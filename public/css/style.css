@@ -1,0 +1,1500 @@
+  /*
+------------------------------------------------------------
+PlanArbreBEA
+Feuille de style principale
+Version 1.0.0
+Licence GNU AGPL v3
+------------------------------------------------------------
+*/
+
+/* ==========================================================
+   Variables
+========================================================== */
+
+:root {
+
+    --primary: #2E7D32;
+    --primary-light: #4CAF50;
+    --primary-dark: #1B5E20;
+
+    --secondary: #81C784;
+
+    --background: #F5F8F4;
+
+    --surface: #FFFFFF;
+
+    --border: #DDE6DC;
+
+    --text: #243024;
+
+    --text-light: #667566;
+
+    --success: #2E7D32;
+
+    --warning: #F9A825;
+
+    --danger: #C62828;
+
+    --radius: 14px;
+
+    --shadow:
+        0 4px 18px rgba(0,0,0,.08);
+
+    --transition:
+        .25s ease;
+
+    --container:
+        1200px;
+
+}
+
+/* ==========================================================
+   Reset
+========================================================== */
+
+* {
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+}
+html {
+
+    scroll-behavior: smooth;
+
+}
+
+body {
+
+    font-family:
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    background: var(--background);
+
+    color: var(--text);
+
+    line-height: 1.6;
+
+    min-height: 100vh;
+
+}
+
+img {
+
+    max-width: 100%;
+
+    display: block;
+
+}
+
+a {
+
+    color: var(--primary);
+
+    text-decoration: none;
+
+    transition: color var(--transition);
+
+}
+
+a:hover {
+
+    color: var(--primary-dark);
+
+}
+
+.container {
+
+    width: min(95%, var(--container));
+
+    margin: auto;
+
+}
+
+/* ==========================================================
+   Header
+========================================================== */
+
+.site-header {
+
+    background: var(--surface);
+
+    box-shadow: var(--shadow);
+
+    margin-bottom: 1.5rem;
+
+}
+
+.site-header .container {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 1.25rem 0;
+
+}
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 1rem;
+
+}
+
+.logo {
+
+    width: 72px;
+
+    height: 72px;
+
+    object-fit: contain;
+
+}
+
+.brand h1 {
+
+    font-size: 2rem;
+
+    color: var(--primary-dark);
+
+    margin-bottom: .25rem;
+
+}
+
+.subtitle {
+
+    color: var(--text-light);
+
+    font-size: .95rem;
+
+    max-width: 650px;
+
+}
+/* ==========================================================
+   Main
+========================================================== */
+
+main {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1.5rem;
+
+    padding-bottom: 2rem;
+
+}
+
+/* ==========================================================
+   Cards
+========================================================== */
+
+.card {
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    padding: 1.5rem;
+
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition);
+
+}
+
+.card:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 24px rgba(0,0,0,.10);
+
+}
+
+.card-header {
+
+    display: flex;
+
+    align-items: center;
+
+    margin-bottom: 1.25rem;
+
+}
+
+.card-header h2 {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .6rem;
+
+    color: var(--primary-dark);
+
+    font-size: 1.25rem;
+
+    font-weight: 600;
+
+}
+
+.card-header i {
+
+    font-size: 1.3rem;
+
+    color: var(--primary);
+
+}
+
+/* ==========================================================
+   Carte Leaflet
+========================================================== */
+
+.map-card {
+
+    overflow: hidden;
+
+}
+
+#map {
+
+    width: 100%;
+
+    height: 45vh;
+
+    min-height: 420px;
+
+    border-radius: calc(var(--radius) - 4px);
+
+    border: 1px solid var(--border);
+
+}
+
+.help {
+
+    margin-top: .9rem;
+
+    color: var(--text-light);
+
+    font-size: .95rem;
+
+}
+/* ==========================================================
+   Formulaire
+========================================================== */
+
+form {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1.5rem;
+
+}
+
+.form-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .55rem;
+
+}
+
+.form-group label {
+
+    font-weight: 600;
+
+    color: var(--text);
+
+}
+
+.form-group input,
+
+.form-group select,
+
+.form-group textarea {
+
+    width: 100%;
+
+    padding: .9rem 1rem;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    background: #fff;
+
+    color: var(--text);
+
+    font-size: 1rem;
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
+
+}
+
+.form-group input:focus,
+
+.form-group select:focus,
+
+.form-group textarea:focus {
+
+    outline: none;
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 4px rgba(46,125,50,.15);
+
+}
+
+.form-group input[readonly] {
+
+    background: #f4f7f4;
+
+    color: var(--text-light);
+
+    cursor: default;
+
+}
+
+textarea {
+
+    resize: vertical;
+
+    min-height: 140px;
+
+}
+
+/* ==========================================================
+   Carte Leaflet
+========================================================== */
+
+#map {
+
+    width: 100%;
+
+    height: clamp(420px, 50vh, 650px);
+
+    border-radius: calc(var(--radius) - 4px);
+
+    border: 1px solid var(--border);
+
+}
+/* ==========================================================
+   Objectifs
+========================================================== */
+
+.goals-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+
+    gap: 1rem;
+
+}
+
+.goal-tile {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 70px;
+
+    padding: 1rem;
+
+    border: 2px solid var(--border);
+
+    border-radius: 12px;
+
+    background: var(--surface);
+
+    cursor: pointer;
+
+    user-select: none;
+
+    transition: all var(--transition);
+
+}
+
+.goal-tile:hover {
+
+    border-color: var(--primary);
+
+    transform: translateY(-2px);
+
+}
+
+.goal-tile input {
+
+    position: absolute;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+}
+
+.goal-tile span {
+
+    font-weight: 600;
+
+    text-align: center;
+
+    color: var(--text);
+
+}
+
+.goal-tile input:checked + span {
+
+    color: white;
+
+}
+
+.goal-tile:has(input:checked) {
+
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+    box-shadow: 0 8px 20px rgba(46,125,50,.25);
+
+}
+
+/* ==========================================================
+   Photo
+========================================================== */
+
+.photo-dropzone {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .75rem;
+
+    min-height: 220px;
+
+    border: 2px dashed var(--primary);
+
+    border-radius: var(--radius);
+
+    background: #FAFCFA;
+
+    cursor: pointer;
+
+    transition: all var(--transition);
+
+}
+
+.photo-dropzone:hover {
+
+    background: #F2F8F2;
+
+    border-color: var(--primary-dark);
+
+}
+
+.photo-dropzone.dragover {
+
+    background: #E8F5E9;
+
+    border-style: solid;
+
+    transform: scale(1.01);
+
+}
+
+.photo-dropzone i {
+
+    font-size: 3rem;
+
+    color: var(--primary);
+
+}
+
+.photo-dropzone p {
+
+    font-size: 1.1rem;
+
+    font-weight: 600;
+
+}
+
+.photo-dropzone small {
+
+    color: var(--text-light);
+
+}
+/* ==========================================================
+   Aperçu photo
+========================================================== */
+
+.photo-preview {
+
+    display: block;
+
+    width: 100%;
+
+    max-height: 350px;
+
+    object-fit: cover;
+
+    border-radius: var(--radius);
+
+    border: 1px solid var(--border);
+
+    margin-top: 1rem;
+
+    box-shadow: var(--shadow);
+
+}
+
+/* ==========================================================
+   Message d'information
+========================================================== */
+
+.info-banner {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 1rem;
+
+    padding: 1rem 1.25rem;
+
+    background: #F1F8E9;
+
+    border-left: 5px solid var(--primary);
+
+    border-radius: var(--radius);
+
+    color: var(--text);
+
+    font-size: .95rem;
+
+}
+
+.info-banner i {
+
+    color: var(--primary);
+
+    font-size: 1.4rem;
+
+    flex-shrink: 0;
+
+}
+
+/* ==========================================================
+   Messages
+========================================================== */
+
+.message {
+
+    display: none;
+
+    padding: 1rem 1.25rem;
+
+    border-radius: var(--radius);
+
+    font-weight: 500;
+
+    margin-top: 1rem;
+
+}
+
+.message.show {
+
+    display: block;
+
+}
+
+.message.success {
+
+    background: #E8F5E9;
+
+    color: #1B5E20;
+
+    border-left: 5px solid #2E7D32;
+
+}
+
+.message.error {
+
+    background: #FFEBEE;
+
+    color: #B71C1C;
+
+    border-left: 5px solid #C62828;
+
+}
+
+.message.info {
+
+    background: #E3F2FD;
+
+    color: #0D47A1;
+
+    border-left: 5px solid #1976D2;
+
+}
+
+/* ==========================================================
+   Boutons
+========================================================== */
+
+.form-actions {
+
+    margin-top: 2rem;
+
+}
+
+.btn-primary {
+
+    width: 100%;
+
+    padding: 1rem 1.5rem;
+
+    border: none;
+
+    border-radius: var(--radius);
+
+    background: var(--primary);
+
+    color: white;
+
+    font-size: 1.1rem;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all var(--transition);
+
+    box-shadow: var(--shadow);
+
+}
+
+.btn-primary:hover:not(:disabled) {
+
+    background: var(--primary-dark);
+
+    transform: translateY(-2px);
+
+}
+
+.btn-primary:active:not(:disabled) {
+
+    transform: scale(.98);
+
+}
+
+.btn-primary:disabled {
+
+    background: #BDBDBD;
+
+    cursor: not-allowed;
+
+    opacity: .75;
+
+}
+/* ==========================================================
+   Footer
+========================================================== */
+
+.site-footer {
+
+    margin-top: 3rem;
+
+    padding: 2rem 0;
+
+    background: var(--surface);
+
+    border-top: 1px solid var(--border);
+
+}
+
+.site-footer .container {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 2rem;
+
+    flex-wrap: wrap;
+
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+
+    flex: 1;
+
+    min-width: 220px;
+
+}
+
+.footer-left strong {
+
+    display: block;
+
+    margin-bottom: .5rem;
+
+    color: var(--primary-dark);
+
+    font-size: 1.1rem;
+
+}
+
+.footer-left p,
+.footer-center p {
+
+    color: var(--text-light);
+
+    margin-bottom: .4rem;
+
+}
+
+.footer-right {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .5rem;
+
+}
+
+.footer-right a {
+
+    font-weight: 500;
+
+}
+
+/* ==========================================================
+   Compteur citoyen
+========================================================== */
+
+.stats-card {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: 1.25rem;
+
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-light)
+    );
+
+    color: white;
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+}
+
+.stats-card .number {
+
+    font-size: 2rem;
+
+    font-weight: 700;
+
+}
+
+.stats-card .label {
+
+    font-size: .95rem;
+
+    opacity: .9;
+
+}
+
+/* ==========================================================
+   Carte de remerciement
+========================================================== */
+
+.thank-you {
+
+    display: none;
+
+    text-align: center;
+
+    padding: 3rem 2rem;
+
+    background: var(--surface);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+}
+
+.thank-you.show {
+
+    display: block;
+
+    animation: fadeIn .5s ease;
+
+}
+
+.thank-you i {
+
+    font-size: 4rem;
+
+    color: var(--success);
+
+    margin-bottom: 1rem;
+
+}
+
+.thank-you h2 {
+
+    color: var(--primary-dark);
+
+    margin-bottom: .75rem;
+
+}
+
+.thank-you p {
+
+    color: var(--text-light);
+
+}
+
+/* ==========================================================
+   Animations
+========================================================== */
+
+@keyframes fadeIn {
+
+    from {
+
+        opacity: 0;
+
+    }
+
+    to {
+
+        opacity: 1;
+
+    }
+
+}
+
+@keyframes slideUp {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(24px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+@keyframes pulse {
+
+    0% {
+
+        transform: scale(1);
+
+    }
+
+    50% {
+
+        transform: scale(1.03);
+
+    }
+
+    100% {
+
+        transform: scale(1);
+
+    }
+
+}
+
+/* ==========================================================
+   Classes utilitaires
+========================================================== */
+
+.hidden {
+
+    display: none !important;
+
+}
+
+.text-center {
+
+    text-align: center;
+
+}
+
+.mt-1 {
+
+    margin-top: 1rem;
+
+}
+
+.mt-2 {
+
+    margin-top: 2rem;
+
+}
+
+.mb-1 {
+
+    margin-bottom: 1rem;
+
+}
+
+.mb-2 {
+
+    margin-bottom: 2rem;
+
+}
+
+/* ==========================================================
+   Badge
+========================================================== */
+
+.badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: .4rem;
+
+    padding: .35rem .8rem;
+
+    border-radius: 999px;
+
+    background: var(--primary-light);
+
+    color: white;
+
+    font-size: .85rem;
+
+    font-weight: 600;
+
+}
+
+/* ==========================================================
+   Barre de progression
+========================================================== */
+
+.progress {
+
+    width: 100%;
+
+    height: 10px;
+
+    background: #E0E0E0;
+
+    border-radius: 999px;
+
+    overflow: hidden;
+
+    margin-top: 1rem;
+
+}
+
+.progress-bar {
+
+    width: 0;
+
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        var(--primary),
+        var(--primary-light)
+    );
+
+    transition: width .35s ease;
+
+}
+
+/* ==========================================================
+   Loader
+========================================================== */
+
+.loader {
+
+    display: inline-block;
+
+    width: 18px;
+
+    height: 18px;
+
+    border: 3px solid rgba(255,255,255,.35);
+
+    border-top-color: white;
+
+    border-radius: 50%;
+
+    animation: spin .8s linear infinite;
+
+    margin-right: .6rem;
+
+}
+
+@keyframes spin {
+
+    to {
+
+        transform: rotate(360deg);
+
+    }
+
+}
+
+/* ==========================================================
+   Responsive
+========================================================== */
+
+/* -------- Tablettes -------- */
+
+@media (max-width: 992px) {
+
+    .container {
+
+        width: min(96%, 900px);
+
+    }
+
+    .site-header .container {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 1rem;
+
+    }
+
+    .brand {
+
+        align-items: flex-start;
+
+    }
+
+    #map {
+
+        height: clamp(360px, 45vh, 500px);
+
+    }
+
+    .goals-grid {
+
+        grid-template-columns: repeat(2, 1fr);
+
+    }
+
+}
+
+/* -------- Smartphones -------- */
+
+@media (max-width: 768px) {
+
+    body {
+
+        font-size: .95rem;
+
+    }
+
+    .container {
+
+        width: 95%;
+
+    }
+
+    .logo {
+
+        width: 56px;
+
+        height: 56px;
+
+    }
+
+    .brand h1 {
+
+        font-size: 1.6rem;
+
+    }
+
+    .subtitle {
+
+        font-size: .9rem;
+
+    }
+
+    .card {
+
+        padding: 1rem;
+
+    }
+
+    #map {
+
+        height: 340px;
+
+    }
+
+    .goals-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .photo-dropzone {
+
+        min-height: 180px;
+
+    }
+
+    .btn-primary {
+
+        font-size: 1rem;
+
+    }
+
+    .site-footer .container {
+
+        flex-direction: column;
+
+        text-align: center;
+
+    }
+
+    .footer-right {
+
+        align-items: center;
+
+    }
+
+}
+
+/* -------- Petits smartphones -------- */
+
+@media (max-width: 480px) {
+
+    .brand {
+
+        flex-direction: column;
+
+        text-align: center;
+
+        width: 100%;
+
+    }
+
+    .brand div {
+
+        width: 100%;
+
+    }
+
+    .brand h1 {
+
+        font-size: 1.35rem;
+
+    }
+
+    .subtitle {
+
+        font-size: .85rem;
+
+    }
+
+    #map {
+
+        height: 300px;
+
+    }
+
+    .goal-tile {
+
+        min-height: 60px;
+
+    }
+
+    .photo-dropzone i {
+
+        font-size: 2.4rem;
+
+    }
+
+}
+
+/* ==========================================================
+   Impression
+========================================================== */
+
+@media print {
+
+    .site-header,
+    .site-footer,
+    .btn-primary,
+    .photo-dropzone {
+
+        display: none !important;
+
+    }
+
+    body {
+
+        background: white;
+
+        color: black;
+
+    }
+
+    .card {
+
+        box-shadow: none;
+
+        border: 1px solid #cccccc;
+
+        page-break-inside: avoid;
+
+    }
+
+}
+
+/* ==========================================================
+   Accessibilité
+========================================================== */
+
+:focus-visible {
+
+    outline: 3px solid var(--primary);
+
+    outline-offset: 3px;
+
+}
+
+::selection {
+
+    background: var(--primary);
+
+    color: white;
+
+}
+
+button,
+input,
+select,
+textarea {
+
+    font: inherit;
+
+}
+
+/* ==========================================================
+   Préférences utilisateur
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    * {
+
+        animation: none !important;
+
+        transition: none !important;
+
+        scroll-behavior: auto !important;
+
+    }
+
+}
+
+/* ==========================================================
+   Mode sombre
+========================================================== */
+
+@media (prefers-color-scheme: dark) {
+
+    :root {
+
+        --background: #1C1F1C;
+
+        --surface: #2A2F2A;
+
+        --border: #404640;
+
+        --text: #F2F5F2;
+
+        --text-light: #B9C3B9;
+
+        --shadow:
+            0 4px 20px rgba(0,0,0,.35);
+
+    }
+
+    body {
+
+        background: var(--background);
+
+        color: var(--text);
+
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+
+        background: #333833;
+
+        color: var(--text);
+
+        border-color: var(--border);
+
+    }
+
+    .readonly-value {
+
+        background: #333833;
+
+    }
+
+    .photo-dropzone {
+
+        background: #303530;
+
+    }
+
+}
+
+/* ==========================================================
+   Leaflet
+========================================================== */
+
+.leaflet-container {
+
+    font-family: inherit;
+
+    border-radius: inherit;
+
+}
+
+.leaflet-popup-content {
+
+    font-size: .95rem;
+
+}
+
+.leaflet-control-zoom a {
+
+    transition: background .2s ease;
+
+}
+
+/* ==========================================================
+   Toast
+========================================================== */
+
+.toast {
+
+    position: fixed;
+
+    bottom: 24px;
+
+    right: 24px;
+
+    z-index: 9999;
+
+    min-width: 280px;
+
+    max-width: 420px;
+
+    padding: 1rem 1.25rem;
+
+    border-radius: var(--radius);
+
+    background: var(--surface);
+
+    box-shadow: var(--shadow);
+
+    border-left: 5px solid var(--primary);
+
+    animation: slideUp .35s ease;
+
+}
+
+.toast.success {
+
+    border-left-color: var(--success);
+
+}
+
+.toast.error {
+
+    border-left-color: var(--danger);
+
+}
+
+.toast.warning {
+
+    border-left-color: var(--warning);
+
+}
+
+/* ==========================================================
+   Fin
+========================================================== */
