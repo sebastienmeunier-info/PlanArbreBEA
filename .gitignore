@@ -1,0 +1,23 @@
+# Photos
+uploads/photos/*
+
+# Exports
+uploads/exports/*
+
+# Logs
+*.log
+
+# Sauvegardes
+*.bak
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Tests locaux
+tests/tmp/

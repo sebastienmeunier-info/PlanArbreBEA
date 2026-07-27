@@ -2,21 +2,16 @@
 
 declare(strict_types=1);
 
-/*
-------------------------------------------------------------
-PlanArbreBEA
-save.php
-Version 1.0.0
-Licence GNU AGPL v3
-------------------------------------------------------------
-*/
+/**
+ * ------------------------------------------------------------
+ * PlanArbreBEA
+ * Enregistrement d'une proposition
+ * Version : 1.0.0
+ * Licence : GNU AGPL v3
+ * ------------------------------------------------------------
+ */
 
-require_once __DIR__ . '/app/Config.php';
-require_once __DIR__ . '/app/Response.php';
-require_once __DIR__ . '/app/Validator.php';
-require_once __DIR__ . '/app/Territory.php';
-require_once __DIR__ . '/app/GeoJSON.php';
-require_once __DIR__ . '/app/Photo.php';
+require_once __DIR__ . '/app/autoload.php';
 
 Config::init();
 
@@ -24,7 +19,22 @@ try {
 
     /*
     ------------------------------------------------------------
-    Validation du formulaire
+    Vérification de la méthode HTTP
+    ------------------------------------------------------------
+    */
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+
+        Response::error(
+            'Méthode HTTP non autorisée.',
+            405
+        );
+
+    }
+
+    /*
+    ------------------------------------------------------------
+    Validation des données
     ------------------------------------------------------------
     */
 
@@ -32,17 +42,19 @@ try {
 
     /*
     ------------------------------------------------------------
-    Contrôle du territoire
+    Vérification du territoire
     ------------------------------------------------------------
     */
 
-    if (!Territory::contains(
-        $data['latitude'],
-        $data['longitude']
-    )) {
+    if (
+        !Territory::contains(
+            $data['latitude'],
+            $data['longitude']
+        )
+    ) {
 
         Response::forbidden(
-            "Le point sélectionné est situé hors du territoire de Baugé-en-Anjou."
+            'Le point sélectionné est situé hors du territoire de Baugé-en-Anjou.'
         );
 
     }
@@ -63,7 +75,7 @@ try {
     ------------------------------------------------------------
     */
 
-    $feature = GeoJSON::createProposal(
+    $feature = Feature::proposal(
         $data,
         $photo
     );
@@ -84,22 +96,38 @@ try {
     ------------------------------------------------------------
     */
 
-    Response::success(
+    Response::created(
+
         [
             'feature' => $feature
         ],
-        'Votre proposition a été enregistrée.'
+
+        'Votre proposition a été enregistrée avec succès.'
+
     );
 
 }
+
+/*
+------------------------------------------------------------
+Erreurs de validation
+------------------------------------------------------------
+*/
+
 catch (InvalidArgumentException $e) {
 
-    Response::error(
-        $e->getMessage(),
-        400
+    Response::badRequest(
+        $e->getMessage()
     );
 
 }
+
+/*
+------------------------------------------------------------
+Erreurs applicatives
+------------------------------------------------------------
+*/
+
 catch (RuntimeException $e) {
 
     Response::error(
@@ -108,6 +136,13 @@ catch (RuntimeException $e) {
     );
 
 }
+
+/*
+------------------------------------------------------------
+Erreur inattendue
+------------------------------------------------------------
+*/
+
 catch (Throwable $e) {
 
     Response::serverError(
