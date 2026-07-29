@@ -1,98 +1,236 @@
 <?php
 
-class Territory
+declare(strict_types=1);
+
+/**
+ * ------------------------------------------------------------
+ * PlanArbreBEA
+ * Vérification d'appartenance au territoire
+ * Version : 1.0.0
+ * Licence : GNU AGPL v3
+ * ------------------------------------------------------------
+ */
+
+final class Territory
 {
     /**
-     * Charge le fichier GeoJSON représentant le territoire.
-     *
-     * @return array
-     * @throws RuntimeException
+     * Géométrie chargée en mémoire.
      */
-    public static function loadBoundary(): array
-    {
-        $file = __DIR__ . '/../data/territoire.geojson';
+    private static ?array $geometry = null;
 
-        if (!is_file($file)) {
-            throw new RuntimeException("Fichier territoire introuvable : $file");
+    /**
+     * Vérifie si un point est dans le territoire.
+     */
+    public static function contains(
+        float $latitude,
+        float $longitude
+    ): bool {
+
+        $geometry = self::geometry();
+
+        return match ($geometry['type']) {
+
+            'Polygon' =>
+                self::polygonContains(
+                    $geometry['coordinates'],
+                    $longitude,
+                    $latitude
+                ),
+
+            'MultiPolygon' =>
+                self::multiPolygonContains(
+                    $geometry['coordinates'],
+                    $longitude,
+                    $latitude
+                ),
+
+            default => false
+
+        };
+
+    }
+
+    /**
+     * Charge la géométrie.
+     */
+    private static function geometry(): array
+    {
+        if (self::$geometry !== null) {
+            return self::$geometry;
         }
 
-        $json = file_get_contents($file);
+        if (!file_exists(Config::TERRITORY_FILE)) {
+
+            throw new RuntimeException(
+                "Fichier territoire introuvable."
+            );
+
+        }
+
+        $json = file_get_contents(
+            Config::TERRITORY_FILE
+        );
 
         if ($json === false) {
-            throw new RuntimeException("Impossible de lire le fichier : $file");
-        }
 
-        $data = json_decode($json, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new RuntimeException(
-                "GeoJSON invalide : " . json_last_error_msg()
+                "Lecture impossible du territoire."
             );
+
         }
 
-        if (!is_array($data)) {
-            throw new RuntimeException("Le GeoJSON ne contient pas un tableau valide.");
+        $geojson = json_decode(
+            $json,
+            true
+        );
+
+        if (!is_array($geojson)) {
+
+            throw new RuntimeException(
+                "GeoJSON invalide."
+            );
+
         }
 
-        return $data;
+        if (
+            !isset($geojson['features'][0]['geometry'])
+        ) {
+
+            throw new RuntimeException(
+                "Aucune géométrie trouvée."
+            );
+
+        }
+
+        self::$geometry =
+            $geojson['features'][0]['geometry'];
+
+        return self::$geometry;
+
     }
 
-    public static function contains(float $lat, float $lng): bool
-    {
-        $geo = self::loadBoundary();
+    /**
+     * Polygon.
+     */
+    private static function polygonContains(
+        array $rings,
+        float $x,
+        float $y
+    ): bool {
 
-        foreach (($geo['features'] ?? []) as $feature) {
-            $geometry = $feature['geometry'] ?? [];
+        if (empty($rings)) {
+            return false;
+        }
 
-            switch ($geometry['type'] ?? '') {
-                case 'Polygon':
-                    if (self::polygonContains($lng, $lat, $geometry['coordinates'])) {
-                        return true;
-                    }
-                    break;
+        if (!self::pointInRing($rings[0], $x, $y)) {
+            return false;
+        }
 
-                case 'MultiPolygon':
-                    foreach ($geometry['coordinates'] as $polygon) {
-                        if (self::polygonContains($lng, $lat, $polygon)) {
-                            return true;
-                        }
-                    }
-                    break;
+        foreach (array_slice($rings, 1) as $hole) {
+
+            if (self::pointInRing($hole, $x, $y)) {
+                return false;
             }
+
         }
 
-        return false;
+        return true;
+
     }
 
-    private static function polygonContains(float $x, float $y, array $polygon): bool
-    {
-        foreach ($polygon as $ring) {
-            if (self::pointInRing($x, $y, $ring)) {
+    /**
+     * MultiPolygon.
+     */
+    private static function multiPolygonContains(
+        array $polygons,
+        float $x,
+        float $y
+    ): bool {
+
+        foreach ($polygons as $polygon) {
+
+            if (
+                self::polygonContains(
+                    $polygon,
+                    $x,
+                    $y
+                )
+            ) {
+
                 return true;
+
             }
+
         }
 
         return false;
+
     }
 
-    private static function pointInRing(float $x, float $y, array $ring): bool
-    {
+    /**
+     * Algorithme Ray Casting.
+     */
+    private static function pointInRing(
+        array $ring,
+        float $x,
+        float $y
+    ): bool {
+
         $inside = false;
-        $n = count($ring);
 
-        for ($i = 0, $j = $n - 1; $i < $n; $j = $i++) {
-            [$xi, $yi] = $ring[$i];
-            [$xj, $yj] = $ring[$j];
+        $count = count($ring);
 
-            $intersects =
-                (($yi > $y) !== ($yj > $y))
-                && ($x < ($xj - $xi) * ($y - $yi) / (($yj - $yi) ?: 1e-12) + $xi);
+        if ($count < 3) {
+            return false;
+        }
 
-            if ($intersects) {
+        for (
+            $i = 0, $j = $count - 1;
+            $i < $count;
+            $j = $i++
+        ) {
+
+            $xi = $ring[$i][0];
+            $yi = $ring[$i][1];
+
+            $xj = $ring[$j][0];
+            $yj = $ring[$j][1];
+
+            $intersect =
+                (
+                    ($yi > $y)
+                    !==
+                    ($yj > $y)
+                )
+                &&
+                (
+                    $x <
+                    (
+                        ($xj - $xi)
+                        *
+                        ($y - $yi)
+                        /
+                        (($yj - $yi) ?: 1e-12)
+                    )
+                    + $xi
+                );
+
+            if ($intersect) {
                 $inside = !$inside;
             }
+
         }
 
         return $inside;
+
     }
+
+    /**
+     * Vide le cache.
+     */
+    public static function clearCache(): void
+    {
+        self::$geometry = null;
+    }
+
 }

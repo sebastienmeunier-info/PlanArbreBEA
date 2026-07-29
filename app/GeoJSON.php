@@ -30,29 +30,31 @@ final class GeoJSON
         $json = file_get_contents($filename);
 
         if ($json === false) {
+
             throw new RuntimeException(
-                "Impossible de lire le fichier GeoJSON."
+                "Impossible de lire le fichier : {$filename}"
             );
+
         }
 
         $collection = json_decode($json, true);
 
         if (!is_array($collection)) {
 
-            return [
-                'type' => 'FeatureCollection',
-                'features' => []
-            ];
+            throw new RuntimeException(
+                "GeoJSON invalide : {$filename}"
+            );
 
         }
 
+        $collection['type'] ??= 'FeatureCollection';
         $collection['features'] ??= [];
 
         return $collection;
     }
 
     /**
-     * Sauvegarde un GeoJSON.
+     * Sauvegarde un fichier GeoJSON.
      */
     private static function save(
         string $filename,
@@ -81,17 +83,25 @@ final class GeoJSON
         ) {
 
             throw new RuntimeException(
-                "Impossible d'enregistrer le fichier."
+                "Impossible d'écrire le fichier : {$filename}"
             );
 
         }
 
-        clearstatcache(true, $filename);
+        @chmod(
+            $filename,
+            Config::FILE_PERMISSIONS
+        );
+
+        clearstatcache(
+            true,
+            $filename
+        );
 
     }
 
     /**
-     * Arbres.
+     * Charge les arbres.
      */
     public static function loadTrees(): array
     {
@@ -101,7 +111,7 @@ final class GeoJSON
     }
 
     /**
-     * Propositions.
+     * Charge les propositions.
      */
     public static function loadProposals(): array
     {
@@ -121,6 +131,29 @@ final class GeoJSON
 
         $collection['features'][] = $feature;
 
+        /*
+         * Tri des propositions
+         * Les plus récentes en premier
+         */
+
+        usort(
+
+            $collection['features'],
+
+            static function (
+                array $a,
+                array $b
+            ): int {
+
+                return strcmp(
+                    $b['properties']['date_creation'],
+                    $a['properties']['date_creation']
+                );
+
+            }
+
+        );
+
         self::save(
             Config::PROPOSALS_FILE,
             $collection
@@ -139,62 +172,20 @@ final class GeoJSON
     }
 
     /**
-     * Création d'une Feature Point.
+     * Vérifie qu'un GeoJSON est valide.
      */
-    public static function createProposal(
-        array $data,
-        ?string $photo = null
-    ): array {
+    public static function isValid(
+        array $collection
+    ): bool {
 
-        return [
-
-            'type' => 'Feature',
-
-            'geometry' => [
-
-                'type' => 'Point',
-
-                'coordinates' => [
-
-                    $data['longitude'],
-
-                    $data['latitude']
-
-                ]
-
-            ],
-
-            'properties' => [
-
-                'id' => bin2hex(
-                    random_bytes(16)
-                ),
-
-                'date_creation' => date('c'),
-
-                'nom' => $data['author'],
-
-                'adresse' => $data['address'],
-
-                'commune' => $data['commune'],
-
-                'essence' => $data['species'],
-
-                'objectifs' => $data['objectifs'],
-
-                'commentaire' => $data['comment'],
-
-                'photo' => $photo,
-
-                'statut' => Config::STATUS_PENDING,
-
-                'visible' => true,
-
-                'version' => Config::VERSION
-
-            ]
-
-        ];
+        return
+            isset($collection['type'])
+            &&
+            $collection['type'] === 'FeatureCollection'
+            &&
+            isset($collection['features'])
+            &&
+            is_array($collection['features']);
 
     }
 
