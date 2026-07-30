@@ -28,6 +28,8 @@ L'extension PHP `gd` doit être activée : elle contrôle et stocke les trois ph
 
 Les demandes peuvent contenir une adresse e-mail facultative. Elle est enregistrée afin de notifier le demandeur lors d'une validation, d'un rejet, d'une plantation ou d'un déplacement de localisation. L'envoi des e-mails sera activé avec le module d'administration.
 
+La procédure de recherche des sources administratives officielles et de génération de `territoire.geojson` et `communes-deleguees.geojson` est décrite dans [la documentation GeoJSON](geojson.md).
+
 ## Comptes et administration
 
 Chaque inscription crée un compte `contributeur`. Pour créer le premier administrateur, définir `PLANTONS_BOOTSTRAP_ADMIN_EMAIL` avec l'adresse e-mail de ce compte avant son inscription. Un administrateur peut ensuite promouvoir les contributeurs depuis `/admin/utilisateurs`.
