@@ -92,7 +92,7 @@ final class ExportController
             'commentaire', 'adresse', 'commune_deleguee', 'longitude', 'latitude', 'auteur_saisi', 'email_proposition',
             'contributeur_nom', 'contributeur_email', 'contributeur_adresse', 'contributeur_telephone', 'contributeur_role', 'contributeur_inscrit_le',
             'photos_urls',
-        ], ';');
+        ], ';', '"', '');
         foreach ($features as $feature) {
             $properties = $feature['properties'] ?? [];
             $contributor = $properties['contributor'] ?? [];
@@ -103,7 +103,7 @@ final class ExportController
                 $properties['comment'] ?? '', $properties['address'] ?? '', $properties['delegated_municipality'] ?? '', $coordinates[0] ?? '', $coordinates[1] ?? '',
                 $properties['author'] ?? '', $properties['email'] ?? '', $contributor['name'] ?? '', $contributor['email'] ?? '', $contributor['address'] ?? '',
                 $contributor['phone'] ?? '', $contributor['role'] ?? '', $contributor['created_at'] ?? '', implode(' | ', (array) ($properties['photo_urls'] ?? [])),
-            ], ';');
+            ], ';', '"', '');
         }
         rewind($handle);
         $content = stream_get_contents($handle) ?: '';
