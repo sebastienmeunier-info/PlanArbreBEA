@@ -2,6 +2,7 @@
 
 ## 0.1.0-dev — Sprint 1
 
+- Remplacement des cases à cocher des objectifs par des tuiles avec pictogrammes.
 - Ajout de l'adresse e-mail facultative pour les futures notifications de statut et de déplacement.
 - Ajout de la carte Leaflet, de la recherche d'adresse et de la géolocalisation.
 - Ajout du contrôle territorial côté navigateur et côté serveur.

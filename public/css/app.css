@@ -21,12 +21,18 @@ button:hover, button:focus-visible { background: var(--green-dark); }
 output { font-size: .9rem; }
 fieldset { border: 0; padding: 0; }
 legend { margin-bottom: .5rem; }
-.objective-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem; }
-.objective { display: flex; align-items: center; gap: .5rem; min-height: 3rem; padding: .5rem; border: 1px solid var(--line); border-radius: .4rem; font-weight: 500; }
-.objective input { width: 1.2rem; min-height: auto; }
+.objective-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .65rem; }
+.objective { display: block; position: relative; min-width: 0; cursor: pointer; }
+.objective input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
+.objective-tile { display: grid; justify-items: center; gap: .45rem; min-height: 7rem; padding: .8rem .5rem; border: 2px solid var(--line); border-radius: .6rem; background: #fff; color: var(--ink); text-align: center; font-weight: 650; transition: border-color .15s, background .15s, transform .15s; }
+.objective-icon { display: grid; place-items: center; inline-size: 2.7rem; block-size: 2.7rem; border-radius: 50%; color: #fff; background: var(--green); font-size: 1.65rem; line-height: 1; }
+.objective:hover .objective-tile { border-color: var(--green); transform: translateY(-2px); }
+.objective input:checked + .objective-tile { border-color: var(--green-dark); background: #e6f2e9; box-shadow: 0 0 0 2px #1f6b3b33; }
+.objective input:checked + .objective-tile .objective-icon { background: var(--green-dark); }
+.objective input:focus-visible + .objective-tile { outline: 3px solid #2466c5; outline-offset: 2px; }
 .photo-previews { display: flex; flex-wrap: wrap; gap: .5rem; margin: -.5rem 0 1rem; }
 .photo-previews img { width: 5rem; height: 5rem; object-fit: cover; border-radius: .4rem; }
 .form-message { min-height: 1.4rem; font-weight: 600; }
 .form-message.error { color: #a51717; }.form-message.success { color: var(--green-dark); }
 .submit-button { width: 100%; font-size: 1.05rem; }
-@media (min-width: 48rem) { .page-layout { grid-template-columns: 1.1fr .9fr; align-items: start; }.intro { grid-column: 1 / -1; }.objective-grid { grid-template-columns: 1fr; } }
+@media (min-width: 48rem) { .page-layout { grid-template-columns: 1.1fr .9fr; align-items: start; }.intro { grid-column: 1 / -1; } }
