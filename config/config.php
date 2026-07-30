@@ -10,7 +10,8 @@ $territoryCenter = [47.5310, -0.1020];
 
 return [
     'app' => [
-        'name' => getenv('PLANARBRE_PROJECT_NAME') ?: 'PlanArbreBEA',
+        'name' => getenv('PLANARBRE_PROJECT_NAME') ?: 'Plan Arbre Baugé en Anjou',
+        'logo_url' => getenv('PLANARBRE_PROJECT_LOGO_URL') ?: 'https://www.sebastienmeunier.info/wp-content/uploads/2024/12/sebmeunier-300x300.png',
         'environment' => $environment,
         'debug' => filter_var(getenv('PLANARBRE_DEBUG') ?: $environment !== 'production', FILTER_VALIDATE_BOOL),
         'base_url' => rtrim((string) (getenv('PLANARBRE_BASE_URL') ?: ''), '/'),
@@ -54,6 +55,7 @@ return [
         ],
     ],
     'planting' => [
+        'target_count' => 1000,
         'max_objectives_per_proposal' => 3,
         'allowed_species' => [
             'Chêne', 'Érable', 'Tilleul', 'Charme', 'Frêne', 'Merisier',

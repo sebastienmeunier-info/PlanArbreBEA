@@ -2,6 +2,7 @@
 
 ## 0.1.0-dev — Sprint 1
 
+- Configuration du nom et du logo du projet, ajout du menu et des indicateurs de plantation dans l'en-tête public.
 - Raccourcissement de l'adresse affichée après sélection cartographique.
 - Infobulle enrichie avec l'essence et les objectifs, et complétion d'adresse et de commune déléguée après le clic cartographique.
 - Ajout des repères de carte colorés selon le statut de chaque proposition.

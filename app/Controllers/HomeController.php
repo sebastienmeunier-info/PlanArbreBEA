@@ -7,6 +7,7 @@ namespace PlanArbreBEA\Controllers;
 use PlanArbreBEA\Core\Application;
 use PlanArbreBEA\Core\Request;
 use PlanArbreBEA\Core\Response;
+use PlanArbreBEA\Services\GeoJsonStore;
 
 final class HomeController
 {
@@ -18,11 +19,21 @@ final class HomeController
             session_start();
         }
         $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
+        $planting = $this->app->config('planting');
+        $proposalFeatures = (new GeoJsonStore())->read($this->app->config('data_sources')['proposals']['file'])['features'];
+        $statistics = ['proposed' => 0, 'validated' => 0, 'planted' => 0];
+        foreach ($proposalFeatures as $proposal) {
+            $status = $proposal['properties']['status'] ?? 'a_valider';
+            if ($status === 'validee') { $statistics['validated']++; }
+            elseif (in_array($status, ['arbre_plante', 'realisee'], true)) { $statistics['planted']++; }
+            else { $statistics['proposed']++; }
+        }
 
         Response::html($this->app->view()->render('home', [
             'application' => $this->app->config('app'),
             'territory' => $this->app->config('territory'),
-            'planting' => $this->app->config('planting'),
+            'planting' => $planting,
+            'statistics' => $statistics,
             'security' => $this->app->config('security'),
             'map' => $this->app->config('map'),
             'proposals' => $this->app->config('proposals'),

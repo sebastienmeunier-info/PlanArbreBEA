@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="public/css/app.css">
 </head>
 <body class="outdoor-mode">
-<header class="site-header"><strong><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></strong><span><?= htmlspecialchars($territory['name'], ENT_QUOTES, 'UTF-8') ?></span></header>
+<header class="site-header"><a class="project-brand" href="/" aria-label="<?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?>"><img class="project-logo" src="<?= htmlspecialchars($application['logo_url'], ENT_QUOTES, 'UTF-8') ?>" alt=""><strong><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></strong></a><nav class="site-navigation" aria-label="Navigation principale"><button class="menu-button" type="button" aria-label="Ouvrir le menu de navigation">☰ <span>Menu</span></button></nav></header>
 <main class="page-layout">
-    <section class="intro"><h1>Proposer un arbre</h1><p>Choisissez un emplacement sur la carte, puis décrivez votre proposition.</p></section>
+    <section class="intro"><h1>Proposer une plantation</h1><p>Objectif : <?= number_format((int) $planting['target_count'], 0, ',', ' ') ?> plantations — <?= (int) $statistics['proposed'] ?> plantations proposées, <?= (int) $statistics['validated'] ?> plantations validées, <?= (int) $statistics['planted'] ?> arbres plantés.</p></section>
     <section class="map-panel" aria-label="Choix de l'emplacement">
         <form id="address-search" class="address-search"><label for="address">Rechercher une adresse</label><div><input id="address" type="search" autocomplete="street-address" placeholder="Rue, lieu-dit, commune"><button type="submit">Rechercher</button></div></form>
         <div id="address-results" class="address-results" aria-live="polite"></div>
