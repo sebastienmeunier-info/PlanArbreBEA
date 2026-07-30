@@ -4,19 +4,22 @@
   const form = document.querySelector('#proposal-form');
   const locationOutput = document.querySelector('#selected-location');
   const message = document.querySelector('#form-message');
+  const toast = document.querySelector('#toast');
   const map = L.map('map', { scrollWheelZoom: false }).setView(config.center, config.zoom);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
   let marker;
   let territory;
+  let toastTimer;
 
   const setMessage = (text, kind = '') => { message.textContent = text; message.className = `form-message ${kind}`; };
+  const showToast = (text, kind = '') => { clearTimeout(toastTimer); toast.textContent = text; toast.className = `toast ${kind}`; toast.hidden = false; toastTimer = window.setTimeout(() => { toast.hidden = true; }, 5000); };
   const setPosition = (latitude, longitude, address = '') => {
     const latLng = [latitude, longitude];
     if (territory && window.turf && !territory.features.some((feature) => turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))) {
       setMessage('Ce point est situé hors du territoire autorisé.', 'error');
       return;
     }
-    marker ? marker.setLatLng(latLng) : (marker = L.marker(latLng).addTo(map));
+    marker ? marker.setLatLng(latLng) : (marker = L.marker(latLng, { icon: L.divIcon({ className: '', html: '<span class="proposal-marker" aria-hidden="true">●</span>', iconSize: [42, 42], iconAnchor: [21, 21] }) }).addTo(map));
     map.setView(latLng, Math.max(map.getZoom(), 16));
     document.querySelector('#latitude').value = latitude;
     document.querySelector('#longitude').value = longitude;
@@ -47,9 +50,13 @@
     if (files.length > config.maxPhotos) { event.target.value = ''; setMessage(`Vous pouvez sélectionner ${config.maxPhotos} photos maximum.`, 'error'); return; }
     for (const file of files) { if (file.size > 1048576) { event.target.value = ''; previews.textContent = ''; setMessage('Chaque photo est limitée à 1 Mo.', 'error'); return; } const image = document.createElement('img'); image.src = URL.createObjectURL(file); image.alt = `Aperçu de ${file.name}`; previews.append(image); }
   });
+  form.querySelectorAll('input[name="objectives[]"]').forEach((input) => input.addEventListener('change', () => {
+    const selected = form.querySelectorAll('input[name="objectives[]"]:checked');
+    if (selected.length > config.maxObjectives) { input.checked = false; showToast(`Vous pouvez sélectionner ${config.maxObjectives} objectifs maximum.`, 'error'); }
+  }));
   form.addEventListener('submit', async (event) => {
     event.preventDefault(); if (!form.latitude.value || !form.longitude.value) return setMessage('Choisissez l’emplacement de l’arbre sur la carte.', 'error');
     const submit = form.querySelector('[type="submit"]'); submit.disabled = true; setMessage('Envoi de la proposition…');
-    try { const response = await fetch(config.proposalUrl, { method: 'POST', body: new FormData(form) }); const data = await response.json(); if (!response.ok) throw new Error(data.message || 'Envoi impossible.'); form.reset(); document.querySelector('#photo-previews').textContent = ''; marker?.remove(); marker = undefined; locationOutput.value = 'Choisissez un point sur la carte.'; setMessage(data.message, 'success'); } catch (error) { setMessage(error.message, 'error'); } finally { submit.disabled = false; }
+    try { const response = await fetch(config.proposalUrl, { method: 'POST', body: new FormData(form) }); const data = await response.json(); if (!response.ok) throw new Error(data.message || 'Envoi impossible.'); form.reset(); document.querySelector('#photo-previews').textContent = ''; marker?.remove(); marker = undefined; locationOutput.value = 'Choisissez un point sur la carte.'; setMessage(''); showToast(data.message); } catch (error) { setMessage(error.message, 'error'); } finally { submit.disabled = false; }
   });
 })();

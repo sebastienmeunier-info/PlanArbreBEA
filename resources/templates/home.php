@@ -25,7 +25,7 @@
             <label>Votre nom <small>facultatif</small><input name="author" maxlength="80" autocomplete="name"></label>
             <label>Votre adresse e-mail <small>facultative — pour recevoir les changements de statut</small><input name="email" type="email" maxlength="<?= (int) $security['max_email_length'] ?>" autocomplete="email" inputmode="email" placeholder="nom@exemple.fr"></label>
             <label>Essence souhaitée<select name="species" required><option value="">Choisir une essence</option><?php foreach ($planting['allowed_species'] as $species): ?><option value="<?= htmlspecialchars($species, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($species, ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select></label>
-            <fieldset><legend>Objectifs de plantation</legend><div class="objective-grid"><?php foreach ($planting['objectives'] as $key => $objective): ?><label class="objective"><input type="checkbox" name="objectives[]" value="<?= htmlspecialchars($key, ENT_QUOTES, 'UTF-8') ?>"><span class="objective-tile"><span class="objective-icon" aria-hidden="true"><?= htmlspecialchars($objective['icon'], ENT_QUOTES, 'UTF-8') ?></span><span><?= htmlspecialchars($objective['label'], ENT_QUOTES, 'UTF-8') ?></span></span></label><?php endforeach; ?></div></fieldset>
+            <fieldset><legend>Objectifs de plantation <small>3 maximum</small></legend><div class="objective-grid"><?php foreach ($planting['objectives'] as $key => $objective): ?><label class="objective"><input type="checkbox" name="objectives[]" value="<?= htmlspecialchars($key, ENT_QUOTES, 'UTF-8') ?>"><span class="objective-tile"><span class="objective-icon" aria-hidden="true"><?= htmlspecialchars($objective['icon'], ENT_QUOTES, 'UTF-8') ?></span><span><?= htmlspecialchars($objective['label'], ENT_QUOTES, 'UTF-8') ?></span></span></label><?php endforeach; ?></div></fieldset>
             <label>Commentaire <small>facultatif</small><textarea name="comment" maxlength="1000" rows="4" placeholder="Précisez votre idée de plantation."></textarea></label>
             <label>Photos <small>jusqu'à <?= (int) $security['max_photos_per_proposal'] ?>, 1 Mo chacune</small><input id="photos" name="photos[]" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
             <div id="photo-previews" class="photo-previews" aria-live="polite"></div>
@@ -34,7 +34,8 @@
         </form>
     </section>
 </main>
-<script>window.PlanArbreConfig = <?= json_encode(['center' => $territory['center'], 'zoom' => $map['default_zoom'], 'territoryUrl' => $dataSources['territory']['url'], 'proposalUrl' => '/api/propositions', 'maxPhotos' => $security['max_photos_per_proposal']], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<script>window.PlanArbreConfig = <?= json_encode(['center' => $territory['center'], 'zoom' => $map['default_zoom'], 'territoryUrl' => $dataSources['territory']['url'], 'proposalUrl' => '/api/propositions', 'maxPhotos' => $security['max_photos_per_proposal'], 'maxObjectives' => $planting['max_objectives_per_proposal']], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
 <script src="public/js/app.js" defer></script>

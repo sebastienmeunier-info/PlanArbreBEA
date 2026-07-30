@@ -36,6 +36,9 @@ final class ProposalController
             if ($objectives === [] || array_diff($objectives, array_keys($planting['objectives'])) !== []) {
                 throw new InvalidArgumentException('Veuillez sélectionner au moins un objectif valide.');
             }
+            if (count(array_unique($objectives)) > $planting['max_objectives_per_proposal']) {
+                throw new InvalidArgumentException('Vous pouvez sélectionner au maximum trois objectifs.');
+            }
             if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
                 throw new InvalidArgumentException('Veuillez renseigner une adresse e-mail valide.');
             }

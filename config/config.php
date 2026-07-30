@@ -54,6 +54,7 @@ return [
         ],
     ],
     'planting' => [
+        'max_objectives_per_proposal' => 3,
         'allowed_species' => [
             'Chêne', 'Érable', 'Tilleul', 'Charme', 'Frêne', 'Merisier',
             'Arbre fruitier', 'Autre',

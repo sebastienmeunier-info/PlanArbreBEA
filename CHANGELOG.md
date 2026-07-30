@@ -2,6 +2,7 @@
 
 ## 0.1.0-dev — Sprint 1
 
+- Limitation à trois objectifs, ajout du repère orange et d'une confirmation éphémère après envoi.
 - Ajout d'un thème sombre à haut contraste et d'une mise en page mobile adaptée à l'usage extérieur.
 - Remplacement des cases à cocher des objectifs par des tuiles avec pictogrammes.
 - Ajout de l'adresse e-mail facultative pour les futures notifications de statut et de déplacement.
