@@ -11,7 +11,7 @@
 <body class="outdoor-mode">
 <?php require __DIR__ . '/partials/header.php'; ?>
 <main class="page-layout">
-    <section class="intro"><h1><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></h1><p>Objectif : <?= number_format((int) $planting['target_count'], 0, ',', ' ') ?> plantations — <?= (int) $statistics['proposed'] ?> plantations proposées, <?= (int) $statistics['validated'] ?> plantations validées, <?= (int) $statistics['planted'] ?> arbres plantés.</p></section>
+    <section class="intro"><h1><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></h1><p>Objectif : <?= number_format((int) $planting['target_count'], 0, ',', ' ') ?> <?= $treeProposal ? 'arbres' : 'plantations' ?> — <?= (int) $statistics['proposed'] ?> <?= $treeProposal ? 'arbres proposés' : 'plantations proposées' ?>, <?= (int) $statistics['validated'] ?> <?= $treeProposal ? 'arbres validés' : 'plantations validées' ?>, <?= (int) $statistics['planted'] ?> arbres plantés.</p></section>
     <section class="map-panel" aria-label="Choix de l'emplacement">
         <form id="address-search" class="address-search"><label for="address">Rechercher une adresse</label><div><input id="address" type="search" autocomplete="street-address" placeholder="Rue, lieu-dit, commune"><button type="submit">Rechercher</button></div></form>
         <div id="address-results" class="address-results" aria-live="polite"></div>
