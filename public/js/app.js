@@ -93,11 +93,13 @@
     }
     source.close(); throw new Error('Une photo ne peut pas être réduite à 500 Ko.');
   };
-  document.querySelector('#photos').addEventListener('change', (event) => {
-    const files = [...event.target.files]; const previews = document.querySelector('#photo-previews'); previews.textContent = '';
-    if (files.length > config.maxPhotos) { event.target.value = ''; setMessage(`Vous pouvez sélectionner ${config.maxPhotos} photos maximum.`, 'error'); return; }
-    photoPreparation = (async () => { try { setMessage('Optimisation des photos…'); preparedPhotos = await Promise.all(files.map(compressPhoto)); for (const file of preparedPhotos) { const image = document.createElement('img'); image.src = URL.createObjectURL(file); image.alt = `Aperçu de ${file.name}`; previews.append(image); } setMessage(''); } catch (error) { preparedPhotos = []; event.target.value = ''; previews.textContent = ''; setMessage(error.message, 'error'); } })();
-  });
+  const photoInputs = [...document.querySelectorAll('.photo-input')];
+  const preparePhotos = () => {
+    const files = photoInputs.flatMap((input) => [...input.files]); const previews = document.querySelector('#photo-previews'); previews.textContent = '';
+    if (files.length > config.maxPhotos) { photoInputs.forEach((input) => { input.value = ''; }); setMessage(`Vous pouvez sélectionner ${config.maxPhotos} photos maximum.`, 'error'); return; }
+    photoPreparation = (async () => { try { setMessage('Optimisation des photos…'); preparedPhotos = await Promise.all(files.map(compressPhoto)); for (const file of preparedPhotos) { const image = document.createElement('img'); image.src = URL.createObjectURL(file); image.alt = `Aperçu de ${file.name}`; previews.append(image); } setMessage(''); } catch (error) { preparedPhotos = []; photoInputs.forEach((input) => { input.value = ''; }); previews.textContent = ''; setMessage(error.message, 'error'); } })();
+  };
+  photoInputs.forEach((input) => input.addEventListener('change', preparePhotos));
   form.querySelectorAll('input[name="objectives[]"]').forEach((input) => input.addEventListener('change', () => {
     const selected = form.querySelectorAll('input[name="objectives[]"]:checked');
     if (selected.length > config.maxObjectives) { input.checked = false; showToast(`Vous pouvez sélectionner ${config.maxObjectives} objectifs maximum.`, 'error'); }

@@ -33,7 +33,7 @@
                 <fieldset><legend>Objectifs de plantation <small>3 maximum</small></legend><div class="objective-grid"><?php foreach ($planting['objectives'] as $key => $objective): ?><label class="objective"><input type="checkbox" name="objectives[]" value="<?= htmlspecialchars($key, ENT_QUOTES, 'UTF-8') ?>"><span class="objective-tile"><span class="objective-icon" aria-hidden="true"><?= htmlspecialchars($objective['icon'], ENT_QUOTES, 'UTF-8') ?></span><span><?= htmlspecialchars($objective['label'], ENT_QUOTES, 'UTF-8') ?></span></span></label><?php endforeach; ?></div></fieldset>
             <?php endif; ?>
             <label>Commentaire <small>facultatif</small><textarea name="comment" maxlength="1000" rows="4" placeholder="<?= $treeProposal ? 'Précisez l’état général de l’arbre.' : 'Précisez votre idée de plantation.' ?>"></textarea></label>
-            <label>Photos <small>jusqu'à <?= (int) $security['max_photos_per_proposal'] ?></small><input id="photos" name="photos[]" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+            <fieldset class="photo-fieldset"><legend>Photos <small>jusqu'à <?= (int) $security['max_photos_per_proposal'] ?></small></legend><div class="photo-inputs"><?php for ($photoIndex = 1; $photoIndex <= (int) $security['max_photos_per_proposal']; $photoIndex++): ?><label>Photo <?= $photoIndex ?><input class="photo-input" name="photos[]" type="file" accept="image/jpeg,image/png,image/webp"></label><?php endfor; ?></div></fieldset>
             <div id="photo-previews" class="photo-previews" aria-live="polite"></div>
             <p id="form-message" class="form-message" aria-live="polite"></p>
             <button class="submit-button" type="submit">Envoyer ma proposition</button>
