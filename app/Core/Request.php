@@ -18,7 +18,10 @@ final class Request
     public static function fromGlobals(): self
     {
         $uri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
-        $path = parse_url($uri, PHP_URL_PATH) ?: '/';
+        $requestedRoute = $_GET['route'] ?? null;
+        $path = is_string($requestedRoute) && str_starts_with($requestedRoute, '/')
+            ? $requestedRoute
+            : (parse_url($uri, PHP_URL_PATH) ?: '/');
         $script = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
         // The PHP development server reports the requested virtual path as
         // SCRIPT_NAME for routes below an existing directory (for example /admin/…).

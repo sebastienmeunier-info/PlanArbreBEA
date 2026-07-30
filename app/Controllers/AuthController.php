@@ -65,5 +65,5 @@ final class AuthController
     private function phone(mixed $value): string { $phone = mb_substr(trim((string) $value), 0, 30); if ($phone !== '' && preg_match('/^[0-9+().\-\s]+$/', $phone) !== 1) { throw new InvalidArgumentException('Numéro de téléphone invalide.'); } return $phone; }
     private function resets(): array { $file = $this->app->config('auth')['password_resets_file']; return is_file($file) ? (json_decode((string) file_get_contents($file), true) ?: []) : []; }
     private function writeResets(array $resets): void { file_put_contents($this->app->config('auth')['password_resets_file'], json_encode($resets), LOCK_EX); }
-    private function redirect(string $location): never { header('Location: ' . $this->app->url($location), true, 303); exit; }
+    private function redirect(string $location): never { header('Location: ' . $this->app->routeUrl($location), true, 303); exit; }
 }

@@ -11,6 +11,7 @@ final class View
     public function __construct(
         private readonly string $directory,
         private readonly string $basePath = '',
+        private readonly string $routingMode = 'query',
     ) {}
 
     public function render(string $template, array $data = []): string
@@ -28,7 +29,29 @@ final class View
 
             return $basePath . '/' . ltrim($path, '/');
         };
-        $data += ['basePath' => $basePath, 'url' => $url];
+        $routeUrl = static function (string $path = '/') use ($url): string {
+            if (preg_match('#^https?://#i', $path)) {
+                return $path;
+            }
+
+            $parts = parse_url($path);
+            $route = $parts['path'] ?? '/';
+            if ($route === '/') {
+                return $url('/');
+            }
+
+            $parameters = ['route' => $route];
+            if (isset($parts['query'])) {
+                parse_str($parts['query'], $query);
+                $parameters += $query;
+            }
+
+            return $url('/index.php') . '?' . http_build_query($parameters);
+        };
+        if ($this->routingMode !== 'query') {
+            $routeUrl = $url;
+        }
+        $data += ['basePath' => $basePath, 'url' => $url, 'routeUrl' => $routeUrl];
         extract($data, EXTR_SKIP);
         ob_start();
         require $file;

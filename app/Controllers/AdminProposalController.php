@@ -22,7 +22,7 @@ final class AdminProposalController
     {
         $auth = $this->auth();
         $this->guard($auth);
-        header('Location: ' . $this->app->url('/mon-compte?onglet=plantations'), true, 303);
+        header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=plantations'), true, 303);
         exit;
     }
 
@@ -80,7 +80,7 @@ final class AdminProposalController
                 'updated_at' => date(DATE_ATOM),
                 'updated_by' => $current['id'],
             ], [$longitude, $latitude]);
-            header('Location: ' . $this->app->url('/mon-compte?onglet=' . $tab), true, 303);
+            header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=' . $tab), true, 303);
             exit;
         } catch (InvalidArgumentException|RuntimeException $exception) {
             Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422);

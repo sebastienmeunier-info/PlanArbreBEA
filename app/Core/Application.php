@@ -15,7 +15,11 @@ final class Application
         date_default_timezone_set($config['app']['timezone']);
         $this->ensureRuntimeDirectories();
         $this->router = new Router();
-        $this->view = new View($config['paths']['views'], $config['app']['base_path']);
+        $this->view = new View(
+            $config['paths']['views'],
+            $config['app']['base_path'],
+            $config['app']['routing_mode'],
+        );
         $this->logger = new Logger($config['logging']['file'], $config['logging']['minimum_level']);
     }
 
@@ -32,6 +36,27 @@ final class Application
         }
 
         return rtrim((string) $this->config['app']['base_path'], '/') . '/' . ltrim($path, '/');
+    }
+
+    public function routeUrl(string $path = '/'): string
+    {
+        if ($this->config['app']['routing_mode'] !== 'query' || preg_match('#^https?://#i', $path)) {
+            return $this->url($path);
+        }
+
+        $parts = parse_url($path);
+        $route = $parts['path'] ?? '/';
+        if ($route === '/') {
+            return $this->url('/');
+        }
+
+        $parameters = ['route' => $route];
+        if (isset($parts['query'])) {
+            parse_str($parts['query'], $query);
+            $parameters += $query;
+        }
+
+        return $this->url('/index.php') . '?' . http_build_query($parameters);
     }
 
     private function ensureRuntimeDirectories(): void

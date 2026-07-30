@@ -13,6 +13,8 @@ PLANTONS_TIMEZONE=Europe/Paris
 
 Lors d'une installation dans un sous-dossier, par exemple `https://exemple.fr/PlanArbreBEA/`, le préfixe est détecté automatiquement. Si l'hébergement ne transmet pas correctement ce chemin à PHP, définir aussi `PLANTONS_BASE_PATH=/PlanArbreBEA`.
 
+Par défaut, Plantons utilise des liens compatibles avec les hébergements mutualisés sans réécriture Apache : `index.php?route=…`. Aucun accès à la racine du domaine ni activation de `mod_rewrite` n'est nécessaire. Pour utiliser des URL courtes sur un hébergement dont `.htaccess` est actif, définir `PLANTONS_ROUTING_MODE=pretty`.
+
 Les fichiers de données et les journaux sont protégés par `.htaccess` sur Apache. Sur Nginx, ajouter une règle équivalente interdisant l'accès HTTP aux extensions `.json`, `.geojson` et `.log`.
 
 ## Configuration d'un territoire

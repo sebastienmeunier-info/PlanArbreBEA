@@ -12,7 +12,7 @@
   <?php if ($features === []): ?><p>Aucune proposition pour le moment.</p><?php endif; ?>
   <div class="proposal-admin-list">
   <?php foreach ($features as $feature): $properties = $feature['properties'] ?? []; $coordinates = $feature['geometry']['coordinates'] ?? [null, null]; ?>
-    <form class="proposal-admin-card" method="post" action="<?= htmlspecialchars($url('/admin/propositions/modifier'), ENT_QUOTES, 'UTF-8') ?>">
+    <form class="proposal-admin-card" method="post" action="<?= htmlspecialchars($routeUrl('/admin/propositions/modifier'), ENT_QUOTES, 'UTF-8') ?>">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
       <input type="hidden" name="id" value="<?= htmlspecialchars((string) ($properties['id'] ?? '')) ?>">
       <h2><?= htmlspecialchars((string) ($properties['species'] ?? 'Plantation')) ?></h2>

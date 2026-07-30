@@ -19,7 +19,7 @@ final class AccountController
     {
         $auth = $this->auth();
         $user = $auth->currentUser();
-        if (!$user) { header('Location: ' . $this->app->url('/connexion'), true, 303); exit; }
+        if (!$user) { header('Location: ' . $this->app->routeUrl('/connexion'), true, 303); exit; }
 
         $isAdministrator = in_array($user['role'], ['administrateur', 'super_administrateur'], true);
         $tab = (string) $request->query('onglet', 'profil');
@@ -88,7 +88,7 @@ final class AccountController
         $changes = ['first_name' => $first, 'last_name' => $last, 'email' => $email, 'address' => $address, 'phone' => $phone];
         if ($password !== '') { $changes['password_hash'] = password_hash($password, PASSWORD_DEFAULT); }
         $repository->update($user['id'], $changes);
-        header('Location: ' . $this->app->url('/mon-compte?onglet=profil'), true, 303); exit;
+        header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=profil'), true, 303); exit;
     }
 
     private function auth(): AuthService

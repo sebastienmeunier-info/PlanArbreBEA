@@ -24,6 +24,9 @@ return [
         // Détecté automatiquement (ex. /PlanArbreBEA). À surcharger avec
         // PLANTONS_BASE_PATH seulement si l'hébergement utilise une règle particulière.
         'base_path' => $basePath,
+        // Le mode query ne dépend pas de mod_rewrite et fonctionne sur les
+        // hébergements mutualisés où les règles .htaccess sont désactivées.
+        'routing_mode' => getenv('PLANTONS_ROUTING_MODE') ?: 'query',
         'timezone' => getenv('PLANTONS_TIMEZONE') ?: 'Europe/Paris',
         'version' => trim((string) file_get_contents($root . '/VERSION')),
     ],
