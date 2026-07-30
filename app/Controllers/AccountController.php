@@ -31,11 +31,12 @@ final class AccountController
         $allFeatures = $store->read($sources['proposals']['file'])['features'];
         $features = array_values(array_filter($allFeatures, static fn(array $feature): bool => ($feature['properties']['email'] ?? '') === $user['email']));
         $displayFeatures = $isAdministrator ? $allFeatures : $features;
-        $counts = ['proposed' => 0, 'validated' => 0, 'planted' => 0];
+        $counts = ['proposed' => 0, 'validated' => 0, 'rejected' => 0, 'planted' => 0];
         foreach ($displayFeatures as $feature) {
             $status = $feature['properties']['status'] ?? 'a_valider';
             if ($status === 'validee') { $counts['validated']++; }
             elseif (in_array($status, ['arbre_plante', 'realisee'], true)) { $counts['planted']++; }
+            elseif (in_array($status, ['refusee', 'rejetee'], true)) { $counts['rejected']++; }
             else { $counts['proposed']++; }
         }
 
