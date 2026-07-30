@@ -11,6 +11,7 @@ final class Request
         private readonly string $path,
         private readonly array $query = [],
         private readonly array $body = [],
+        private readonly array $files = [],
     ) {
     }
 
@@ -29,6 +30,7 @@ final class Request
             '/' . ltrim(rawurldecode($path), '/'),
             $_GET,
             $_POST,
+            $_FILES,
         );
     }
 
@@ -36,4 +38,5 @@ final class Request
     public function path(): string { return $this->path; }
     public function query(string $key, mixed $default = null): mixed { return $this->query[$key] ?? $default; }
     public function input(string $key, mixed $default = null): mixed { return $this->body[$key] ?? $default; }
+    public function files(string $key): ?array { return $this->files[$key] ?? null; }
 }

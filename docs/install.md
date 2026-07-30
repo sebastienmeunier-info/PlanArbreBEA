@@ -23,3 +23,5 @@ Avant la mise en service, adapter `config/config.php` :
 - `planting.allowed_species` : essences proposées au citoyen ;
 - `planting.objectives` : objectifs de plantation proposés ;
 - `security.max_photos_per_proposal` : fixé à `3` pour la version 1.0.
+
+L'extension PHP `gd` doit être activée : elle convertit les trois photos éventuelles en WebP avant leur enregistrement.

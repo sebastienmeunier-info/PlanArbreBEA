@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0-dev — Sprint 1
+
+- Ajout de la carte Leaflet, de la recherche d'adresse et de la géolocalisation.
+- Ajout du contrôle territorial côté navigateur et côté serveur.
+- Ajout du formulaire citoyen avec essences, objectifs et jusqu'à trois photos WebP.
+- Ajout des routes GeoJSON et du stockage atomique des propositions.
+
 ## 0.1.0-dev — Sprint 0
 
 - Mise en place du front controller, de l'autoloader et du routeur.
