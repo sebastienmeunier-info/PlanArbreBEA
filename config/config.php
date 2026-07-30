@@ -12,6 +12,7 @@ $territoryCenter = [47.5310, -0.1020];
 return [
     'app' => [
         'name' => $projectName,
+        'header_text' => getenv('PLANTONS_HEADER_TEXT') ?: 'Plantons des arbres dans notre commune',
         'logo_url' => getenv('PLANTONS_PROJECT_LOGO_URL') ?: 'https://www.sebastienmeunier.info/wp-content/uploads/2024/12/sebmeunier-300x300.png',
         'environment' => $environment,
         'debug' => filter_var(getenv('PLANTONS_DEBUG') ?: $environment !== 'production', FILTER_VALIDATE_BOOL),
