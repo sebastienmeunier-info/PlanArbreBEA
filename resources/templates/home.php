@@ -16,6 +16,13 @@
         <form id="address-search" class="address-search"><label for="address">Rechercher une adresse</label><div><input id="address" type="search" autocomplete="street-address" placeholder="Rue, lieu-dit, commune"><button type="submit">Rechercher</button></div></form>
         <div id="address-results" class="address-results" aria-live="polite"></div>
         <div id="map" role="application" aria-label="Carte du territoire"></div>
+        <aside class="map-legend" aria-label="Légende des propositions">
+            <strong>Légende</strong>
+            <span><i class="legend-marker legend-marker--proposed">●</i> Plantation proposée</span>
+            <span><i class="legend-marker legend-marker--rejected">●</i> Plantation refusée</span>
+            <span><i class="legend-marker legend-marker--validated">●</i> Plantation validée</span>
+            <span><i class="legend-marker legend-marker--planted">🌳</i> Arbre planté</span>
+        </aside>
         <div class="map-actions"><button id="locate-me" type="button">Utiliser ma position</button><output id="selected-location">Choisissez un point sur la carte.</output></div>
     </section>
     <section class="form-panel">
