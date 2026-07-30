@@ -45,6 +45,10 @@ return [
             'file' => $root . '/data/propositions.geojson',
             'url' => getenv('PLANARBRE_PROPOSALS_GEOJSON_URL') ?: '/api/data/propositions',
         ],
+        'donations' => [
+            'file' => $root . '/data/dons.geojson',
+            'url' => getenv('PLANARBRE_DONATIONS_GEOJSON_URL') ?: '/api/data/dons',
+        ],
         'territory' => [
             'file' => $root . '/data/territoire.geojson',
             'url' => getenv('PLANARBRE_TERRITORY_GEOJSON_URL') ?: '/api/data/territoire',

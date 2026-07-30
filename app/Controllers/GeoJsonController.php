@@ -17,6 +17,7 @@ final class GeoJsonController
     public function municipalities(Request $request): never { $this->respond('delegated_municipalities'); }
     public function trees(Request $request): never { $this->respond('trees'); }
     public function proposals(Request $request): never { $this->respond('proposals'); }
+    public function donations(Request $request): never { $this->respond('donations'); }
 
     private function respond(string $source): never
     {

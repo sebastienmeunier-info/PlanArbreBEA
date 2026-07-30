@@ -19,6 +19,16 @@ final class ProposalController
 
     public function create(Request $request): never
     {
+        $this->createForSource($request, 'proposals');
+    }
+
+    public function createDonation(Request $request): never
+    {
+        $this->createForSource($request, 'donations');
+    }
+
+    private function createForSource(Request $request, string $source): never
+    {
         try {
             $this->verifyCsrf((string) $request->input('csrf_token'));
             $planting = $this->app->config('planting');
@@ -73,7 +83,7 @@ final class ProposalController
                     'photos' => $photos,
                 ],
             ];
-            $store->appendFeature($sources['proposals']['file'], $feature);
+            $store->appendFeature($sources[$source]['file'], $feature);
             Response::json(['message' => 'Votre proposition a été enregistrée et sera examinée par la collectivité.', 'feature' => $feature], 201);
         } catch (InvalidArgumentException $exception) {
             Response::json(['message' => $exception->getMessage()], 422);

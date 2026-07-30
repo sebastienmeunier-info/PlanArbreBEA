@@ -17,20 +17,21 @@ final class HomeController
 
     public function index(Request $request): never
     {
-        $this->renderProposalPage('Proposer une plantation', false);
+        $this->renderProposalPage('Proposer une plantation', false, 'proposals', '/api/propositions');
     }
 
     public function treeProposal(Request $request): never
     {
-        $this->renderProposalPage('Proposer un arbre', true);
+        $this->renderProposalPage('Proposer un arbre', true, 'donations', '/api/dons');
     }
 
-    private function renderProposalPage(string $pageTitle, bool $treeProposal): never
+    private function renderProposalPage(string $pageTitle, bool $treeProposal, string $source, string $submissionUrl): never
     {
         $auth = new AuthService(new UserRepository($this->app->config('auth')['users_file']), $this->app->config('auth'));
         $user = $auth->currentUser();
         $planting = $this->app->config('planting');
-        $proposalFeatures = (new GeoJsonStore())->read($this->app->config('data_sources')['proposals']['file'])['features'];
+        $dataSources = $this->app->config('data_sources');
+        $proposalFeatures = (new GeoJsonStore())->read($dataSources[$source]['file'])['features'];
         $statistics = ['proposed' => 0, 'validated' => 0, 'planted' => 0];
         foreach ($proposalFeatures as $proposal) {
             $status = $proposal['properties']['status'] ?? 'a_valider';
@@ -47,7 +48,9 @@ final class HomeController
             'security' => $this->app->config('security'),
             'map' => $this->app->config('map'),
             'proposals' => $this->app->config('proposals'),
-            'dataSources' => $this->app->config('data_sources'),
+            'dataSources' => $dataSources,
+            'activeDataSource' => $dataSources[$source],
+            'submissionUrl' => $submissionUrl,
             'csrfToken' => $auth->csrfToken(),
             'user' => $user,
             'pageTitle' => $pageTitle,
