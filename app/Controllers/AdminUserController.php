@@ -18,12 +18,8 @@ final class AdminUserController
     {
         $auth = $this->auth();
         $this->guard($auth);
-        Response::html($this->app->view()->render('admin/users', [
-            'users' => $this->repository()->all(),
-            'csrfToken' => $auth->csrfToken(),
-            'user' => $auth->currentUser(),
-            'application' => $this->app->config('app'),
-        ]));
+        header('Location: /mon-compte?onglet=utilisateurs', true, 303);
+        exit;
     }
 
     public function changeRole(Request $request): never
@@ -41,7 +37,7 @@ final class AdminUserController
         }
 
         $this->repository()->update($target['id'], ['role' => $role]);
-        header('Location: /admin/utilisateurs', true, 303);
+        header('Location: /mon-compte?onglet=utilisateurs', true, 303);
         exit;
     }
 

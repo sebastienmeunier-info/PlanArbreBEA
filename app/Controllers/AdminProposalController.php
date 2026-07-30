@@ -22,15 +22,8 @@ final class AdminProposalController
     {
         $auth = $this->auth();
         $this->guard($auth);
-        $sources = $this->app->config('data_sources');
-        $features = (new GeoJsonStore())->read($sources['proposals']['file'])['features'];
-        Response::html($this->app->view()->render('admin/proposals', [
-            'application' => $this->app->config('app'),
-            'csrfToken' => $auth->csrfToken(),
-            'user' => $auth->currentUser(),
-            'features' => $features,
-            'statuses' => $this->app->config('proposals')['status_labels'],
-        ]));
+        header('Location: /mon-compte?onglet=propositions', true, 303);
+        exit;
     }
 
     public function update(Request $request): never
@@ -62,7 +55,7 @@ final class AdminProposalController
                 'updated_at' => date(DATE_ATOM),
                 'updated_by' => $current['id'],
             ], [$longitude, $latitude]);
-            header('Location: /admin/propositions', true, 303);
+            header('Location: /mon-compte?onglet=propositions', true, 303);
             exit;
         } catch (InvalidArgumentException|RuntimeException $exception) {
             Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422);
