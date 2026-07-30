@@ -21,4 +21,13 @@ final class Response
         echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
     }
+
+    public static function download(string $content, string $filename, string $contentType): never
+    {
+        header('Content-Type: ' . $contentType);
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('X-Content-Type-Options: nosniff');
+        echo $content;
+        exit;
+    }
 }

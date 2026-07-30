@@ -9,6 +9,7 @@ use Plantons\Controllers\AuthController;
 use Plantons\Controllers\AdminUserController;
 use Plantons\Controllers\AccountController;
 use Plantons\Controllers\AdminProposalController;
+use Plantons\Controllers\ExportController;
 
 return [
     ['GET', '/', [HomeController::class, 'index']],
@@ -37,6 +38,7 @@ return [
     ['GET', '/admin/propositions', [AdminProposalController::class, 'index']],
     ['POST', '/admin/propositions/modifier', [AdminProposalController::class, 'update']],
     ['POST', '/admin/dons/modifier', [AdminProposalController::class, 'updateDonation']],
+    ['GET', '/admin/exports', [ExportController::class, 'download']],
     ['GET', '/mon-compte', [AccountController::class, 'index']],
     ['POST', '/mon-compte', [AccountController::class, 'update']],
 ];
