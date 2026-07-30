@@ -30,8 +30,9 @@ final class AccountController
         $sources = $this->app->config('data_sources');
         $allFeatures = $store->read($sources['proposals']['file'])['features'];
         $features = array_values(array_filter($allFeatures, static fn(array $feature): bool => ($feature['properties']['email'] ?? '') === $user['email']));
+        $displayFeatures = $isAdministrator ? $allFeatures : $features;
         $counts = ['proposed' => 0, 'validated' => 0, 'planted' => 0];
-        foreach ($features as $feature) {
+        foreach ($displayFeatures as $feature) {
             $status = $feature['properties']['status'] ?? 'a_valider';
             if ($status === 'validee') { $counts['validated']++; }
             elseif (in_array($status, ['arbre_plante', 'realisee'], true)) { $counts['planted']++; }
@@ -41,7 +42,7 @@ final class AccountController
         Response::html($this->app->view()->render('account/index', [
             'application' => $this->app->config('app'), 'csrfToken' => $auth->csrfToken(), 'user' => $user,
             'tab' => $tab, 'isAdministrator' => $isAdministrator, 'counts' => $counts, 'features' => $features,
-            'displayFeatures' => $isAdministrator ? $allFeatures : $features, 'statuses' => $this->app->config('proposals')['status_labels'],
+            'displayFeatures' => $displayFeatures, 'statuses' => $this->app->config('proposals')['status_labels'],
             'planting' => $this->app->config('planting'),
             'users' => $isAdministrator ? (new UserRepository($this->app->config('auth')['users_file']))->all() : [],
         ]));
