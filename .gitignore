@@ -6,3 +6,5 @@ uploads/photos/*
 uploads/documents/*
 uploads/exports/*
 uploads/backups/*
+tools/php/
+tools/*.zip
