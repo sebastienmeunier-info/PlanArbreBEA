@@ -78,6 +78,12 @@ return [
             'pot' => ['label' => 'En pot', 'icon' => '🪴'],
             'pleine_terre' => ['label' => 'Pleine terre', 'icon' => '🌱'],
         ],
+        'tree_sizes' => [
+            'moins_1m' => ['label' => 'Moins d’1 m', 'icon' => '🌱'],
+            '1_a_2m' => ['label' => 'De 1 à 2 m', 'icon' => '🌿'],
+            '2_a_4m' => ['label' => 'De 2 à 4 m', 'icon' => '🌳'],
+            'plus_4m' => ['label' => 'Plus de 4 m', 'icon' => '🌲'],
+        ],
     ],
     'logging' => [
         'file' => $root . '/logs/application.log',

@@ -37,6 +37,7 @@ final class ProposalController
             $species = trim((string) $request->input('species'));
             $objectives = array_values(array_filter((array) $request->input('objectives', []), 'is_string'));
             $conditioning = trim((string) $request->input('conditioning'));
+            $treeSize = trim((string) $request->input('tree_size'));
             $author = mb_substr(trim((string) $request->input('author')), 0, 80);
             $email = mb_substr(trim((string) $request->input('email')), 0, $this->app->config('security')['max_email_length']);
             $comment = mb_substr(trim((string) $request->input('comment')), 0, 1000);
@@ -47,6 +48,9 @@ final class ProposalController
             if ($source === 'donations') {
                 if (!array_key_exists($conditioning, $planting['tree_conditioning'])) {
                     throw new InvalidArgumentException('Veuillez sélectionner le conditionnement de l’arbre.');
+                }
+                if (!array_key_exists($treeSize, $planting['tree_sizes'])) {
+                    throw new InvalidArgumentException('Veuillez sélectionner la taille de l’arbre.');
                 }
                 $objectives = [];
             } else {
@@ -86,6 +90,7 @@ final class ProposalController
                     'species' => $species,
                     'objectives' => $objectives,
                     'conditioning' => $source === 'donations' ? $conditioning : null,
+                    'tree_size' => $source === 'donations' ? $treeSize : null,
                     'comment' => $comment,
                     'address' => mb_substr(trim((string) $request->input('address')), 0, 255),
                     'delegated_municipality' => $territoryService->municipality($municipalities, $longitude, $latitude),
