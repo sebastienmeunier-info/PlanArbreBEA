@@ -1,5 +1,6 @@
 data/*.json
 data/*.geojson
+!data/territoire.geojson
 logs/*.log
 uploads/photos/*
 !uploads/photos/.gitkeep

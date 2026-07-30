@@ -23,7 +23,7 @@ return [
      * fichiers de données séparés afin de pouvoir les mettre à jour sans code.
      */
     'territory' => [
-        'name' => getenv('PLANARBRE_TERRITORY_NAME') ?: 'Territoire à configurer',
+        'name' => getenv('PLANARBRE_TERRITORY_NAME') ?: 'Baugé-en-Anjou',
         'center' => $territoryCenter,
         'timezone' => getenv('PLANARBRE_TIMEZONE') ?: 'Europe/Paris',
     ],
