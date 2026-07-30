@@ -21,6 +21,10 @@ Le Sprint 0 installe le socle technique : front controller, routage, configurati
 
 La configuration est centralisée dans `config/config.php`. Les réglages locaux sensibles ne doivent pas être versionnés : utiliser les variables d'environnement documentées dans [docs/install.md](docs/install.md).
 
+## Transposition sur un autre territoire
+
+Le déploiement sur une autre collectivité ne nécessite pas de modifier le code. Dans `config/config.php`, renseigner le nom du projet et du territoire, le centre de carte, les URL ou chemins des fichiers GeoJSON, les essences autorisées et les objectifs de plantation. Les envois citoyens peuvent contenir jusqu'à trois photos, limitées à 1 Mo chacune.
+
 ## Architecture
 
 ```text

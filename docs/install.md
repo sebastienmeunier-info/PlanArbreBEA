@@ -12,3 +12,14 @@ PLANARBRE_TIMEZONE=Europe/Paris
 ```
 
 Les fichiers de données et les journaux sont protégés par `.htaccess` sur Apache. Sur Nginx, ajouter une règle équivalente interdisant l'accès HTTP aux extensions `.json`, `.geojson` et `.log`.
+
+## Configuration d'un territoire
+
+Avant la mise en service, adapter `config/config.php` :
+
+- `app.name` : nom du projet affiché ;
+- `territory.name` et `territory.center` : identité et centre de carte ;
+- `data_sources` : chemins locaux et URL de service des GeoJSON ;
+- `planting.allowed_species` : essences proposées au citoyen ;
+- `planting.objectives` : objectifs de plantation proposés ;
+- `security.max_photos_per_proposal` : fixé à `3` pour la version 1.0.
