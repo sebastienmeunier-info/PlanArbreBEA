@@ -27,7 +27,7 @@ final class AuthController
             if ($firstName === '' || $lastName === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false || strlen($password) < 12) { throw new InvalidArgumentException('Renseignez vos nom, prénom, e-mail et un mot de passe de 12 caractères minimum.'); }
             $repository = $this->repository(); if ($repository->findByEmail($email)) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
             $authConfig = $this->app->config('auth');
-            $role = $authConfig['bootstrap_admin_email'] !== '' && $email === $authConfig['bootstrap_admin_email'] ? 'administrateur' : 'contributeur';
+            $role = ($authConfig['bootstrap_admin_email'] !== '' && $email === $authConfig['bootstrap_admin_email']) || in_array($email, $authConfig['administrator_emails'], true) ? 'administrateur' : 'contributeur';
             $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'password_hash' => password_hash($password, PASSWORD_DEFAULT), 'role' => $role, 'created_at' => date(DATE_ATOM)];
             $repository->create($user); $this->auth()->login($email, $password); $this->redirect('/');
         } catch (InvalidArgumentException $exception) { $this->page('auth/register', $exception->getMessage(), 422); }
@@ -53,7 +53,7 @@ final class AuthController
 
     private function page(string $template, ?string $message = null, int $status = 200, array $extra = []): never
     {
-        Response::html($this->app->view()->render($template, array_replace(['application' => $this->app->config('app'), 'csrfToken' => $this->auth()->csrfToken(), 'message' => $message], $extra)), $status);
+        Response::html($this->app->view()->render($template, array_replace(['application' => $this->app->config('app'), 'csrfToken' => $this->auth()->csrfToken(), 'user' => $this->auth()->currentUser(), 'message' => $message], $extra)), $status);
     }
     private function auth(): AuthService { return new AuthService($this->repository(), $this->app->config('auth')); }
     private function repository(): UserRepository { return new UserRepository($this->app->config('auth')['users_file']); }
