@@ -74,6 +74,10 @@ return [
             'confort_pieton' => ['label' => 'Confort piéton', 'icon' => '🚶'],
             'autre' => ['label' => 'Autre objectif', 'icon' => '✦'],
         ],
+        'tree_conditioning' => [
+            'pot' => ['label' => 'En pot', 'icon' => '🪴'],
+            'pleine_terre' => ['label' => 'Pleine terre', 'icon' => '🌱'],
+        ],
     ],
     'logging' => [
         'file' => $root . '/logs/application.log',

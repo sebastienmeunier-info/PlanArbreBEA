@@ -25,7 +25,7 @@
     return { className: cross ? 'proposal-marker--cross' : '', icon: cross ? '+' : '●' };
   };
   const proposalIcon = (status) => { const details = markerDetails(status); return L.divIcon({ className: '', html: `<span class="proposal-marker ${details.className}" aria-hidden="true">${details.icon}</span>`, iconSize: [42, 42], iconAnchor: [21, 21] }); };
-  const renderProposal = (feature) => L.geoJSON(feature, { pointToLayer: (item, latLng) => L.marker(latLng, { icon: proposalIcon(item.properties?.status) }), onEachFeature: (item, layer) => { const properties = item.properties || {}; const objectives = (properties.objectives || []).map((objective) => config.objectives[objective]?.label || objective).join(', '); layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${objectives || 'Objectifs non renseignés'}`); } }).addTo(map);
+  const renderProposal = (feature) => L.geoJSON(feature, { pointToLayer: (item, latLng) => L.marker(latLng, { icon: proposalIcon(item.properties?.status) }), onEachFeature: (item, layer) => { const properties = item.properties || {}; const details = properties.conditioning ? (config.conditionings?.[properties.conditioning]?.label || properties.conditioning) : (properties.objectives || []).map((objective) => config.objectives[objective]?.label || objective).join(', '); layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${details || 'Information non renseignée'}`); } }).addTo(map);
   const delegatedMunicipality = (longitude, latitude) => municipalities?.features?.find((feature) => window.turf && turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))?.properties?.nom || '';
   const shortAddress = (place) => {
     const address = place.address || {};

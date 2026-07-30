@@ -36,6 +36,7 @@ final class ProposalController
             $latitude = $this->number($request->input('latitude'), 'Latitude invalide.');
             $species = trim((string) $request->input('species'));
             $objectives = array_values(array_filter((array) $request->input('objectives', []), 'is_string'));
+            $conditioning = trim((string) $request->input('conditioning'));
             $author = mb_substr(trim((string) $request->input('author')), 0, 80);
             $email = mb_substr(trim((string) $request->input('email')), 0, $this->app->config('security')['max_email_length']);
             $comment = mb_substr(trim((string) $request->input('comment')), 0, 1000);
@@ -43,11 +44,18 @@ final class ProposalController
             if (!in_array($species, $planting['allowed_species'], true)) {
                 throw new InvalidArgumentException('Veuillez sélectionner une essence autorisée.');
             }
-            if ($objectives === [] || array_diff($objectives, array_keys($planting['objectives'])) !== []) {
-                throw new InvalidArgumentException('Veuillez sélectionner au moins un objectif valide.');
-            }
-            if (count(array_unique($objectives)) > $planting['max_objectives_per_proposal']) {
-                throw new InvalidArgumentException('Vous pouvez sélectionner au maximum trois objectifs.');
+            if ($source === 'donations') {
+                if (!array_key_exists($conditioning, $planting['tree_conditioning'])) {
+                    throw new InvalidArgumentException('Veuillez sélectionner le conditionnement de l’arbre.');
+                }
+                $objectives = [];
+            } else {
+                if ($objectives === [] || array_diff($objectives, array_keys($planting['objectives'])) !== []) {
+                    throw new InvalidArgumentException('Veuillez sélectionner au moins un objectif valide.');
+                }
+                if (count(array_unique($objectives)) > $planting['max_objectives_per_proposal']) {
+                    throw new InvalidArgumentException('Vous pouvez sélectionner au maximum trois objectifs.');
+                }
             }
             if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
                 throw new InvalidArgumentException('Veuillez renseigner une adresse e-mail valide.');
@@ -77,6 +85,7 @@ final class ProposalController
                     'email' => $email === '' ? null : $email,
                     'species' => $species,
                     'objectives' => $objectives,
+                    'conditioning' => $source === 'donations' ? $conditioning : null,
                     'comment' => $comment,
                     'address' => mb_substr(trim((string) $request->input('address')), 0, 255),
                     'delegated_municipality' => $territoryService->municipality($municipalities, $longitude, $latitude),
