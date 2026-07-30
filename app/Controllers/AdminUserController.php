@@ -10,7 +10,7 @@ use Plantons\Core\Request;
 use Plantons\Core\Response;
 use Plantons\Repositories\UserRepository;
 use Plantons\Services\AuthService;
-use Plantons\Services\SmtpMailer;
+use Plantons\Services\NotificationService;
 use RuntimeException;
 
 final class AdminUserController
@@ -99,11 +99,15 @@ final class AdminUserController
 
     private function sendInvitation(array $user, string $token): void
     {
-        $baseUrl = rtrim((string) $this->app->config('app')['base_url'], '/');
-        $url = $baseUrl . '/reinitialiser-mot-de-passe?token=' . rawurlencode($token);
-        $subject = 'Activation de votre compte';
-        $message = "Bonjour {$user['first_name']},\n\nVotre compte a été créé. Définissez votre mot de passe en suivant ce lien, valable 7 jours :\n{$url}\n";
-        (new SmtpMailer($this->app->config('smtp')))->send($user['email'], $subject, $message);
+        $url = $this->app->absoluteRouteUrl('/reinitialiser-mot-de-passe?token=' . rawurlencode($token));
+        if (!$this->notifier()->send('account_invitation', $user['email'], [
+            'project_name' => (string) $this->app->config('app')['name'],
+            'first_name' => (string) $user['first_name'],
+            'last_name' => (string) $user['last_name'],
+            'url' => $url,
+        ])) {
+            throw new RuntimeException('Le courriel d’invitation n’a pas pu être envoyé. Consultez logs/application.log.');
+        }
     }
 
     private function mayChangeRole(string $actor, string $target, string $next): bool
@@ -144,4 +148,5 @@ final class AdminUserController
 
     private function repository(): UserRepository { return new UserRepository($this->app->config('auth')['users_file']); }
     private function auth(): AuthService { return new AuthService($this->repository(), $this->app->config('auth')); }
+    private function notifier(): NotificationService { return new NotificationService($this->app->config('smtp'), $this->app->config('notifications'), $this->app->logger()); }
 }

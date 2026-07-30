@@ -59,6 +59,28 @@ final class Application
         return $this->url('/index.php') . '?' . http_build_query($parameters);
     }
 
+    /** Returns an absolute application URL for links sent by e-mail. */
+    public function absoluteRouteUrl(string $path = '/'): string
+    {
+        $routeUrl = $this->routeUrl($path);
+        if (preg_match('#^https?://#i', $routeUrl)) {
+            return $routeUrl;
+        }
+
+        $baseUrl = rtrim((string) $this->config['app']['base_url'], '/');
+        if ($baseUrl !== '') {
+            $basePath = rtrim((string) $this->config['app']['base_path'], '/');
+            if ($basePath !== '' && str_starts_with($routeUrl, $basePath . '/')) {
+                $routeUrl = substr($routeUrl, strlen($basePath));
+            }
+            return $baseUrl . '/' . ltrim($routeUrl, '/');
+        }
+
+        $https = (string) ($_SERVER['HTTPS'] ?? '') !== '' && (string) $_SERVER['HTTPS'] !== 'off';
+        $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
+        return $host === '' ? $routeUrl : ($https ? 'https://' : 'http://') . $host . $routeUrl;
+    }
+
     private function ensureRuntimeDirectories(): void
     {
         foreach (['data', 'logs', 'uploads'] as $path) {

@@ -38,4 +38,15 @@ La procédure de recherche des sources administratives officielles et de génér
 
 Chaque inscription crée un compte `contributeur`. Pour créer le premier administrateur, définir `PLANTONS_BOOTSTRAP_ADMIN_EMAIL` avec l'adresse e-mail de ce compte avant son inscription. Un administrateur peut ensuite promouvoir les contributeurs depuis `/admin/utilisateurs`.
 
-Pour envoyer les liens de réinitialisation de mot de passe, définir `PLANTONS_MAIL_ENABLED=true` et `PLANTONS_MAIL_FROM`. Sans cette configuration, le lien est journalisé seulement en environnement de développement.
+## Notifications par e-mail
+
+Plantons envoie les invitations, les liens de réinitialisation de mot de passe et les changements de statut via SMTP. Les objets et corps de ces e-mails sont centralisés dans `config/config.php`, sous `notifications.messages`.
+
+Sur l'hébergement, définir au minimum :
+
+```text
+PLANTONS_BASE_URL=https://apps.sebastienmeunier.info/PlanArbreBEA
+PLANTONS_SMTP_PASSWORD=mot-de-passe-de-la-boite-mail
+```
+
+`PLANTONS_BASE_URL` garantit que les liens reçus par e-mail fonctionnent depuis l'hébergement FTP. Ne placez jamais le mot de passe SMTP dans `config/config.php`, dans le ZIP ou dans Git. La cause exacte d'un échec est inscrite dans `logs/application.log`, sans y enregistrer le mot de passe.

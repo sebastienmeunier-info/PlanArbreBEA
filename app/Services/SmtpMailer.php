@@ -28,7 +28,14 @@ final class SmtpMailer
             $this->command($socket, 'MAIL FROM:<' . $this->config['from_email'] . '>', [250]);
             $this->command($socket, 'RCPT TO:<' . $recipient . '>', [250, 251]);
             $this->command($socket, 'DATA', [354]);
-            $headers = ['From: ' . $this->config['from_name'] . ' <' . $this->config['from_email'] . '>', 'To: <' . $recipient . '>', 'Subject: ' . $subject, 'MIME-Version: 1.0', 'Content-Type: text/plain; charset=UTF-8'];
+            $headers = [
+                'From: ' . $this->encodeHeader((string) $this->config['from_name']) . ' <' . $this->config['from_email'] . '>',
+                'To: <' . $recipient . '>',
+                'Subject: ' . $this->encodeHeader($subject),
+                'MIME-Version: 1.0',
+                'Content-Type: text/plain; charset=UTF-8',
+                'Content-Transfer-Encoding: 8bit',
+            ];
             fwrite($socket, implode("\r\n", $headers) . "\r\n\r\n" . str_replace("\n.", "\n..", $message) . "\r\n.\r\n");
             $this->expect($socket, [250]);
             $this->command($socket, 'QUIT', [221]);
@@ -55,5 +62,12 @@ final class SmtpMailer
         } while (isset($line[3]) && $line[3] === '-');
         $code = (int) substr($response, 0, 3);
         if (!in_array($code, $codes, true)) { throw new RuntimeException('Erreur SMTP : ' . trim($response)); }
+    }
+
+    private function encodeHeader(string $value): string
+    {
+        return preg_match('/[^\\x20-\\x7E]/', $value) === 1
+            ? '=?UTF-8?B?' . base64_encode($value) . '?='
+            : $value;
     }
 }

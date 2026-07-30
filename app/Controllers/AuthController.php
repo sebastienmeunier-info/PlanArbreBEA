@@ -10,6 +10,7 @@ use Plantons\Core\Request;
 use Plantons\Core\Response;
 use Plantons\Repositories\UserRepository;
 use Plantons\Services\AuthService;
+use Plantons\Services\NotificationService;
 
 final class AuthController
 {
@@ -47,7 +48,14 @@ final class AuthController
     public function forgot(Request $request): never
     {
         $this->csrf($request); $email = mb_strtolower(trim((string) $request->input('email'))); $user = $this->repository()->findByEmail($email);
-        if ($user) { $token = bin2hex(random_bytes(32)); $resets = array_filter($this->resets(), static fn(array $reset): bool => $reset['email'] !== $email); $resets[] = ['email' => $email, 'token_hash' => password_hash($token, PASSWORD_DEFAULT), 'expires_at' => time() + 3600]; $this->writeResets($resets); $url = rtrim($this->app->config('app')['base_url'], '/') . '/reinitialiser-mot-de-passe?token=' . $token; if ($this->app->config('auth')['mail_enabled']) { @mail($email, 'Réinitialisation de votre mot de passe', "Utilisez ce lien valable une heure : {$url}", 'From: ' . $this->app->config('auth')['mail_from']); } else { $this->app->logger()->info('Lien de réinitialisation généré.', ['email' => $email, 'url' => $url]); } }
+        if ($user) {
+            $token = bin2hex(random_bytes(32));
+            $resets = array_filter($this->resets(), static fn(array $reset): bool => $reset['email'] !== $email);
+            $resets[] = ['email' => $email, 'token_hash' => password_hash($token, PASSWORD_DEFAULT), 'expires_at' => time() + 3600];
+            $this->writeResets($resets);
+            $url = $this->app->absoluteRouteUrl('/reinitialiser-mot-de-passe?token=' . rawurlencode($token));
+            $this->notifier()->send('password_reset', $email, $this->mailVariables($user, ['url' => $url]));
+        }
         $this->page('auth/forgot', 'Si cette adresse existe, un lien de réinitialisation lui a été envoyé.');
     }
     public function reset(Request $request): never
@@ -60,6 +68,8 @@ final class AuthController
         Response::html($this->app->view()->render($template, array_replace(['application' => $this->app->config('app'), 'csrfToken' => $this->auth()->csrfToken(), 'user' => $this->auth()->currentUser(), 'message' => $message], $extra)), $status);
     }
     private function auth(): AuthService { return new AuthService($this->repository(), $this->app->config('auth')); }
+    private function notifier(): NotificationService { return new NotificationService($this->app->config('smtp'), $this->app->config('notifications'), $this->app->logger()); }
+    private function mailVariables(array $user, array $extra = []): array { return array_replace(['project_name' => (string) $this->app->config('app')['name'], 'first_name' => (string) ($user['first_name'] ?? ''), 'last_name' => (string) ($user['last_name'] ?? '')], $extra); }
     private function repository(): UserRepository { return new UserRepository($this->app->config('auth')['users_file']); }
     private function csrf(Request $request): void { if (!$this->auth()->verifyCsrf((string) $request->input('csrf_token'))) { throw new InvalidArgumentException('Session expirée.'); } }
     private function phone(mixed $value): string { $phone = mb_substr(trim((string) $value), 0, 30); if ($phone !== '' && preg_match('/^[0-9+().\-\s]+$/', $phone) !== 1) { throw new InvalidArgumentException('Numéro de téléphone invalide.'); } return $phone; }
