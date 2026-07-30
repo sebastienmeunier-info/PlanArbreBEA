@@ -23,13 +23,18 @@
   };
   const proposalIcon = (status) => { const details = markerDetails(status); return L.divIcon({ className: '', html: `<span class="proposal-marker ${details.className}" aria-hidden="true">${details.icon}</span>`, iconSize: [42, 42], iconAnchor: [21, 21] }); };
   const delegatedMunicipality = (longitude, latitude) => municipalities?.features?.find((feature) => window.turf && turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))?.properties?.nom || '';
+  const shortAddress = (place) => {
+    const address = place.address || {};
+    const street = [address.house_number, address.road || address.pedestrian || address.footway].filter(Boolean).join(' ');
+    return street || address.amenity || address.building || address.hamlet || (place.display_name || '').split(',')[0] || 'adresse non trouvée';
+  };
   const describeLocation = async (latitude, longitude, knownAddress = '') => {
     const request = ++locationRequest;
     let address = knownAddress;
     const municipality = delegatedMunicipality(longitude, latitude);
     locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — recherche de l’adresse… — ${municipality || 'commune déléguée non identifiée'}`;
     if (!address) {
-      try { const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`, { headers: { Accept: 'application/json' } }); const place = await response.json(); address = place.display_name || ''; } catch { address = ''; }
+      try { const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=${latitude}&lon=${longitude}`, { headers: { Accept: 'application/json' } }); const place = await response.json(); address = shortAddress(place); } catch { address = ''; }
     }
     if (request !== locationRequest) return;
     document.querySelector('#selected-address').value = address;
@@ -69,7 +74,7 @@
   document.querySelector('#address-search').addEventListener('submit', async (event) => {
     event.preventDefault(); const query = document.querySelector('#address').value.trim(); if (query.length < 3) return;
     const results = document.querySelector('#address-results'); results.textContent = 'Recherche en cours…';
-    try { const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=${encodeURIComponent(query)}`, { headers: { Accept: 'application/json' } }); const places = await response.json(); results.replaceChildren(...places.map((place) => { const button = document.createElement('button'); button.type = 'button'; button.textContent = place.display_name; button.onclick = () => { setPosition(Number(place.lat), Number(place.lon), place.display_name); results.textContent = ''; }; return button; })); } catch { results.textContent = 'La recherche d’adresse est indisponible.'; }
+    try { const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`, { headers: { Accept: 'application/json' } }); const places = await response.json(); results.replaceChildren(...places.map((place) => { const button = document.createElement('button'); button.type = 'button'; button.textContent = place.display_name; button.onclick = () => { setPosition(Number(place.lat), Number(place.lon), shortAddress(place)); results.textContent = ''; }; return button; })); } catch { results.textContent = 'La recherche d’adresse est indisponible.'; }
   });
   document.querySelector('#photos').addEventListener('change', (event) => {
     const files = [...event.target.files]; const previews = document.querySelector('#photo-previews'); previews.textContent = '';
