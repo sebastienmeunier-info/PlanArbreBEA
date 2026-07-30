@@ -166,7 +166,8 @@ return [
         'port' => (int) (getenv('PLANTONS_SMTP_PORT') ?: 465),
         'encryption' => getenv('PLANTONS_SMTP_ENCRYPTION') ?: 'ssl',
         'username' => getenv('PLANTONS_SMTP_USERNAME') ?: 'contact@sebastienmeunier.info',
-        'password' => getenv('PLANTONS_SMTP_PASSWORD') ?: '',
+        // PLANARBRE_SMTP_PASSWORD est accepté pour les installations déjà configurées.
+        'password' => getenv('PLANTONS_SMTP_PASSWORD') ?: (getenv('PLANARBRE_SMTP_PASSWORD') ?: ''),
         'from_email' => getenv('PLANTONS_SMTP_FROM_EMAIL') ?: 'contact@sebastienmeunier.info',
         'from_name' => getenv('PLANTONS_SMTP_FROM_NAME') ?: $projectName,
     ],
