@@ -1,1 +1,1 @@
-<footer class="site-footer"><span><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></span><span>Logiciel libre · AGPL v3</span></footer>
+<footer class="site-footer"><span><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?> : logiciel libre de cartographie participative.</span><span>Logiciel libre · AGPL v3.</span><span>Projet initié en 2026 par Sébastien MEUNIER</span></footer>
