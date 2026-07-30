@@ -2,6 +2,7 @@
 
 ## 0.1.0-dev — Sprint 1
 
+- Affichage immédiat du repère d'une proposition après son envoi réussi.
 - Uniformisation de l'en-tête et du pied de page, et définition de l'adresse administrateur de Sébastien MEUNIER.
 - Compression locale des photos WebP à 500 Ko maximum avant envoi.
 - Ajout de l'inscription, connexion, réinitialisation de mot de passe et gestion des rôles contributeur/administrateur.

@@ -24,6 +24,7 @@
     return { className: '', icon: '●' };
   };
   const proposalIcon = (status) => { const details = markerDetails(status); return L.divIcon({ className: '', html: `<span class="proposal-marker ${details.className}" aria-hidden="true">${details.icon}</span>`, iconSize: [42, 42], iconAnchor: [21, 21] }); };
+  const renderProposal = (feature) => L.geoJSON(feature, { pointToLayer: (item, latLng) => L.marker(latLng, { icon: proposalIcon(item.properties?.status) }), onEachFeature: (item, layer) => { const properties = item.properties || {}; const objectives = (properties.objectives || []).map((objective) => config.objectives[objective]?.label || objective).join(', '); layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${objectives || 'Objectifs non renseignés'}`); } }).addTo(map);
   const delegatedMunicipality = (longitude, latitude) => municipalities?.features?.find((feature) => window.turf && turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))?.properties?.nom || '';
   const shortAddress = (place) => {
     const address = place.address || {};
@@ -65,7 +66,7 @@
   fetch(config.municipalitiesUrl).then((response) => response.ok ? response.json() : null).then((geojson) => { municipalities = geojson; });
   fetch(config.proposalsUrl).then((response) => response.ok ? response.json() : null).then((geojson) => {
     if (!geojson?.features?.length) return;
-    L.geoJSON(geojson, { pointToLayer: (feature, latLng) => L.marker(latLng, { icon: proposalIcon(feature.properties?.status) }), onEachFeature: (feature, layer) => { const properties = feature.properties || {}; const objectives = (properties.objectives || []).map((objective) => config.objectives[objective]?.label || objective).join(', '); layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${objectives || 'Objectifs non renseignés'}`); } }).addTo(map);
+    geojson.features.forEach(renderProposal);
   });
 
   map.on('click', (event) => setPosition(event.latlng.lat, event.latlng.lng));
@@ -103,6 +104,6 @@
   form.addEventListener('submit', async (event) => {
     event.preventDefault(); if (!form.latitude.value || !form.longitude.value) return setMessage('Choisissez l’emplacement de l’arbre sur la carte.', 'error'); await photoPreparation;
     const submit = form.querySelector('[type="submit"]'); submit.disabled = true; setMessage('Envoi de la proposition…');
-    try { const formData = new FormData(form); formData.delete('photos[]'); preparedPhotos.forEach((photo) => formData.append('photos[]', photo, photo.name)); const response = await fetch(config.proposalUrl, { method: 'POST', body: formData }); const data = await response.json(); if (!response.ok) throw new Error(data.message || 'Envoi impossible.'); form.reset(); preparedPhotos = []; document.querySelector('#photo-previews').textContent = ''; marker?.remove(); marker = undefined; locationOutput.value = 'Choisissez un point sur la carte.'; setMessage(''); showToast(data.message); } catch (error) { setMessage(error.message, 'error'); } finally { submit.disabled = false; }
+    try { const formData = new FormData(form); formData.delete('photos[]'); preparedPhotos.forEach((photo) => formData.append('photos[]', photo, photo.name)); const response = await fetch(config.proposalUrl, { method: 'POST', body: formData }); const data = await response.json(); if (!response.ok) throw new Error(data.message || 'Envoi impossible.'); form.reset(); preparedPhotos = []; document.querySelector('#photo-previews').textContent = ''; marker?.remove(); marker = undefined; renderProposal(data.feature); locationOutput.value = 'Choisissez un point sur la carte.'; setMessage(''); showToast(data.message); } catch (error) { setMessage(error.message, 'error'); } finally { submit.disabled = false; }
   });
 })();
