@@ -6,23 +6,17 @@
     <meta name="theme-color" content="#0d2115">
     <title><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="public/css/app.css">
+    <link rel="stylesheet" href="/public/css/app.css">
 </head>
 <body class="outdoor-mode">
 <?php require __DIR__ . '/partials/header.php'; ?>
 <main class="page-layout">
-    <section class="intro"><h1>Proposer une plantation</h1><p>Objectif : <?= number_format((int) $planting['target_count'], 0, ',', ' ') ?> plantations — <?= (int) $statistics['proposed'] ?> plantations proposées, <?= (int) $statistics['validated'] ?> plantations validées, <?= (int) $statistics['planted'] ?> arbres plantés.</p></section>
+    <section class="intro"><h1><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></h1><p>Objectif : <?= number_format((int) $planting['target_count'], 0, ',', ' ') ?> plantations — <?= (int) $statistics['proposed'] ?> plantations proposées, <?= (int) $statistics['validated'] ?> plantations validées, <?= (int) $statistics['planted'] ?> arbres plantés.</p></section>
     <section class="map-panel" aria-label="Choix de l'emplacement">
         <form id="address-search" class="address-search"><label for="address">Rechercher une adresse</label><div><input id="address" type="search" autocomplete="street-address" placeholder="Rue, lieu-dit, commune"><button type="submit">Rechercher</button></div></form>
         <div id="address-results" class="address-results" aria-live="polite"></div>
         <div id="map" role="application" aria-label="Carte du territoire"></div>
-        <aside class="map-legend" aria-label="Légende des propositions">
-            <strong>Légende</strong>
-            <span><i class="legend-marker legend-marker--proposed">●</i> Plantation proposée</span>
-            <span><i class="legend-marker legend-marker--rejected">●</i> Plantation refusée</span>
-            <span><i class="legend-marker legend-marker--validated">●</i> Plantation validée</span>
-            <span><i class="legend-marker legend-marker--planted">🌳</i> Arbre planté</span>
-        </aside>
+        <aside class="map-legend" aria-label="Légende des propositions"><strong>Légende</strong><span><i class="legend-marker legend-marker--proposed">●</i> Plantation proposée</span><span><i class="legend-marker legend-marker--rejected">●</i> Plantation refusée</span><span><i class="legend-marker legend-marker--validated">●</i> Plantation validée</span><span><i class="legend-marker legend-marker--planted">🌳</i> Arbre planté</span></aside>
         <div class="map-actions"><button id="locate-me" type="button">Utiliser ma position</button><output id="selected-location">Choisissez un point sur la carte.</output></div>
     </section>
     <section class="form-panel">
@@ -46,6 +40,6 @@
 <script>window.PlanArbreConfig = <?= json_encode(['center' => $territory['center'], 'zoom' => $map['default_zoom'], 'territoryUrl' => $dataSources['territory']['url'], 'municipalitiesUrl' => $dataSources['delegated_municipalities']['url'], 'proposalsUrl' => $dataSources['proposals']['url'], 'proposalUrl' => '/api/propositions', 'maxPhotos' => $security['max_photos_per_proposal'], 'maxObjectives' => $planting['max_objectives_per_proposal'], 'objectives' => $planting['objectives']], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
-<script src="public/js/app.js" defer></script>
+<script src="/public/js/app.js" defer></script>
 </body>
 </html>

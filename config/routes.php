@@ -12,6 +12,7 @@ use PlanArbreBEA\Controllers\AdminProposalController;
 
 return [
     ['GET', '/', [HomeController::class, 'index']],
+    ['GET', '/proposer-un-arbre', [HomeController::class, 'treeProposal']],
     ['GET', '/sante', [HomeController::class, 'health']],
     ['GET', '/api/data/territoire', [GeoJsonController::class, 'territory']],
     ['GET', '/api/data/communes-deleguees', [GeoJsonController::class, 'municipalities']],

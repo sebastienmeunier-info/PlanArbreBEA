@@ -17,6 +17,16 @@ final class HomeController
 
     public function index(Request $request): never
     {
+        $this->renderProposalPage('Proposer une plantation');
+    }
+
+    public function treeProposal(Request $request): never
+    {
+        $this->renderProposalPage('Proposer un arbre');
+    }
+
+    private function renderProposalPage(string $pageTitle): never
+    {
         $auth = new AuthService(new UserRepository($this->app->config('auth')['users_file']), $this->app->config('auth'));
         $user = $auth->currentUser();
         $planting = $this->app->config('planting');
@@ -40,6 +50,7 @@ final class HomeController
             'dataSources' => $this->app->config('data_sources'),
             'csrfToken' => $auth->csrfToken(),
             'user' => $user,
+            'pageTitle' => $pageTitle,
         ]));
     }
 
