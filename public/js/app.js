@@ -12,6 +12,8 @@
   let municipalities;
   let toastTimer;
   let locationRequest = 0;
+  let preparedPhotos = [];
+  let photoPreparation = Promise.resolve();
 
   const setMessage = (text, kind = '') => { message.textContent = text; message.className = `form-message ${kind}`; };
   const showToast = (text, kind = '') => { clearTimeout(toastTimer); toast.textContent = text; toast.className = `toast ${kind}`; toast.hidden = false; toastTimer = window.setTimeout(() => { toast.hidden = true; }, 5000); };
@@ -76,18 +78,31 @@
     const results = document.querySelector('#address-results'); results.textContent = 'Recherche en cours…';
     try { const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`, { headers: { Accept: 'application/json' } }); const places = await response.json(); results.replaceChildren(...places.map((place) => { const button = document.createElement('button'); button.type = 'button'; button.textContent = place.display_name; button.onclick = () => { setPosition(Number(place.lat), Number(place.lon), shortAddress(place)); results.textContent = ''; }; return button; })); } catch { results.textContent = 'La recherche d’adresse est indisponible.'; }
   });
+  const canvasBlob = (canvas, quality) => new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', quality));
+  const compressPhoto = async (file) => {
+    const source = await createImageBitmap(file);
+    let scale = Math.min(1, 1600 / Math.max(source.width, source.height));
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(source.width * scale)); canvas.height = Math.max(1, Math.round(source.height * scale));
+      canvas.getContext('2d').drawImage(source, 0, 0, canvas.width, canvas.height);
+      const blob = await canvasBlob(canvas, Math.max(.45, .82 - attempt * .07));
+      if (blob && blob.size <= 512000) { source.close(); return new File([blob], `${file.name.replace(/\.[^.]+$/, '')}.webp`, { type: 'image/webp' }); }
+      scale *= .78;
+    }
+    source.close(); throw new Error('Une photo ne peut pas être réduite à 500 Ko.');
+  };
   document.querySelector('#photos').addEventListener('change', (event) => {
     const files = [...event.target.files]; const previews = document.querySelector('#photo-previews'); previews.textContent = '';
     if (files.length > config.maxPhotos) { event.target.value = ''; setMessage(`Vous pouvez sélectionner ${config.maxPhotos} photos maximum.`, 'error'); return; }
-    for (const file of files) { if (file.size > 1048576) { event.target.value = ''; previews.textContent = ''; setMessage('Chaque photo est limitée à 1 Mo.', 'error'); return; } const image = document.createElement('img'); image.src = URL.createObjectURL(file); image.alt = `Aperçu de ${file.name}`; previews.append(image); }
+    photoPreparation = (async () => { try { setMessage('Optimisation des photos…'); preparedPhotos = await Promise.all(files.map(compressPhoto)); for (const file of preparedPhotos) { const image = document.createElement('img'); image.src = URL.createObjectURL(file); image.alt = `Aperçu de ${file.name}`; previews.append(image); } setMessage(''); } catch (error) { preparedPhotos = []; event.target.value = ''; previews.textContent = ''; setMessage(error.message, 'error'); } })();
   });
   form.querySelectorAll('input[name="objectives[]"]').forEach((input) => input.addEventListener('change', () => {
     const selected = form.querySelectorAll('input[name="objectives[]"]:checked');
     if (selected.length > config.maxObjectives) { input.checked = false; showToast(`Vous pouvez sélectionner ${config.maxObjectives} objectifs maximum.`, 'error'); }
   }));
   form.addEventListener('submit', async (event) => {
-    event.preventDefault(); if (!form.latitude.value || !form.longitude.value) return setMessage('Choisissez l’emplacement de l’arbre sur la carte.', 'error');
+    event.preventDefault(); if (!form.latitude.value || !form.longitude.value) return setMessage('Choisissez l’emplacement de l’arbre sur la carte.', 'error'); await photoPreparation;
     const submit = form.querySelector('[type="submit"]'); submit.disabled = true; setMessage('Envoi de la proposition…');
-    try { const response = await fetch(config.proposalUrl, { method: 'POST', body: new FormData(form) }); const data = await response.json(); if (!response.ok) throw new Error(data.message || 'Envoi impossible.'); form.reset(); document.querySelector('#photo-previews').textContent = ''; marker?.remove(); marker = undefined; locationOutput.value = 'Choisissez un point sur la carte.'; setMessage(''); showToast(data.message); } catch (error) { setMessage(error.message, 'error'); } finally { submit.disabled = false; }
+    try { const formData = new FormData(form); formData.delete('photos[]'); preparedPhotos.forEach((photo) => formData.append('photos[]', photo, photo.name)); const response = await fetch(config.proposalUrl, { method: 'POST', body: formData }); const data = await response.json(); if (!response.ok) throw new Error(data.message || 'Envoi impossible.'); form.reset(); preparedPhotos = []; document.querySelector('#photo-previews').textContent = ''; marker?.remove(); marker = undefined; locationOutput.value = 'Choisissez un point sur la carte.'; setMessage(''); showToast(data.message); } catch (error) { setMessage(error.message, 'error'); } finally { submit.disabled = false; }
   });
 })();

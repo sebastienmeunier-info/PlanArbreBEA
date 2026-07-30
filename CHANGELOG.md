@@ -2,6 +2,7 @@
 
 ## 0.1.0-dev — Sprint 1
 
+- Compression locale des photos WebP à 500 Ko maximum avant envoi.
 - Ajout de l'inscription, connexion, réinitialisation de mot de passe et gestion des rôles contributeur/administrateur.
 - Configuration du nom et du logo du projet, ajout du menu et des indicateurs de plantation dans l'en-tête public.
 - Raccourcissement de l'adresse affichée après sélection cartographique.

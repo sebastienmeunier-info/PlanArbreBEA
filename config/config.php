@@ -77,7 +77,7 @@ return [
     ],
     'security' => [
         'csrf_token_name' => 'csrf_token',
-        'max_upload_size' => 1_048_576,
+        'max_upload_size' => 512_000,
         'max_photos_per_proposal' => 3,
         'max_email_length' => 254,
         'allowed_photo_mime_types' => ['image/jpeg', 'image/png', 'image/webp'],
