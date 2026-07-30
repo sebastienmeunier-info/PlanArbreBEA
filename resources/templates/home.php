@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#0d2115">
     <title><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="/public/css/app.css">
+    <link rel="stylesheet" href="<?= htmlspecialchars($url('/public/css/app.css'), ENT_QUOTES, 'UTF-8') ?>">
 </head>
 <body class="outdoor-mode">
 <?php require __DIR__ . '/partials/header.php'; ?>
@@ -42,9 +42,9 @@
 </main>
 <?php require __DIR__ . '/partials/footer.php'; ?>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-<script>window.PlantonsConfig = <?= json_encode(['center' => $territory['center'], 'zoom' => $map['default_zoom'], 'territoryUrl' => $dataSources['territory']['url'], 'municipalitiesUrl' => $dataSources['delegated_municipalities']['url'], 'proposalsUrl' => $activeDataSource['url'], 'proposalUrl' => $submissionUrl, 'markerShape' => $treeProposal ? 'cross' : 'round', 'maxPhotos' => $security['max_photos_per_proposal'], 'maxObjectives' => $planting['max_objectives_per_proposal'], 'objectives' => $planting['objectives'], 'conditionings' => $planting['tree_conditioning'], 'treeSizes' => $planting['tree_sizes']], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
+<script>window.PlantonsConfig = <?= json_encode(['center' => $territory['center'], 'zoom' => $map['default_zoom'], 'territoryUrl' => $url($dataSources['territory']['url']), 'municipalitiesUrl' => $url($dataSources['delegated_municipalities']['url']), 'proposalsUrl' => $url($activeDataSource['url']), 'proposalUrl' => $submissionUrl, 'markerShape' => $treeProposal ? 'cross' : 'round', 'maxPhotos' => $security['max_photos_per_proposal'], 'maxObjectives' => $planting['max_objectives_per_proposal'], 'objectives' => $planting['objectives'], 'conditionings' => $planting['tree_conditioning'], 'treeSizes' => $planting['tree_sizes']], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
-<script src="/public/js/app.js" defer></script>
+<script src="<?= htmlspecialchars($url('/public/js/app.js'), ENT_QUOTES, 'UTF-8') ?>" defer></script>
 </body>
 </html>

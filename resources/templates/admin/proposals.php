@@ -2,7 +2,7 @@
 <html lang="fr">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="/public/css/app.css">
+<link rel="stylesheet" href="<?= htmlspecialchars($url('/public/css/app.css'), ENT_QUOTES, 'UTF-8') ?>">
 <title>Propositions · <?= htmlspecialchars($application['name']) ?></title>
 <body class="outdoor-mode">
 <?php require __DIR__ . '/../partials/header.php'; ?>
@@ -12,7 +12,7 @@
   <?php if ($features === []): ?><p>Aucune proposition pour le moment.</p><?php endif; ?>
   <div class="proposal-admin-list">
   <?php foreach ($features as $feature): $properties = $feature['properties'] ?? []; $coordinates = $feature['geometry']['coordinates'] ?? [null, null]; ?>
-    <form class="proposal-admin-card" method="post" action="/admin/propositions/modifier">
+    <form class="proposal-admin-card" method="post" action="<?= htmlspecialchars($url('/admin/propositions/modifier'), ENT_QUOTES, 'UTF-8') ?>">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
       <input type="hidden" name="id" value="<?= htmlspecialchars((string) ($properties['id'] ?? '')) ?>">
       <h2><?= htmlspecialchars((string) ($properties['species'] ?? 'Plantation')) ?></h2>

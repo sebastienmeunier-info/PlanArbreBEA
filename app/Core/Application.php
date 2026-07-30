@@ -15,7 +15,7 @@ final class Application
         date_default_timezone_set($config['app']['timezone']);
         $this->ensureRuntimeDirectories();
         $this->router = new Router();
-        $this->view = new View($config['paths']['views']);
+        $this->view = new View($config['paths']['views'], $config['app']['base_path']);
         $this->logger = new Logger($config['logging']['file'], $config['logging']['minimum_level']);
     }
 
@@ -24,6 +24,15 @@ final class Application
     public function view(): View { return $this->view; }
     public function logger(): Logger { return $this->logger; }
     public function config(string $key): mixed { return $this->config[$key] ?? null; }
+
+    public function url(string $path = '/'): string
+    {
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        return rtrim((string) $this->config['app']['base_path'], '/') . '/' . ltrim($path, '/');
+    }
 
     private function ensureRuntimeDirectories(): void
     {

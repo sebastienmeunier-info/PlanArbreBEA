@@ -11,6 +11,8 @@ PLANTONS_BASE_URL=https://exemple.fr/plantons
 PLANTONS_TIMEZONE=Europe/Paris
 ```
 
+Lors d'une installation dans un sous-dossier, par exemple `https://exemple.fr/PlanArbreBEA/`, le préfixe est détecté automatiquement. Si l'hébergement ne transmet pas correctement ce chemin à PHP, définir aussi `PLANTONS_BASE_PATH=/PlanArbreBEA`.
+
 Les fichiers de données et les journaux sont protégés par `.htaccess` sur Apache. Sur Nginx, ajouter une règle équivalente interdisant l'accès HTTP aux extensions `.json`, `.geojson` et `.log`.
 
 ## Configuration d'un territoire

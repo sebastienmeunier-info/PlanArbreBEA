@@ -20,7 +20,7 @@ final class AdminUserController
     public function index(Request $request): never
     {
         $this->guard($this->auth());
-        header('Location: /mon-compte?onglet=utilisateurs', true, 303);
+        header('Location: ' . $this->app->url('/mon-compte?onglet=utilisateurs'), true, 303);
         exit;
     }
 
@@ -50,13 +50,13 @@ final class AdminUserController
             $token = bin2hex(random_bytes(32));
             $this->storeInvitationToken($email, $token);
             $this->sendInvitation($user, $token);
-            header('Location: /mon-compte?onglet=utilisateurs&invite=sent', true, 303);
+            header('Location: ' . $this->app->url('/mon-compte?onglet=utilisateurs&invite=sent'), true, 303);
             exit;
         } catch (InvalidArgumentException $exception) {
             Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422);
         } catch (RuntimeException $exception) {
             $this->app->logger()->warning($exception->getMessage());
-            header('Location: /mon-compte?onglet=utilisateurs&invite=failed', true, 303);
+            header('Location: ' . $this->app->url('/mon-compte?onglet=utilisateurs&invite=failed'), true, 303);
             exit;
         }
     }
@@ -68,7 +68,7 @@ final class AdminUserController
         $target = $this->repository()->findById((string) $request->input('user_id')); $role = (string) $request->input('role');
         if ($target === null || !$this->mayChangeRole($current['role'], $target['role'], $role)) { Response::html('Cette modification de rôle n’est pas autorisée.', 403); }
         $this->repository()->update($target['id'], ['role' => $role]);
-        header('Location: /mon-compte?onglet=utilisateurs', true, 303); exit;
+        header('Location: ' . $this->app->url('/mon-compte?onglet=utilisateurs'), true, 303); exit;
     }
 
     public function updateProfile(Request $request): never
@@ -84,7 +84,7 @@ final class AdminUserController
             $role = $this->requestedRole($current, $target['role']);
             if (!$this->mayEditRole($current['role'], $target['role'], $role)) { Response::html('Cette modification de rôle n’est pas autorisée.', 403); }
             $repository->update($target['id'], ['first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'role' => $role]);
-            header('Location: /mon-compte?onglet=utilisateurs', true, 303); exit;
+            header('Location: ' . $this->app->url('/mon-compte?onglet=utilisateurs'), true, 303); exit;
         } catch (InvalidArgumentException $exception) { Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422); }
     }
 

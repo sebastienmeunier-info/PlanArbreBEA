@@ -17,12 +17,12 @@ final class HomeController
 
     public function index(Request $request): never
     {
-        $this->renderProposalPage('Proposer une plantation', false, 'proposals', '/api/propositions');
+        $this->renderProposalPage('Proposer une plantation', false, 'proposals', $this->app->url('/api/propositions'));
     }
 
     public function treeProposal(Request $request): never
     {
-        $this->renderProposalPage('Proposer un arbre', true, 'donations', '/api/dons');
+        $this->renderProposalPage('Proposer un arbre', true, 'donations', $this->app->url('/api/dons'));
     }
 
     private function renderProposalPage(string $pageTitle, bool $treeProposal, string $source, string $submissionUrl): never

@@ -8,6 +8,10 @@ $root = dirname(__DIR__);
 $environment = getenv('PLANTONS_ENV') ?: 'development';
 $projectName = getenv('PLANTONS_PROJECT_NAME') ?: 'Plantons';
 $territoryCenter = [47.5310, -0.1020];
+$scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+$detectedBasePath = str_ends_with($scriptName, '.php') ? dirname($scriptName) : '';
+$basePath = rtrim((string) (getenv('PLANTONS_BASE_PATH') ?: $detectedBasePath), '/.');
+$basePath = $basePath === '/' ? '' : $basePath;
 
 return [
     'app' => [
@@ -17,6 +21,9 @@ return [
         'environment' => $environment,
         'debug' => filter_var(getenv('PLANTONS_DEBUG') ?: $environment !== 'production', FILTER_VALIDATE_BOOL),
         'base_url' => rtrim((string) (getenv('PLANTONS_BASE_URL') ?: ''), '/'),
+        // Détecté automatiquement (ex. /PlanArbreBEA). À surcharger avec
+        // PLANTONS_BASE_PATH seulement si l'hébergement utilise une règle particulière.
+        'base_path' => $basePath,
         'timezone' => getenv('PLANTONS_TIMEZONE') ?: 'Europe/Paris',
         'version' => trim((string) file_get_contents($root . '/VERSION')),
     ],
