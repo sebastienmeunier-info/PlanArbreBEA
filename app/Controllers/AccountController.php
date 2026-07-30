@@ -23,12 +23,13 @@ final class AccountController
 
         $isAdministrator = in_array($user['role'], ['administrateur', 'super_administrateur'], true);
         $tab = (string) $request->query('onglet', 'profil');
-        $allowedTabs = $isAdministrator ? ['profil', 'plantations', 'utilisateurs'] : ['profil', 'plantations'];
+        $allowedTabs = $isAdministrator ? ['profil', 'plantations', 'dons', 'utilisateurs'] : ['profil', 'plantations'];
         if (!in_array($tab, $allowedTabs, true)) { $tab = 'profil'; }
 
         $store = new GeoJsonStore();
         $sources = $this->app->config('data_sources');
-        $allFeatures = $store->read($sources['proposals']['file'])['features'];
+        $isDonationTab = $tab === 'dons';
+        $allFeatures = $store->read($sources[$isDonationTab ? 'donations' : 'proposals']['file'])['features'];
         $features = array_values(array_filter($allFeatures, static fn(array $feature): bool => ($feature['properties']['email'] ?? '') === $user['email']));
         $displayFeatures = $isAdministrator ? $allFeatures : $features;
         $counts = ['proposed' => 0, 'validated' => 0, 'rejected' => 0, 'planted' => 0];
@@ -44,7 +45,7 @@ final class AccountController
             'application' => $this->app->config('app'), 'csrfToken' => $auth->csrfToken(), 'user' => $user,
             'tab' => $tab, 'isAdministrator' => $isAdministrator, 'counts' => $counts, 'features' => $features,
             'displayFeatures' => $displayFeatures, 'statuses' => $this->app->config('proposals')['status_labels'],
-            'planting' => $this->app->config('planting'),
+            'planting' => $this->app->config('planting'), 'isDonationTab' => $isDonationTab,
             'notice' => match ($request->query('invite')) {
                 'sent' => 'Le compte a été créé et l’invitation a été envoyée.',
                 'failed' => 'Le compte est créé, mais l’invitation n’a pas pu être envoyée. Vérifiez la configuration SMTP puis renvoyez l’invitation.',

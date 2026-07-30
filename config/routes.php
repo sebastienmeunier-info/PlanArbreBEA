@@ -36,6 +36,7 @@ return [
     ['POST', '/admin/utilisateurs/modifier', [AdminUserController::class, 'updateProfile']],
     ['GET', '/admin/propositions', [AdminProposalController::class, 'index']],
     ['POST', '/admin/propositions/modifier', [AdminProposalController::class, 'update']],
+    ['POST', '/admin/dons/modifier', [AdminProposalController::class, 'updateDonation']],
     ['GET', '/mon-compte', [AccountController::class, 'index']],
     ['POST', '/mon-compte', [AccountController::class, 'update']],
 ];

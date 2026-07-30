@@ -28,6 +28,16 @@ final class AdminProposalController
 
     public function update(Request $request): never
     {
+        $this->updateForSource($request, 'proposals', 'plantations');
+    }
+
+    public function updateDonation(Request $request): never
+    {
+        $this->updateForSource($request, 'donations', 'dons');
+    }
+
+    private function updateForSource(Request $request, string $source, string $tab): never
+    {
         try {
             $auth = $this->auth();
             $current = $this->guard($auth);
@@ -45,8 +55,18 @@ final class AdminProposalController
             $species = trim((string) $request->input('species'));
             $objectives = array_values(array_unique(array_filter((array) $request->input('objectives', []), 'is_string')));
             if (!in_array($species, $planting['allowed_species'], true)) { throw new InvalidArgumentException('Essence invalide.'); }
-            if ($objectives === [] || array_diff($objectives, array_keys($planting['objectives'])) !== []) { throw new InvalidArgumentException('Objectifs invalides.'); }
-            if (count($objectives) > $planting['max_objectives_per_proposal']) { throw new InvalidArgumentException('Trois objectifs maximum sont autorisés.'); }
+            $changes = ['status' => $status, 'species' => $species];
+            if ($source === 'donations') {
+                $conditioning = (string) $request->input('conditioning');
+                $treeSize = (string) $request->input('tree_size');
+                if (!array_key_exists($conditioning, $planting['tree_conditioning'])) { throw new InvalidArgumentException('Conditionnement invalide.'); }
+                if (!array_key_exists($treeSize, $planting['tree_sizes'])) { throw new InvalidArgumentException('Taille invalide.'); }
+                $changes += ['conditioning' => $conditioning, 'tree_size' => $treeSize, 'objectives' => []];
+            } else {
+                if ($objectives === [] || array_diff($objectives, array_keys($planting['objectives'])) !== []) { throw new InvalidArgumentException('Objectifs invalides.'); }
+                if (count($objectives) > $planting['max_objectives_per_proposal']) { throw new InvalidArgumentException('Trois objectifs maximum sont autorisés.'); }
+                $changes['objectives'] = $objectives;
+            }
             $store = new GeoJsonStore();
             $sources = $this->app->config('data_sources');
             $territory = $store->read($sources['territory']['file']);
@@ -55,15 +75,12 @@ final class AdminProposalController
                 throw new InvalidArgumentException('La localisation doit rester dans le territoire autorisé.');
             }
             $municipalities = $store->read($sources['delegated_municipalities']['file']);
-            $store->updateFeature($sources['proposals']['file'], (string) $request->input('id'), [
-                'status' => $status,
-                'species' => $species,
-                'objectives' => $objectives,
+            $store->updateFeature($sources[$source]['file'], (string) $request->input('id'), $changes + [
                 'delegated_municipality' => $territoryService->municipality($municipalities, $longitude, $latitude),
                 'updated_at' => date(DATE_ATOM),
                 'updated_by' => $current['id'],
             ], [$longitude, $latitude]);
-            header('Location: /mon-compte?onglet=plantations', true, 303);
+            header('Location: /mon-compte?onglet=' . $tab, true, 303);
             exit;
         } catch (InvalidArgumentException|RuntimeException $exception) {
             Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422);
