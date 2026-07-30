@@ -6,7 +6,7 @@ PlanArbreBEA est un logiciel libre de gestion du patrimoine arboré et des propo
 
 Le Sprint 0 installe le socle technique : front controller, routage, configuration, gestion d'erreurs, journalisation et première page publique. Les modules cartographiques, formulaire citoyen, administration et API seront ajoutés dans les sprints suivants.
 
-Le Sprint 1 ajoute la carte interactive et le dépôt sécurisé des premières propositions citoyennes. La limite territoriale de Baugé-en-Anjou est fournie dans `data/territoire.geojson`. Ajouter, si nécessaire, les communes déléguées dans `data/communes-deleguees.geojson`.
+Le Sprint 1 ajoute la carte interactive et le dépôt sécurisé des premières propositions citoyennes. La limite territoriale de Baugé-en-Anjou et ses communes déléguées sont fournies dans `data/territoire.geojson` et `data/communes-deleguees.geojson`.
 
 ## Prérequis
 
