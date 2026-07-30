@@ -85,6 +85,34 @@ return [
     'notifications' => [
         'status_changes' => true,
         'events' => ['validee', 'rejetee', 'arbre_plante', 'localisation_deplacee'],
+        // Variables disponibles : {{project_name}}, {{first_name}}, {{last_name}},
+        // {{proposal_id}}, {{species}}, {{location}}, {{url}}.
+        'messages' => [
+            'account_invitation' => [
+                'subject' => 'Activation de votre compte · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nVotre compte a été créé. Définissez votre mot de passe en suivant ce lien, valable 7 jours :\n{{url}}\n\nÀ bientôt,\n{{project_name}}",
+            ],
+            'password_reset' => [
+                'subject' => 'Réinitialisation de votre mot de passe · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nUtilisez ce lien valable une heure pour choisir un nouveau mot de passe :\n{{url}}\n\n{{project_name}}",
+            ],
+            'proposal_validated' => [
+                'subject' => 'Votre proposition a été validée · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} pour {{species}} a été validée.\n\n{{project_name}}",
+            ],
+            'proposal_rejected' => [
+                'subject' => 'Décision concernant votre proposition · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} pour {{species}} n’a pas été retenue.\n\n{{project_name}}",
+            ],
+            'tree_planted' => [
+                'subject' => 'Plantation réalisée · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nL’arbre proposé dans le cadre de la proposition {{proposal_id}} a été planté.\n\nMerci pour votre contribution,\n{{project_name}}",
+            ],
+            'location_moved' => [
+                'subject' => 'Localisation mise à jour · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nLa localisation de votre proposition {{proposal_id}} a été mise à jour : {{location}}.\n\n{{project_name}}",
+            ],
+        ],
     ],
     'proposals' => [
         'status_labels' => [
