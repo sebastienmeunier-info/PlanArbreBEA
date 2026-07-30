@@ -25,7 +25,7 @@
     <?php endforeach; ?></section><aside class="plantations-map-panel"><h3>Carte<?= $isDonationTab ? ' des dons' : '' ?></h3><p><?= $isAdministrator ? 'Faites glisser un repère pour modifier ses coordonnées.' : 'Vos propositions géolocalisées.' ?></p><div id="plantations-map" class="account-map"></div><section id="proposal-details" class="proposal-details" hidden><h4>Détail <?= $isDonationTab ? 'du don' : 'de la proposition' ?></h4><p id="proposal-comment"></p><div id="proposal-photos" class="proposal-photo-gallery"></div><?php if ($isAdministrator): ?><section id="proposal-contributor" class="proposal-contributor" hidden><h5>Contributeur</h5><p id="proposal-contributor-details"></p></section><?php endif; ?></section></aside></div>
   <?php elseif ($tab === 'exports'): ?>
     <h2>Exports</h2><p>Réservé aux administrateurs. Les exports incluent les données de proposition, les coordonnées, les informations du contributeur et les liens complets vers les photos.</p>
-    <form class="export-form" method="get" action="<?= htmlspecialchars($routeUrl('/admin/exports'), ENT_QUOTES, 'UTF-8') ?>">
+    <form class="export-form" method="get" action="<?= htmlspecialchars($url('/index.php'), ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="route" value="/admin/exports">
       <label>Source<select name="source"><option value="all">Plantations et dons</option><option value="proposals">Plantations</option><option value="donations">Dons d’arbres</option></select></label>
       <label>Format<select name="format"><option value="geojson">GeoJSON</option><option value="csv">CSV</option><option value="qgis">QGIS — GeoJSON compatible</option></select></label>
       <button type="submit">Télécharger l’export</button>
