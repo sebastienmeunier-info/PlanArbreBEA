@@ -33,14 +33,19 @@ final class AdminUserController
             $firstName = trim((string) $request->input('first_name'));
             $lastName = trim((string) $request->input('last_name'));
             $email = mb_strtolower(trim((string) $request->input('email')));
+            $address = mb_substr(trim((string) $request->input('address')), 0, 255);
+            $phone = $this->phone($request->input('phone'));
             if ($firstName === '' || $lastName === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) { throw new InvalidArgumentException('Nom, prénom et e-mail valides sont requis.'); }
             $role = $this->requestedRole($current = $this->guard($auth), 'contributeur');
             $repository = $this->repository();
             $user = $repository->findByEmail($email);
             if ($user !== null && $user['password_hash'] !== null) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
             if ($user === null) {
-                $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'password_hash' => null, 'role' => $role, 'created_at' => date(DATE_ATOM)];
+                $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'password_hash' => null, 'role' => $role, 'created_at' => date(DATE_ATOM)];
                 $repository->create($user);
+            } else {
+                $repository->update($user['id'], ['first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'address' => $address, 'phone' => $phone, 'role' => $role]);
+                $user = $repository->findById($user['id']);
             }
             $token = bin2hex(random_bytes(32));
             $this->storeInvitationToken($email, $token);
@@ -72,13 +77,13 @@ final class AdminUserController
             $auth = $this->auth(); $current = $this->guard($auth);
             if (!$auth->verifyCsrf((string) $request->input('csrf_token'))) { Response::html('Session expirée.', 403); }
             $repository = $this->repository(); $target = $repository->findById((string) $request->input('user_id'));
-            $firstName = trim((string) $request->input('first_name')); $lastName = trim((string) $request->input('last_name')); $email = mb_strtolower(trim((string) $request->input('email')));
+            $firstName = trim((string) $request->input('first_name')); $lastName = trim((string) $request->input('last_name')); $email = mb_strtolower(trim((string) $request->input('email'))); $address = mb_substr(trim((string) $request->input('address')), 0, 255); $phone = $this->phone($request->input('phone'));
             if ($target === null || $firstName === '' || $lastName === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) { throw new InvalidArgumentException('Informations utilisateur invalides.'); }
             $existing = $repository->findByEmail($email);
             if ($existing !== null && $existing['id'] !== $target['id']) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
             $role = $this->requestedRole($current, $target['role']);
             if (!$this->mayEditRole($current['role'], $target['role'], $role)) { Response::html('Cette modification de rôle n’est pas autorisée.', 403); }
-            $repository->update($target['id'], ['first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'role' => $role]);
+            $repository->update($target['id'], ['first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'role' => $role]);
             header('Location: /mon-compte?onglet=utilisateurs', true, 303); exit;
         } catch (InvalidArgumentException $exception) { Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422); }
     }
@@ -121,6 +126,13 @@ final class AdminUserController
         if ($current['role'] === 'administrateur') { return $role === 'administrateur' ? 'administrateur' : 'contributeur'; }
         if ($role === '') { return $fallback; }
         return in_array($role, ['contributeur', 'administrateur', 'super_administrateur'], true) ? $role : $fallback;
+    }
+
+    private function phone(mixed $value): string
+    {
+        $phone = mb_substr(trim((string) $value), 0, 30);
+        if ($phone !== '' && preg_match('/^[0-9+().\-\s]+$/', $phone) !== 1) { throw new InvalidArgumentException('Numéro de téléphone invalide.'); }
+        return $phone;
     }
 
     private function guard(AuthService $auth): array

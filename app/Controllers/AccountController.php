@@ -61,12 +61,14 @@ final class AccountController
         if (!$user || !$auth->verifyCsrf((string) $request->input('csrf_token'))) { Response::html('Accès refusé.', 403); }
         $first = trim((string) $request->input('first_name')); $last = trim((string) $request->input('last_name'));
         $email = mb_strtolower(trim((string) $request->input('email')));
+        $address = mb_substr(trim((string) $request->input('address')), 0, 255);
+        $phone = $this->phone($request->input('phone'));
         $password = (string) $request->input('password');
         if ($first === '' || $last === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) { Response::html('Informations personnelles invalides.', 422); }
         if ($password !== '' && strlen($password) < 12) { Response::html('Le mot de passe doit contenir au moins 12 caractères.', 422); }
         $repository = new UserRepository($this->app->config('auth')['users_file']); $existing = $repository->findByEmail($email);
         if ($existing !== null && $existing['id'] !== $user['id']) { Response::html('Cette adresse e-mail est déjà utilisée.', 422); }
-        $changes = ['first_name' => $first, 'last_name' => $last, 'email' => $email];
+        $changes = ['first_name' => $first, 'last_name' => $last, 'email' => $email, 'address' => $address, 'phone' => $phone];
         if ($password !== '') { $changes['password_hash'] = password_hash($password, PASSWORD_DEFAULT); }
         $repository->update($user['id'], $changes);
         header('Location: /mon-compte?onglet=profil', true, 303); exit;
@@ -75,5 +77,11 @@ final class AccountController
     private function auth(): AuthService
     {
         return new AuthService(new UserRepository($this->app->config('auth')['users_file']), $this->app->config('auth'));
+    }
+    private function phone(mixed $value): string
+    {
+        $phone = mb_substr(trim((string) $value), 0, 30);
+        if ($phone !== '' && preg_match('/^[0-9+().\-\s]+$/', $phone) !== 1) { Response::html('Numéro de téléphone invalide.', 422); }
+        return $phone;
     }
 }
