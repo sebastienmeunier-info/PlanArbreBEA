@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha512-p4NxAoJBhIINfQ2B9KH6zH/V8sRDaL4ET2+MoVkA3ARdMAnC6p6p6P2o0q8nO7TXH4QmRxU4dBE2juKSU1Ww==" crossorigin="">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="public/css/app.css">
 </head>
 <body>
@@ -33,7 +33,7 @@
     </section>
 </main>
 <script>window.PlanArbreConfig = <?= json_encode(['center' => $territory['center'], 'zoom' => $map['default_zoom'], 'territoryUrl' => $dataSources['territory']['url'], 'proposalUrl' => '/api/propositions', 'maxPhotos' => $security['max_photos_per_proposal']], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha512-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo3I+qXo6b+1yR2Ry3sP8W0W6O4YQZf6QwQ3gFZB6AzA==" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
 <script src="public/js/app.js" defer></script>
 </body>
