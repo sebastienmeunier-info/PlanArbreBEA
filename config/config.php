@@ -5,18 +5,18 @@ declare(strict_types=1);
 use Plantons\Core\Logger;
 
 $root = dirname(__DIR__);
-$environment = getenv('PLANARBRE_ENV') ?: 'development';
+$environment = getenv('PLANTONS_ENV') ?: 'development';
 $projectName = getenv('PLANTONS_PROJECT_NAME') ?: 'Plantons';
 $territoryCenter = [47.5310, -0.1020];
 
 return [
     'app' => [
         'name' => $projectName,
-        'logo_url' => getenv('PLANARBRE_PROJECT_LOGO_URL') ?: 'https://www.sebastienmeunier.info/wp-content/uploads/2024/12/sebmeunier-300x300.png',
+        'logo_url' => getenv('PLANTONS_PROJECT_LOGO_URL') ?: 'https://www.sebastienmeunier.info/wp-content/uploads/2024/12/sebmeunier-300x300.png',
         'environment' => $environment,
-        'debug' => filter_var(getenv('PLANARBRE_DEBUG') ?: $environment !== 'production', FILTER_VALIDATE_BOOL),
-        'base_url' => rtrim((string) (getenv('PLANARBRE_BASE_URL') ?: ''), '/'),
-        'timezone' => getenv('PLANARBRE_TIMEZONE') ?: 'Europe/Paris',
+        'debug' => filter_var(getenv('PLANTONS_DEBUG') ?: $environment !== 'production', FILTER_VALIDATE_BOOL),
+        'base_url' => rtrim((string) (getenv('PLANTONS_BASE_URL') ?: ''), '/'),
+        'timezone' => getenv('PLANTONS_TIMEZONE') ?: 'Europe/Paris',
         'version' => trim((string) file_get_contents($root . '/VERSION')),
     ],
     /*
@@ -25,9 +25,9 @@ return [
      * fichiers de données séparés afin de pouvoir les mettre à jour sans code.
      */
     'territory' => [
-        'name' => getenv('PLANARBRE_TERRITORY_NAME') ?: 'Baugé-en-Anjou',
+        'name' => getenv('PLANTONS_TERRITORY_NAME') ?: 'Baugé-en-Anjou',
         'center' => $territoryCenter,
-        'timezone' => getenv('PLANARBRE_TIMEZONE') ?: 'Europe/Paris',
+        'timezone' => getenv('PLANTONS_TIMEZONE') ?: 'Europe/Paris',
     ],
     'paths' => [
         'root' => $root,
@@ -40,23 +40,23 @@ return [
     'data_sources' => [
         'trees' => [
             'file' => $root . '/data/arbres.geojson',
-            'url' => getenv('PLANARBRE_TREES_GEOJSON_URL') ?: '/api/data/arbres',
+            'url' => getenv('PLANTONS_TREES_GEOJSON_URL') ?: '/api/data/arbres',
         ],
         'proposals' => [
             'file' => $root . '/data/propositions.geojson',
-            'url' => getenv('PLANARBRE_PROPOSALS_GEOJSON_URL') ?: '/api/data/propositions',
+            'url' => getenv('PLANTONS_PROPOSALS_GEOJSON_URL') ?: '/api/data/propositions',
         ],
         'donations' => [
             'file' => $root . '/data/dons.geojson',
-            'url' => getenv('PLANARBRE_DONATIONS_GEOJSON_URL') ?: '/api/data/dons',
+            'url' => getenv('PLANTONS_DONATIONS_GEOJSON_URL') ?: '/api/data/dons',
         ],
         'territory' => [
             'file' => $root . '/data/territoire.geojson',
-            'url' => getenv('PLANARBRE_TERRITORY_GEOJSON_URL') ?: '/api/data/territoire',
+            'url' => getenv('PLANTONS_TERRITORY_GEOJSON_URL') ?: '/api/data/territoire',
         ],
         'delegated_municipalities' => [
             'file' => $root . '/data/communes-deleguees.geojson',
-            'url' => getenv('PLANARBRE_MUNICIPALITIES_GEOJSON_URL') ?: '/api/data/communes-deleguees',
+            'url' => getenv('PLANTONS_MUNICIPALITIES_GEOJSON_URL') ?: '/api/data/communes-deleguees',
         ],
     ],
     'planting' => [
@@ -142,23 +142,23 @@ return [
     'auth' => [
         'users_file' => $root . '/data/utilisateurs.json',
         'password_resets_file' => $root . '/data/reinitialisations.json',
-        'session_key' => 'planarbre_user_id',
-        'bootstrap_admin_email' => strtolower((string) (getenv('PLANARBRE_BOOTSTRAP_ADMIN_EMAIL') ?: '')),
+        'session_key' => 'plantons_user_id',
+        'bootstrap_admin_email' => strtolower((string) (getenv('PLANTONS_BOOTSTRAP_ADMIN_EMAIL') ?: '')),
         'administrator_emails' => ['contact@sebastienmeunier.info'],
-        'bootstrap_super_admin_email' => strtolower((string) (getenv('PLANARBRE_BOOTSTRAP_SUPER_ADMIN_EMAIL') ?: '')),
+        'bootstrap_super_admin_email' => strtolower((string) (getenv('PLANTONS_BOOTSTRAP_SUPER_ADMIN_EMAIL') ?: '')),
         'roles' => ['contributeur', 'administrateur', 'super_administrateur'],
-        'mail_enabled' => filter_var(getenv('PLANARBRE_MAIL_ENABLED') ?: false, FILTER_VALIDATE_BOOL),
-        'mail_from' => getenv('PLANARBRE_MAIL_FROM') ?: 'noreply@example.org',
+        'mail_enabled' => filter_var(getenv('PLANTONS_MAIL_ENABLED') ?: false, FILTER_VALIDATE_BOOL),
+        'mail_from' => getenv('PLANTONS_MAIL_FROM') ?: 'noreply@example.org',
     ],
     'smtp' => [
-        // Identifiants sensibles : définir PLANARBRE_SMTP_PASSWORD dans
+        // Identifiants sensibles : définir PLANTONS_SMTP_PASSWORD dans
         // l’hébergement, jamais dans le dépôt Git.
-        'host' => getenv('PLANARBRE_SMTP_HOST') ?: 'ssl0.ovh.net',
-        'port' => (int) (getenv('PLANARBRE_SMTP_PORT') ?: 465),
-        'encryption' => getenv('PLANARBRE_SMTP_ENCRYPTION') ?: 'ssl',
-        'username' => getenv('PLANARBRE_SMTP_USERNAME') ?: 'contact@sebastienmeunier.info',
-        'password' => getenv('PLANARBRE_SMTP_PASSWORD') ?: '',
-        'from_email' => getenv('PLANARBRE_SMTP_FROM_EMAIL') ?: 'contact@sebastienmeunier.info',
+        'host' => getenv('PLANTONS_SMTP_HOST') ?: 'ssl0.ovh.net',
+        'port' => (int) (getenv('PLANTONS_SMTP_PORT') ?: 465),
+        'encryption' => getenv('PLANTONS_SMTP_ENCRYPTION') ?: 'ssl',
+        'username' => getenv('PLANTONS_SMTP_USERNAME') ?: 'contact@sebastienmeunier.info',
+        'password' => getenv('PLANTONS_SMTP_PASSWORD') ?: '',
+        'from_email' => getenv('PLANTONS_SMTP_FROM_EMAIL') ?: 'contact@sebastienmeunier.info',
         'from_name' => getenv('PLANTONS_SMTP_FROM_NAME') ?: $projectName,
     ],
     'map' => [

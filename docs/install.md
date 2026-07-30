@@ -5,10 +5,10 @@ Plantons nécessite PHP 8.2 ou une version ultérieure. Déposer le contenu du d
 Pour une installation en production, définir :
 
 ```text
-PLANARBRE_ENV=production
-PLANARBRE_DEBUG=false
-PLANARBRE_BASE_URL=https://exemple.fr/plantons
-PLANARBRE_TIMEZONE=Europe/Paris
+PLANTONS_ENV=production
+PLANTONS_DEBUG=false
+PLANTONS_BASE_URL=https://exemple.fr/plantons
+PLANTONS_TIMEZONE=Europe/Paris
 ```
 
 Les fichiers de données et les journaux sont protégés par `.htaccess` sur Apache. Sur Nginx, ajouter une règle équivalente interdisant l'accès HTTP aux extensions `.json`, `.geojson` et `.log`.
@@ -30,6 +30,6 @@ Les demandes peuvent contenir une adresse e-mail facultative. Elle est enregistr
 
 ## Comptes et administration
 
-Chaque inscription crée un compte `contributeur`. Pour créer le premier administrateur, définir `PLANARBRE_BOOTSTRAP_ADMIN_EMAIL` avec l'adresse e-mail de ce compte avant son inscription. Un administrateur peut ensuite promouvoir les contributeurs depuis `/admin/utilisateurs`.
+Chaque inscription crée un compte `contributeur`. Pour créer le premier administrateur, définir `PLANTONS_BOOTSTRAP_ADMIN_EMAIL` avec l'adresse e-mail de ce compte avant son inscription. Un administrateur peut ensuite promouvoir les contributeurs depuis `/admin/utilisateurs`.
 
-Pour envoyer les liens de réinitialisation de mot de passe, définir `PLANARBRE_MAIL_ENABLED=true` et `PLANARBRE_MAIL_FROM`. Sans cette configuration, le lien est journalisé seulement en environnement de développement.
+Pour envoyer les liens de réinitialisation de mot de passe, définir `PLANTONS_MAIL_ENABLED=true` et `PLANTONS_MAIL_FROM`. Sans cette configuration, le lien est journalisé seulement en environnement de développement.
