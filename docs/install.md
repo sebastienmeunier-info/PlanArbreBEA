@@ -25,3 +25,5 @@ Avant la mise en service, adapter `config/config.php` :
 - `security.max_photos_per_proposal` : fixé à `3` pour la version 1.0.
 
 L'extension PHP `gd` doit être activée : elle convertit les trois photos éventuelles en WebP avant leur enregistrement.
+
+Les demandes peuvent contenir une adresse e-mail facultative. Elle est enregistrée afin de notifier le demandeur lors d'une validation, d'un rejet, d'une plantation ou d'un déplacement de localisation. L'envoi des e-mails sera activé avec le module d'administration.

@@ -27,6 +27,7 @@ final class ProposalController
             $species = trim((string) $request->input('species'));
             $objectives = array_values(array_filter((array) $request->input('objectives', []), 'is_string'));
             $author = mb_substr(trim((string) $request->input('author')), 0, 80);
+            $email = mb_substr(trim((string) $request->input('email')), 0, $this->app->config('security')['max_email_length']);
             $comment = mb_substr(trim((string) $request->input('comment')), 0, 1000);
 
             if (!in_array($species, $planting['allowed_species'], true)) {
@@ -34,6 +35,9 @@ final class ProposalController
             }
             if ($objectives === [] || array_diff($objectives, array_keys($planting['objectives'])) !== []) {
                 throw new InvalidArgumentException('Veuillez sélectionner au moins un objectif valide.');
+            }
+            if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+                throw new InvalidArgumentException('Veuillez renseigner une adresse e-mail valide.');
             }
 
             $store = new GeoJsonStore();
@@ -57,6 +61,7 @@ final class ProposalController
                     'status' => 'a_valider',
                     'created_at' => date(DATE_ATOM),
                     'author' => $author,
+                    'email' => $email === '' ? null : $email,
                     'species' => $species,
                     'objectives' => $objectives,
                     'comment' => $comment,
