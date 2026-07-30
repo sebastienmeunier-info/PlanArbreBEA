@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="public/css/app.css">
 </head>
 <body class="outdoor-mode">
-<header class="site-header"><a class="project-brand" href="/" aria-label="<?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?>"><img class="project-logo" src="<?= htmlspecialchars($application['logo_url'], ENT_QUOTES, 'UTF-8') ?>" alt=""><strong><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></strong></a><nav class="site-navigation" aria-label="Navigation principale"><?php if ($user): ?><span class="user-menu"><?= htmlspecialchars($user['first_name'], ENT_QUOTES, 'UTF-8') ?></span><?php if ($user['role'] === 'administrateur'): ?><a class="menu-button" href="/admin/utilisateurs">Utilisateurs</a><?php endif; ?><form class="logout-form" method="post" action="/deconnexion"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>"><button class="menu-button">Déconnexion</button></form><?php else: ?><a class="menu-button" href="/connexion">Connexion</a><a class="menu-button" href="/inscription">Inscription</a><?php endif; ?></nav></header>
+<?php require __DIR__ . '/partials/header.php'; ?>
 <main class="page-layout">
     <section class="intro"><h1>Proposer une plantation</h1><p>Objectif : <?= number_format((int) $planting['target_count'], 0, ',', ' ') ?> plantations — <?= (int) $statistics['proposed'] ?> plantations proposées, <?= (int) $statistics['validated'] ?> plantations validées, <?= (int) $statistics['planted'] ?> arbres plantés.</p></section>
     <section class="map-panel" aria-label="Choix de l'emplacement">

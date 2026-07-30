@@ -7,6 +7,8 @@ use PlanArbreBEA\Controllers\GeoJsonController;
 use PlanArbreBEA\Controllers\ProposalController;
 use PlanArbreBEA\Controllers\AuthController;
 use PlanArbreBEA\Controllers\AdminUserController;
+use PlanArbreBEA\Controllers\AccountController;
+use PlanArbreBEA\Controllers\AdminProposalController;
 
 return [
     ['GET', '/', [HomeController::class, 'index']],
@@ -26,5 +28,9 @@ return [
     ['GET', '/reinitialiser-mot-de-passe', [AuthController::class, 'resetForm']],
     ['POST', '/reinitialiser-mot-de-passe', [AuthController::class, 'reset']],
     ['GET', '/admin/utilisateurs', [AdminUserController::class, 'index']],
-    ['POST', '/admin/utilisateurs/promouvoir', [AdminUserController::class, 'promote']],
+    ['POST', '/admin/utilisateurs/role', [AdminUserController::class, 'changeRole']],
+    ['GET', '/admin/propositions', [AdminProposalController::class, 'index']],
+    ['POST', '/admin/propositions/modifier', [AdminProposalController::class, 'update']],
+    ['GET', '/mon-compte', [AccountController::class, 'index']],
+    ['POST', '/mon-compte', [AccountController::class, 'update']],
 ];

@@ -19,7 +19,11 @@ final class Request
     {
         $uri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
         $path = parse_url($uri, PHP_URL_PATH) ?: '/';
-        $scriptName = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
+        $script = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+        // The PHP development server reports the requested virtual path as
+        // SCRIPT_NAME for routes below an existing directory (for example /admin/…).
+        // Only a real PHP front controller may define an installation prefix.
+        $scriptName = str_ends_with($script, '.php') ? dirname($script) : '/';
 
         if ($scriptName !== '/' && $scriptName !== '.' && str_starts_with($path, $scriptName)) {
             $path = substr($path, strlen($scriptName)) ?: '/';

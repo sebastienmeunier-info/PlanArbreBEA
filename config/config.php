@@ -102,6 +102,8 @@ return [
         'session_key' => 'planarbre_user_id',
         'bootstrap_admin_email' => strtolower((string) (getenv('PLANARBRE_BOOTSTRAP_ADMIN_EMAIL') ?: '')),
         'administrator_emails' => ['contact@sebastienmeunier.info'],
+        'bootstrap_super_admin_email' => strtolower((string) (getenv('PLANARBRE_BOOTSTRAP_SUPER_ADMIN_EMAIL') ?: '')),
+        'roles' => ['contributeur', 'administrateur', 'super_administrateur'],
         'mail_enabled' => filter_var(getenv('PLANARBRE_MAIL_ENABLED') ?: false, FILTER_VALIDATE_BOOL),
         'mail_from' => getenv('PLANARBRE_MAIL_FROM') ?: 'noreply@example.org',
     ],

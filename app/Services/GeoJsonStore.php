@@ -49,4 +49,37 @@ final class GeoJsonStore
             fclose($handle);
         }
     }
+
+    /** @param array<string,mixed> $properties */
+    public function updateFeature(string $file, string $id, array $properties, ?array $coordinates = null): void
+    {
+        $handle = fopen($file, 'c+');
+        if ($handle === false || !flock($handle, LOCK_EX)) {
+            throw new RuntimeException('Impossible de verrouiller le fichier de données.');
+        }
+
+        try {
+            $content = stream_get_contents($handle);
+            $collection = $content === '' ? ['type' => 'FeatureCollection', 'features' => []] : json_decode($content, true);
+            if (!is_array($collection) || ($collection['type'] ?? null) !== 'FeatureCollection') {
+                throw new RuntimeException('Le fichier de propositions est invalide.');
+            }
+            $found = false;
+            foreach ($collection['features'] as &$feature) {
+                if (($feature['properties']['id'] ?? null) !== $id) { continue; }
+                $feature['properties'] = array_replace($feature['properties'] ?? [], $properties);
+                if ($coordinates !== null) { $feature['geometry'] = ['type' => 'Point', 'coordinates' => $coordinates]; }
+                $found = true;
+                break;
+            }
+            unset($feature);
+            if (!$found) { throw new RuntimeException('Proposition introuvable.'); }
+            rewind($handle);
+            ftruncate($handle, 0);
+            fwrite($handle, json_encode($collection, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
 }
