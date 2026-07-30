@@ -9,7 +9,9 @@
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
   let marker;
   let territory;
+  let municipalities;
   let toastTimer;
+  let locationRequest = 0;
 
   const setMessage = (text, kind = '') => { message.textContent = text; message.className = `form-message ${kind}`; };
   const showToast = (text, kind = '') => { clearTimeout(toastTimer); toast.textContent = text; toast.className = `toast ${kind}`; toast.hidden = false; toastTimer = window.setTimeout(() => { toast.hidden = true; }, 5000); };
@@ -20,6 +22,19 @@
     return { className: '', icon: '●' };
   };
   const proposalIcon = (status) => { const details = markerDetails(status); return L.divIcon({ className: '', html: `<span class="proposal-marker ${details.className}" aria-hidden="true">${details.icon}</span>`, iconSize: [42, 42], iconAnchor: [21, 21] }); };
+  const delegatedMunicipality = (longitude, latitude) => municipalities?.features?.find((feature) => window.turf && turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))?.properties?.nom || '';
+  const describeLocation = async (latitude, longitude, knownAddress = '') => {
+    const request = ++locationRequest;
+    let address = knownAddress;
+    const municipality = delegatedMunicipality(longitude, latitude);
+    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — recherche de l’adresse… — ${municipality || 'commune déléguée non identifiée'}`;
+    if (!address) {
+      try { const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`, { headers: { Accept: 'application/json' } }); const place = await response.json(); address = place.display_name || ''; } catch { address = ''; }
+    }
+    if (request !== locationRequest) return;
+    document.querySelector('#selected-address').value = address;
+    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${address || 'adresse non trouvée'} — ${municipality || 'commune déléguée non identifiée'}`;
+  };
   const setPosition = (latitude, longitude, address = '') => {
     const latLng = [latitude, longitude];
     if (territory && window.turf && !territory.features.some((feature) => turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))) {
@@ -30,8 +45,7 @@
     map.setView(latLng, Math.max(map.getZoom(), 16));
     document.querySelector('#latitude').value = latitude;
     document.querySelector('#longitude').value = longitude;
-    document.querySelector('#selected-address').value = address;
-    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+    describeLocation(latitude, longitude, address);
     setMessage('');
   };
 
@@ -41,9 +55,10 @@
     const layer = L.geoJSON(geojson, { style: { color: '#1f6b3b', weight: 2, fillOpacity: .08 } }).addTo(map);
     map.fitBounds(layer.getBounds(), { padding: [16, 16], maxZoom: config.zoom });
   }).catch(() => setMessage('La limite du territoire n’est pas disponible pour le moment.', 'error'));
+  fetch(config.municipalitiesUrl).then((response) => response.ok ? response.json() : null).then((geojson) => { municipalities = geojson; });
   fetch(config.proposalsUrl).then((response) => response.ok ? response.json() : null).then((geojson) => {
     if (!geojson?.features?.length) return;
-    L.geoJSON(geojson, { pointToLayer: (feature, latLng) => L.marker(latLng, { icon: proposalIcon(feature.properties?.status) }), onEachFeature: (feature, layer) => { const properties = feature.properties || {}; const status = config.statusLabels[properties.status] || properties.status || 'Proposée'; layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${status}`); } }).addTo(map);
+    L.geoJSON(geojson, { pointToLayer: (feature, latLng) => L.marker(latLng, { icon: proposalIcon(feature.properties?.status) }), onEachFeature: (feature, layer) => { const properties = feature.properties || {}; const objectives = (properties.objectives || []).map((objective) => config.objectives[objective]?.label || objective).join(', '); layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${objectives || 'Objectifs non renseignés'}`); } }).addTo(map);
   });
 
   map.on('click', (event) => setPosition(event.latlng.lat, event.latlng.lng));
