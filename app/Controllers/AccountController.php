@@ -23,7 +23,7 @@ final class AccountController
 
         $isAdministrator = in_array($user['role'], ['administrateur', 'super_administrateur'], true);
         $tab = (string) $request->query('onglet', 'profil');
-        $allowedTabs = $isAdministrator ? ['profil', 'contributions', 'propositions', 'utilisateurs'] : ['profil', 'contributions'];
+        $allowedTabs = $isAdministrator ? ['profil', 'plantations', 'utilisateurs'] : ['profil', 'plantations'];
         if (!in_array($tab, $allowedTabs, true)) { $tab = 'profil'; }
 
         $store = new GeoJsonStore();
@@ -41,7 +41,8 @@ final class AccountController
         Response::html($this->app->view()->render('account/index', [
             'application' => $this->app->config('app'), 'csrfToken' => $auth->csrfToken(), 'user' => $user,
             'tab' => $tab, 'isAdministrator' => $isAdministrator, 'counts' => $counts, 'features' => $features,
-            'adminFeatures' => $allFeatures, 'statuses' => $this->app->config('proposals')['status_labels'],
+            'displayFeatures' => $isAdministrator ? $allFeatures : $features, 'statuses' => $this->app->config('proposals')['status_labels'],
+            'planting' => $this->app->config('planting'),
             'users' => $isAdministrator ? (new UserRepository($this->app->config('auth')['users_file']))->all() : [],
         ]));
     }

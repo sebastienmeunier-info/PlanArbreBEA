@@ -22,7 +22,7 @@ final class AdminProposalController
     {
         $auth = $this->auth();
         $this->guard($auth);
-        header('Location: /mon-compte?onglet=propositions', true, 303);
+        header('Location: /mon-compte?onglet=plantations', true, 303);
         exit;
     }
 
@@ -41,6 +41,12 @@ final class AdminProposalController
             }
             $longitude = $this->coordinate($request->input('longitude'));
             $latitude = $this->coordinate($request->input('latitude'));
+            $planting = $this->app->config('planting');
+            $species = trim((string) $request->input('species'));
+            $objectives = array_values(array_unique(array_filter((array) $request->input('objectives', []), 'is_string')));
+            if (!in_array($species, $planting['allowed_species'], true)) { throw new InvalidArgumentException('Essence invalide.'); }
+            if ($objectives === [] || array_diff($objectives, array_keys($planting['objectives'])) !== []) { throw new InvalidArgumentException('Objectifs invalides.'); }
+            if (count($objectives) > $planting['max_objectives_per_proposal']) { throw new InvalidArgumentException('Trois objectifs maximum sont autorisés.'); }
             $store = new GeoJsonStore();
             $sources = $this->app->config('data_sources');
             $territory = $store->read($sources['territory']['file']);
@@ -51,11 +57,13 @@ final class AdminProposalController
             $municipalities = $store->read($sources['delegated_municipalities']['file']);
             $store->updateFeature($sources['proposals']['file'], (string) $request->input('id'), [
                 'status' => $status,
+                'species' => $species,
+                'objectives' => $objectives,
                 'delegated_municipality' => $territoryService->municipality($municipalities, $longitude, $latitude),
                 'updated_at' => date(DATE_ATOM),
                 'updated_by' => $current['id'],
             ], [$longitude, $latitude]);
-            header('Location: /mon-compte?onglet=propositions', true, 303);
+            header('Location: /mon-compte?onglet=plantations', true, 303);
             exit;
         } catch (InvalidArgumentException|RuntimeException $exception) {
             Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422);
