@@ -45,7 +45,11 @@ final class AccountController
             'tab' => $tab, 'isAdministrator' => $isAdministrator, 'counts' => $counts, 'features' => $features,
             'displayFeatures' => $displayFeatures, 'statuses' => $this->app->config('proposals')['status_labels'],
             'planting' => $this->app->config('planting'),
-            'notice' => $request->query('invite') === 'sent' ? 'Le compte a été créé et l’invitation a été envoyée.' : null,
+            'notice' => match ($request->query('invite')) {
+                'sent' => 'Le compte a été créé et l’invitation a été envoyée.',
+                'failed' => 'Le compte est créé, mais l’invitation n’a pas pu être envoyée. Vérifiez la configuration SMTP puis renvoyez l’invitation.',
+                default => null,
+            },
             'users' => $isAdministrator ? (new UserRepository($this->app->config('auth')['users_file']))->all() : [],
         ]));
     }

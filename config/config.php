@@ -107,6 +107,17 @@ return [
         'mail_enabled' => filter_var(getenv('PLANARBRE_MAIL_ENABLED') ?: false, FILTER_VALIDATE_BOOL),
         'mail_from' => getenv('PLANARBRE_MAIL_FROM') ?: 'noreply@example.org',
     ],
+    'smtp' => [
+        // Identifiants sensibles : définir PLANARBRE_SMTP_PASSWORD dans
+        // l’hébergement, jamais dans le dépôt Git.
+        'host' => getenv('PLANARBRE_SMTP_HOST') ?: 'ssl0.ovh.net',
+        'port' => (int) (getenv('PLANARBRE_SMTP_PORT') ?: 465),
+        'encryption' => getenv('PLANARBRE_SMTP_ENCRYPTION') ?: 'ssl',
+        'username' => getenv('PLANARBRE_SMTP_USERNAME') ?: 'contact@sebastienmeunier.info',
+        'password' => getenv('PLANARBRE_SMTP_PASSWORD') ?: '',
+        'from_email' => getenv('PLANARBRE_SMTP_FROM_EMAIL') ?: 'contact@sebastienmeunier.info',
+        'from_name' => getenv('PLANARBRE_SMTP_FROM_NAME') ?: 'Plan Arbre Baugé en Anjou',
+    ],
     'map' => [
         'center' => $territoryCenter,
         'default_zoom' => 12,

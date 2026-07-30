@@ -10,6 +10,8 @@ use PlanArbreBEA\Core\Request;
 use PlanArbreBEA\Core\Response;
 use PlanArbreBEA\Repositories\UserRepository;
 use PlanArbreBEA\Services\AuthService;
+use PlanArbreBEA\Services\SmtpMailer;
+use RuntimeException;
 
 final class AdminUserController
 {
@@ -33,9 +35,12 @@ final class AdminUserController
             $email = mb_strtolower(trim((string) $request->input('email')));
             if ($firstName === '' || $lastName === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) { throw new InvalidArgumentException('Nom, prénom et e-mail valides sont requis.'); }
             $repository = $this->repository();
-            if ($repository->findByEmail($email) !== null) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
-            $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'password_hash' => null, 'role' => 'contributeur', 'created_at' => date(DATE_ATOM)];
-            $repository->create($user);
+            $user = $repository->findByEmail($email);
+            if ($user !== null && $user['password_hash'] !== null) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
+            if ($user === null) {
+                $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'password_hash' => null, 'role' => 'contributeur', 'created_at' => date(DATE_ATOM)];
+                $repository->create($user);
+            }
             $token = bin2hex(random_bytes(32));
             $this->storeInvitationToken($email, $token);
             $this->sendInvitation($user, $token);
@@ -43,6 +48,10 @@ final class AdminUserController
             exit;
         } catch (InvalidArgumentException $exception) {
             Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422);
+        } catch (RuntimeException $exception) {
+            $this->app->logger()->warning($exception->getMessage());
+            header('Location: /mon-compte?onglet=utilisateurs&invite=failed', true, 303);
+            exit;
         }
     }
 
@@ -67,14 +76,11 @@ final class AdminUserController
 
     private function sendInvitation(array $user, string $token): void
     {
-        $auth = $this->app->config('auth');
         $baseUrl = rtrim((string) $this->app->config('app')['base_url'], '/');
         $url = $baseUrl . '/reinitialiser-mot-de-passe?token=' . rawurlencode($token);
         $subject = 'Activation de votre compte';
         $message = "Bonjour {$user['first_name']},\n\nVotre compte a été créé. Définissez votre mot de passe en suivant ce lien, valable 7 jours :\n{$url}\n";
-        if (!@mail($user['email'], $subject, $message, 'From: ' . $auth['mail_from'])) {
-            $this->app->logger()->warning('Envoi de l’invitation impossible.', ['email' => $user['email']]);
-        }
+        (new SmtpMailer($this->app->config('smtp')))->send($user['email'], $subject, $message);
     }
 
     private function mayChangeRole(string $actor, string $target, string $next): bool
