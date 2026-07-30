@@ -32,6 +32,23 @@ final class AccountController
         $allFeatures = $store->read($sources[$isDonationTab ? 'donations' : 'proposals']['file'])['features'];
         $features = array_values(array_filter($allFeatures, static fn(array $feature): bool => ($feature['properties']['email'] ?? '') === $user['email']));
         $displayFeatures = $isAdministrator ? $allFeatures : $features;
+        if ($isAdministrator) {
+            $usersByEmail = [];
+            foreach ((new UserRepository($this->app->config('auth')['users_file']))->all() as $contributor) {
+                $usersByEmail[mb_strtolower((string) $contributor['email'])] = $contributor;
+            }
+            foreach ($displayFeatures as &$feature) {
+                $properties = $feature['properties'] ?? [];
+                $contributor = $usersByEmail[mb_strtolower((string) ($properties['email'] ?? ''))] ?? [];
+                $feature['properties']['contributor'] = [
+                    'name' => trim((string) ($contributor['first_name'] ?? '') . ' ' . (string) ($contributor['last_name'] ?? '')) ?: (string) ($properties['author'] ?? ''),
+                    'email' => (string) ($contributor['email'] ?? $properties['email'] ?? ''),
+                    'address' => (string) ($contributor['address'] ?? ''),
+                    'phone' => (string) ($contributor['phone'] ?? ''),
+                ];
+            }
+            unset($feature);
+        }
         $counts = ['proposed' => 0, 'validated' => 0, 'rejected' => 0, 'planted' => 0];
         foreach ($displayFeatures as $feature) {
             $status = $feature['properties']['status'] ?? 'a_valider';
