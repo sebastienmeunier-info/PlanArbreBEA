@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PlanArbreBEA\Services;
+namespace Plantons\Services;
 
 final class TerritoryService
 {

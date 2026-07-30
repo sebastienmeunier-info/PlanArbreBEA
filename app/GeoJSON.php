@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * ------------------------------------------------------------
- * PlanArbreBEA
+ * Plantons
  * Gestion des fichiers GeoJSON
  * Version : 1.0.0
  * Licence : GNU AGPL v3

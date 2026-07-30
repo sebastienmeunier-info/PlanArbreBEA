@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PlanArbreBEA\Repositories;
+namespace Plantons\Repositories;
 
 use RuntimeException;
 

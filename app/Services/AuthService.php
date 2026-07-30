@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace PlanArbreBEA\Services;
+namespace Plantons\Services;
 
-use PlanArbreBEA\Repositories\UserRepository;
+use Plantons\Repositories\UserRepository;
 
 final class AuthService
 {

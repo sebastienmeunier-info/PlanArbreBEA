@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use PlanArbreBEA\Controllers\HomeController;
-use PlanArbreBEA\Controllers\GeoJsonController;
-use PlanArbreBEA\Controllers\ProposalController;
-use PlanArbreBEA\Controllers\AuthController;
-use PlanArbreBEA\Controllers\AdminUserController;
-use PlanArbreBEA\Controllers\AccountController;
-use PlanArbreBEA\Controllers\AdminProposalController;
+use Plantons\Controllers\HomeController;
+use Plantons\Controllers\GeoJsonController;
+use Plantons\Controllers\ProposalController;
+use Plantons\Controllers\AuthController;
+use Plantons\Controllers\AdminUserController;
+use Plantons\Controllers\AccountController;
+use Plantons\Controllers\AdminProposalController;
 
 return [
     ['GET', '/', [HomeController::class, 'index']],

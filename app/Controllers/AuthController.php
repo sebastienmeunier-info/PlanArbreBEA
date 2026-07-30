@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace PlanArbreBEA\Controllers;
+namespace Plantons\Controllers;
 
 use InvalidArgumentException;
-use PlanArbreBEA\Core\Application;
-use PlanArbreBEA\Core\Request;
-use PlanArbreBEA\Core\Response;
-use PlanArbreBEA\Repositories\UserRepository;
-use PlanArbreBEA\Services\AuthService;
+use Plantons\Core\Application;
+use Plantons\Core\Request;
+use Plantons\Core\Response;
+use Plantons\Repositories\UserRepository;
+use Plantons\Services\AuthService;
 
 final class AuthController
 {

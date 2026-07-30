@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const config = window.PlanArbreConfig;
+  const config = window.PlantonsConfig;
   const form = document.querySelector('#proposal-form');
   const locationOutput = document.querySelector('#selected-location');
   const message = document.querySelector('#form-message');

@@ -1,12 +1,12 @@
-# PlanArbreBEA
+# Plantons
 
-PlanArbreBEA est un logiciel libre de gestion du patrimoine arboré et des propositions citoyennes de plantation. Il est conçu pour les collectivités, avec une installation simple sur hébergement PHP et un stockage pérenne en JSON/GeoJSON.
+Plantons est un logiciel libre de gestion du patrimoine arboré et des propositions citoyennes de plantation. Il est conçu pour les collectivités, avec une installation simple sur hébergement PHP et un stockage pérenne en JSON/GeoJSON.
 
 ## État du projet
 
 Le Sprint 0 installe le socle technique : front controller, routage, configuration, gestion d'erreurs, journalisation et première page publique. Les modules cartographiques, formulaire citoyen, administration et API seront ajoutés dans les sprints suivants.
 
-Le Sprint 1 ajoute la carte interactive et le dépôt sécurisé des premières propositions citoyennes. La limite territoriale de Baugé-en-Anjou et ses communes déléguées sont fournies dans `data/territoire.geojson` et `data/communes-deleguees.geojson`.
+Le Sprint 1 ajoute la carte interactive et le dépôt sécurisé des premières propositions citoyennes. La limite territoriale et ses communes déléguées sont fournies dans `data/territoire.geojson` et `data/communes-deleguees.geojson`.
 
 ## Prérequis
 

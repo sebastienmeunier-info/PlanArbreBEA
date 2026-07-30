@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-use PlanArbreBEA\Core\Logger;
+use Plantons\Core\Logger;
 
 $root = dirname(__DIR__);
 $environment = getenv('PLANARBRE_ENV') ?: 'development';
+$projectName = getenv('PLANTONS_PROJECT_NAME') ?: 'Plantons';
 $territoryCenter = [47.5310, -0.1020];
 
 return [
     'app' => [
-        'name' => getenv('PLANARBRE_PROJECT_NAME') ?: 'Plan Arbre Baugé en Anjou',
+        'name' => $projectName,
         'logo_url' => getenv('PLANARBRE_PROJECT_LOGO_URL') ?: 'https://www.sebastienmeunier.info/wp-content/uploads/2024/12/sebmeunier-300x300.png',
         'environment' => $environment,
         'debug' => filter_var(getenv('PLANARBRE_DEBUG') ?: $environment !== 'production', FILTER_VALIDATE_BOOL),
@@ -158,7 +159,7 @@ return [
         'username' => getenv('PLANARBRE_SMTP_USERNAME') ?: 'contact@sebastienmeunier.info',
         'password' => getenv('PLANARBRE_SMTP_PASSWORD') ?: '',
         'from_email' => getenv('PLANARBRE_SMTP_FROM_EMAIL') ?: 'contact@sebastienmeunier.info',
-        'from_name' => getenv('PLANARBRE_SMTP_FROM_NAME') ?: 'Plan Arbre Baugé en Anjou',
+        'from_name' => getenv('PLANTONS_SMTP_FROM_NAME') ?: $projectName,
     ],
     'map' => [
         'center' => $territoryCenter,

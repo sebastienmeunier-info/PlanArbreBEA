@@ -1,13 +1,13 @@
 # Installation
 
-PlanArbreBEA nécessite PHP 8.2 ou une version ultérieure. Déposer le contenu du dépôt dans l'espace web, en veillant à ce que PHP puisse écrire dans `data/`, `logs/` et `uploads/`.
+Plantons nécessite PHP 8.2 ou une version ultérieure. Déposer le contenu du dépôt dans l'espace web, en veillant à ce que PHP puisse écrire dans `data/`, `logs/` et `uploads/`.
 
 Pour une installation en production, définir :
 
 ```text
 PLANARBRE_ENV=production
 PLANARBRE_DEBUG=false
-PLANARBRE_BASE_URL=https://exemple.fr/planarbrebea
+PLANARBRE_BASE_URL=https://exemple.fr/plantons
 PLANARBRE_TIMEZONE=Europe/Paris
 ```
 

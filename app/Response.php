@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * ------------------------------------------------------------
- * PlanArbreBEA
+ * Plantons
  * Réponses HTTP / JSON
  * Version : 1.0.0
  * Licence : GNU AGPL v3

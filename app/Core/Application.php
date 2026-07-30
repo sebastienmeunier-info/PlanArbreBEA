@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PlanArbreBEA\Core;
+namespace Plantons\Core;
 
 final class Application
 {

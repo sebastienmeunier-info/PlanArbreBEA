@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace PlanArbreBEA\Controllers;
+namespace Plantons\Controllers;
 
 use InvalidArgumentException;
-use PlanArbreBEA\Core\Application;
-use PlanArbreBEA\Core\Request;
-use PlanArbreBEA\Core\Response;
-use PlanArbreBEA\Services\GeoJsonStore;
-use PlanArbreBEA\Services\PhotoService;
-use PlanArbreBEA\Services\TerritoryService;
+use Plantons\Core\Application;
+use Plantons\Core\Request;
+use Plantons\Core\Response;
+use Plantons\Services\GeoJsonStore;
+use Plantons\Services\PhotoService;
+use Plantons\Services\TerritoryService;
 use RuntimeException;
 
 final class ProposalController

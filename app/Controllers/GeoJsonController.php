@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace PlanArbreBEA\Controllers;
+namespace Plantons\Controllers;
 
-use PlanArbreBEA\Core\Application;
-use PlanArbreBEA\Core\Request;
-use PlanArbreBEA\Core\Response;
-use PlanArbreBEA\Services\GeoJsonStore;
+use Plantons\Core\Application;
+use Plantons\Core\Request;
+use Plantons\Core\Response;
+use Plantons\Services\GeoJsonStore;
 
 final class GeoJsonController
 {
