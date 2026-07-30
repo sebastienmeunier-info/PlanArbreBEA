@@ -3,11 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0d2115">
     <title><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="public/css/app.css">
 </head>
-<body>
+<body class="outdoor-mode">
 <header class="site-header"><strong><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></strong><span><?= htmlspecialchars($territory['name'], ENT_QUOTES, 'UTF-8') ?></span></header>
 <main class="page-layout">
     <section class="intro"><h1>Proposer un arbre</h1><p>Choisissez un emplacement sur la carte, puis décrivez votre proposition.</p></section>
