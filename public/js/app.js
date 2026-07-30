@@ -18,10 +18,11 @@
   const setMessage = (text, kind = '') => { message.textContent = text; message.className = `form-message ${kind}`; };
   const showToast = (text, kind = '') => { clearTimeout(toastTimer); toast.textContent = text; toast.className = `toast ${kind}`; toast.hidden = false; toastTimer = window.setTimeout(() => { toast.hidden = true; }, 5000); };
   const markerDetails = (status = 'a_valider') => {
-    if (['refusee', 'rejetee'].includes(status)) return { className: 'proposal-marker--rejected', icon: '●' };
-    if (status === 'validee') return { className: 'proposal-marker--validated', icon: '●' };
-    if (['arbre_plante', 'realisee'].includes(status)) return { className: 'proposal-marker--planted', icon: '🌳' };
-    return { className: '', icon: '●' };
+    const cross = config.markerShape === 'cross';
+    if (['refusee', 'rejetee'].includes(status)) return { className: `proposal-marker--rejected${cross ? ' proposal-marker--cross' : ''}`, icon: cross ? '+' : '●' };
+    if (status === 'validee') return { className: `proposal-marker--validated${cross ? ' proposal-marker--cross' : ''}`, icon: cross ? '+' : '●' };
+    if (['arbre_plante', 'realisee'].includes(status)) return { className: `proposal-marker--planted${cross ? ' proposal-marker--cross' : ''}`, icon: cross ? '+' : '🌳' };
+    return { className: cross ? 'proposal-marker--cross' : '', icon: cross ? '+' : '●' };
   };
   const proposalIcon = (status) => { const details = markerDetails(status); return L.divIcon({ className: '', html: `<span class="proposal-marker ${details.className}" aria-hidden="true">${details.icon}</span>`, iconSize: [42, 42], iconAnchor: [21, 21] }); };
   const renderProposal = (feature) => L.geoJSON(feature, { pointToLayer: (item, latLng) => L.marker(latLng, { icon: proposalIcon(item.properties?.status) }), onEachFeature: (item, layer) => { const properties = item.properties || {}; const objectives = (properties.objectives || []).map((objective) => config.objectives[objective]?.label || objective).join(', '); layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${objectives || 'Objectifs non renseignés'}`); } }).addTo(map);
