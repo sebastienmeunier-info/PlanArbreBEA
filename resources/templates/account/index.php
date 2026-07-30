@@ -4,7 +4,6 @@
 <title>Admin · <?= htmlspecialchars($application['name']) ?></title><body class="outdoor-mode">
 <?php require __DIR__ . '/../partials/header.php'; ?>
 <main class="auth-page account-page">
-  <h1>Admin</h1>
   <nav class="account-tabs" aria-label="Sections de l’administration">
     <a class="<?= $tab === 'profil' ? 'active' : '' ?>" href="/mon-compte?onglet=profil">Mon profil</a>
     <a class="<?= $tab === 'contributions' ? 'active' : '' ?>" href="/mon-compte?onglet=contributions">Mes contributions</a>
@@ -13,7 +12,7 @@
 
   <?php if ($tab === 'profil'): ?>
     <h2>Informations personnelles</h2><p>Rôle : <?= htmlspecialchars(str_replace('_', ' ', $user['role'])) ?></p>
-    <form method="post" action="/mon-compte"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>"><label>Prénom<input name="first_name" value="<?= htmlspecialchars($user['first_name']) ?>" required></label><label>Nom<input name="last_name" value="<?= htmlspecialchars($user['last_name']) ?>" required></label><label>E-mail<input name="email" type="email" value="<?= htmlspecialchars($user['email']) ?>" required></label><button>Enregistrer</button></form>
+    <form method="post" action="/mon-compte"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>"><label>Prénom<input name="first_name" value="<?= htmlspecialchars($user['first_name']) ?>" required></label><label>Nom<input name="last_name" value="<?= htmlspecialchars($user['last_name']) ?>" required></label><label>E-mail<input name="email" type="email" value="<?= htmlspecialchars($user['email']) ?>" required></label><label>Date d’inscription<input value="<?= htmlspecialchars((new DateTimeImmutable($user['created_at']))->format('d/m/Y')) ?>" readonly></label><label>Nouveau mot de passe <small>Laisser vide pour ne pas le modifier · 12 caractères minimum</small><input name="password" type="password" minlength="12" autocomplete="new-password"></label><button>Enregistrer</button></form>
   <?php elseif ($tab === 'contributions'): ?>
     <h2>Mes contributions</h2><div class="contribution-counts"><span><?= $counts['proposed'] ?> plantations proposées</span><span><?= $counts['validated'] ?> plantations validées</span><span><?= count($features) ?> arbres proposés</span><span><?= $counts['planted'] ?> arbres plantés</span></div><div id="my-contributions-map" class="account-map"></div>
   <?php elseif ($tab === 'propositions'): ?>
