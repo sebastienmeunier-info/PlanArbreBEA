@@ -27,3 +27,9 @@ Avant la mise en service, adapter `config/config.php` :
 L'extension PHP `gd` doit être activée : elle convertit les trois photos éventuelles en WebP avant leur enregistrement.
 
 Les demandes peuvent contenir une adresse e-mail facultative. Elle est enregistrée afin de notifier le demandeur lors d'une validation, d'un rejet, d'une plantation ou d'un déplacement de localisation. L'envoi des e-mails sera activé avec le module d'administration.
+
+## Comptes et administration
+
+Chaque inscription crée un compte `contributeur`. Pour créer le premier administrateur, définir `PLANARBRE_BOOTSTRAP_ADMIN_EMAIL` avec l'adresse e-mail de ce compte avant son inscription. Un administrateur peut ensuite promouvoir les contributeurs depuis `/admin/utilisateurs`.
+
+Pour envoyer les liens de réinitialisation de mot de passe, définir `PLANARBRE_MAIL_ENABLED=true` et `PLANARBRE_MAIL_FROM`. Sans cette configuration, le lien est journalisé seulement en environnement de développement.

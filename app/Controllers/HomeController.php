@@ -8,6 +8,8 @@ use PlanArbreBEA\Core\Application;
 use PlanArbreBEA\Core\Request;
 use PlanArbreBEA\Core\Response;
 use PlanArbreBEA\Services\GeoJsonStore;
+use PlanArbreBEA\Services\AuthService;
+use PlanArbreBEA\Repositories\UserRepository;
 
 final class HomeController
 {
@@ -15,10 +17,8 @@ final class HomeController
 
     public function index(Request $request): never
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
+        $auth = new AuthService(new UserRepository($this->app->config('auth')['users_file']), $this->app->config('auth'));
+        $user = $auth->currentUser();
         $planting = $this->app->config('planting');
         $proposalFeatures = (new GeoJsonStore())->read($this->app->config('data_sources')['proposals']['file'])['features'];
         $statistics = ['proposed' => 0, 'validated' => 0, 'planted' => 0];
@@ -38,7 +38,8 @@ final class HomeController
             'map' => $this->app->config('map'),
             'proposals' => $this->app->config('proposals'),
             'dataSources' => $this->app->config('data_sources'),
-            'csrfToken' => $_SESSION['csrf_token'],
+            'csrfToken' => $auth->csrfToken(),
+            'user' => $user,
         ]));
     }
 
