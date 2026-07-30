@@ -29,6 +29,7 @@ return [
     ['POST', '/reinitialiser-mot-de-passe', [AuthController::class, 'reset']],
     ['GET', '/admin/utilisateurs', [AdminUserController::class, 'index']],
     ['POST', '/admin/utilisateurs/role', [AdminUserController::class, 'changeRole']],
+    ['POST', '/admin/utilisateurs/creer', [AdminUserController::class, 'create']],
     ['GET', '/admin/propositions', [AdminProposalController::class, 'index']],
     ['POST', '/admin/propositions/modifier', [AdminProposalController::class, 'update']],
     ['GET', '/mon-compte', [AccountController::class, 'index']],

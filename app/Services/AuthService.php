@@ -20,7 +20,7 @@ final class AuthService
     public function login(string $email, string $password): ?array
     {
         $user = $this->users->findByEmail($email);
-        if ($user === null || !password_verify($password, $user['password_hash'])) { return null; }
+        if ($user === null || !is_string($user['password_hash'] ?? null) || !password_verify($password, $user['password_hash'])) { return null; }
         $this->startSession(); session_regenerate_id(true); $_SESSION[$this->config['session_key']] = $user['id'];
         return $user;
     }

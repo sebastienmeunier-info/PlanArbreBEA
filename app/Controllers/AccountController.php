@@ -45,6 +45,7 @@ final class AccountController
             'tab' => $tab, 'isAdministrator' => $isAdministrator, 'counts' => $counts, 'features' => $features,
             'displayFeatures' => $displayFeatures, 'statuses' => $this->app->config('proposals')['status_labels'],
             'planting' => $this->app->config('planting'),
+            'notice' => $request->query('invite') === 'sent' ? 'Le compte a été créé et l’invitation a été envoyée.' : null,
             'users' => $isAdministrator ? (new UserRepository($this->app->config('auth')['users_file']))->all() : [],
         ]));
     }
