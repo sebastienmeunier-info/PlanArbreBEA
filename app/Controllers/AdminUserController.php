@@ -34,11 +34,12 @@ final class AdminUserController
             $lastName = trim((string) $request->input('last_name'));
             $email = mb_strtolower(trim((string) $request->input('email')));
             if ($firstName === '' || $lastName === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) { throw new InvalidArgumentException('Nom, prénom et e-mail valides sont requis.'); }
+            $role = $this->requestedRole($current = $this->guard($auth), 'contributeur');
             $repository = $this->repository();
             $user = $repository->findByEmail($email);
             if ($user !== null && $user['password_hash'] !== null) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
             if ($user === null) {
-                $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'password_hash' => null, 'role' => 'contributeur', 'created_at' => date(DATE_ATOM)];
+                $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'password_hash' => null, 'role' => $role, 'created_at' => date(DATE_ATOM)];
                 $repository->create($user);
             }
             $token = bin2hex(random_bytes(32));
@@ -65,6 +66,23 @@ final class AdminUserController
         header('Location: /mon-compte?onglet=utilisateurs', true, 303); exit;
     }
 
+    public function updateProfile(Request $request): never
+    {
+        try {
+            $auth = $this->auth(); $current = $this->guard($auth);
+            if (!$auth->verifyCsrf((string) $request->input('csrf_token'))) { Response::html('Session expirée.', 403); }
+            $repository = $this->repository(); $target = $repository->findById((string) $request->input('user_id'));
+            $firstName = trim((string) $request->input('first_name')); $lastName = trim((string) $request->input('last_name')); $email = mb_strtolower(trim((string) $request->input('email')));
+            if ($target === null || $firstName === '' || $lastName === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) { throw new InvalidArgumentException('Informations utilisateur invalides.'); }
+            $existing = $repository->findByEmail($email);
+            if ($existing !== null && $existing['id'] !== $target['id']) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
+            $role = $this->requestedRole($current, $target['role']);
+            if (!$this->mayEditRole($current['role'], $target['role'], $role)) { Response::html('Cette modification de rôle n’est pas autorisée.', 403); }
+            $repository->update($target['id'], ['first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'role' => $role]);
+            header('Location: /mon-compte?onglet=utilisateurs', true, 303); exit;
+        } catch (InvalidArgumentException $exception) { Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422); }
+    }
+
     private function storeInvitationToken(string $email, string $token): void
     {
         $file = $this->app->config('auth')['password_resets_file'];
@@ -88,6 +106,21 @@ final class AdminUserController
         if ($target === 'super_administrateur') { return false; }
         if ($actor === 'administrateur') { return $target === 'contributeur' && $next === 'administrateur'; }
         return $actor === 'super_administrateur' && $target === 'administrateur' && in_array($next, ['contributeur', 'super_administrateur'], true);
+    }
+
+    private function mayEditRole(string $actor, string $target, string $next): bool
+    {
+        if ($target === 'super_administrateur') { return $actor === 'super_administrateur' && $next === 'super_administrateur'; }
+        if ($actor === 'administrateur') { return in_array($target, ['contributeur', 'administrateur'], true) && in_array($next, ['contributeur', 'administrateur'], true); }
+        return $actor === 'super_administrateur' && !( $target === 'contributeur' && $next === 'super_administrateur');
+    }
+
+    private function requestedRole(array $current, string $fallback): string
+    {
+        $role = (string) ($_POST['role'] ?? '');
+        if ($current['role'] === 'administrateur') { return $role === 'administrateur' ? 'administrateur' : 'contributeur'; }
+        if ($role === '') { return $fallback; }
+        return in_array($role, ['contributeur', 'administrateur', 'super_administrateur'], true) ? $role : $fallback;
     }
 
     private function guard(AuthService $auth): array
