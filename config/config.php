@@ -84,6 +84,16 @@ return [
         'status_changes' => true,
         'events' => ['validee', 'rejetee', 'arbre_plante', 'localisation_deplacee'],
     ],
+    'proposals' => [
+        'status_labels' => [
+            'a_valider' => 'Proposée',
+            'refusee' => 'Refusée',
+            'rejetee' => 'Refusée',
+            'validee' => 'Validée',
+            'arbre_plante' => 'Arbre planté',
+            'realisee' => 'Arbre planté',
+        ],
+    ],
     'map' => [
         'center' => $territoryCenter,
         'default_zoom' => 12,

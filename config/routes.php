@@ -12,5 +12,6 @@ return [
     ['GET', '/api/data/territoire', [GeoJsonController::class, 'territory']],
     ['GET', '/api/data/communes-deleguees', [GeoJsonController::class, 'municipalities']],
     ['GET', '/api/data/arbres', [GeoJsonController::class, 'trees']],
+    ['GET', '/api/data/propositions', [GeoJsonController::class, 'proposals']],
     ['POST', '/api/propositions', [ProposalController::class, 'create']],
 ];

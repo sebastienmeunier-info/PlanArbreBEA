@@ -13,13 +13,20 @@
 
   const setMessage = (text, kind = '') => { message.textContent = text; message.className = `form-message ${kind}`; };
   const showToast = (text, kind = '') => { clearTimeout(toastTimer); toast.textContent = text; toast.className = `toast ${kind}`; toast.hidden = false; toastTimer = window.setTimeout(() => { toast.hidden = true; }, 5000); };
+  const markerDetails = (status = 'a_valider') => {
+    if (['refusee', 'rejetee'].includes(status)) return { className: 'proposal-marker--rejected', icon: '●' };
+    if (status === 'validee') return { className: 'proposal-marker--validated', icon: '●' };
+    if (['arbre_plante', 'realisee'].includes(status)) return { className: 'proposal-marker--planted', icon: '🌳' };
+    return { className: '', icon: '●' };
+  };
+  const proposalIcon = (status) => { const details = markerDetails(status); return L.divIcon({ className: '', html: `<span class="proposal-marker ${details.className}" aria-hidden="true">${details.icon}</span>`, iconSize: [42, 42], iconAnchor: [21, 21] }); };
   const setPosition = (latitude, longitude, address = '') => {
     const latLng = [latitude, longitude];
     if (territory && window.turf && !territory.features.some((feature) => turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))) {
       setMessage('Ce point est situé hors du territoire autorisé.', 'error');
       return;
     }
-    marker ? marker.setLatLng(latLng) : (marker = L.marker(latLng, { icon: L.divIcon({ className: '', html: '<span class="proposal-marker" aria-hidden="true">●</span>', iconSize: [42, 42], iconAnchor: [21, 21] }) }).addTo(map));
+    marker ? marker.setLatLng(latLng) : (marker = L.marker(latLng, { icon: proposalIcon('a_valider') }).addTo(map));
     map.setView(latLng, Math.max(map.getZoom(), 16));
     document.querySelector('#latitude').value = latitude;
     document.querySelector('#longitude').value = longitude;
@@ -34,6 +41,10 @@
     const layer = L.geoJSON(geojson, { style: { color: '#1f6b3b', weight: 2, fillOpacity: .08 } }).addTo(map);
     map.fitBounds(layer.getBounds(), { padding: [16, 16], maxZoom: config.zoom });
   }).catch(() => setMessage('La limite du territoire n’est pas disponible pour le moment.', 'error'));
+  fetch(config.proposalsUrl).then((response) => response.ok ? response.json() : null).then((geojson) => {
+    if (!geojson?.features?.length) return;
+    L.geoJSON(geojson, { pointToLayer: (feature, latLng) => L.marker(latLng, { icon: proposalIcon(feature.properties?.status) }), onEachFeature: (feature, layer) => { const properties = feature.properties || {}; const status = config.statusLabels[properties.status] || properties.status || 'Proposée'; layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${status}`); } }).addTo(map);
+  });
 
   map.on('click', (event) => setPosition(event.latlng.lat, event.latlng.lng));
   document.querySelector('#locate-me').addEventListener('click', () => {

@@ -25,6 +25,7 @@ final class HomeController
             'planting' => $this->app->config('planting'),
             'security' => $this->app->config('security'),
             'map' => $this->app->config('map'),
+            'proposals' => $this->app->config('proposals'),
             'dataSources' => $this->app->config('data_sources'),
             'csrfToken' => $_SESSION['csrf_token'],
         ]));
