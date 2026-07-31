@@ -46,6 +46,7 @@ final class HomeController
             'planting' => $planting,
             'statistics' => $statistics,
             'security' => $this->app->config('security'),
+            'privacy' => $this->app->config('privacy'),
             'map' => $this->app->config('map'),
             'proposals' => $this->app->config('proposals'),
             'dataSources' => $dataSources,

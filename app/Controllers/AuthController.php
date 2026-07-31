@@ -27,13 +27,14 @@ final class AuthController
             $email = mb_strtolower(trim((string) $request->input('email'))); $password = (string) $request->input('password');
             $address = mb_substr(trim((string) $request->input('address')), 0, 255); $phone = $this->phone($request->input('phone'));
             if ($firstName === '' || $lastName === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false || strlen($password) < 12) { throw new InvalidArgumentException('Renseignez vos nom, prénom, e-mail et un mot de passe de 12 caractères minimum.'); }
+            if ((string) $request->input('privacy_acknowledged') !== '1') { throw new InvalidArgumentException('Veuillez prendre connaissance de la politique de confidentialité.'); }
             $repository = $this->repository(); if ($repository->findByEmail($email)) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
             $authConfig = $this->app->config('auth');
             $isFirstUser = $repository->all() === [];
             $role = ($isFirstUser || ($authConfig['bootstrap_super_admin_email'] !== '' && $email === $authConfig['bootstrap_super_admin_email']))
                 ? 'super_administrateur'
                 : ((($authConfig['bootstrap_admin_email'] !== '' && $email === $authConfig['bootstrap_admin_email']) || in_array($email, $authConfig['administrator_emails'], true)) ? 'administrateur' : 'contributeur');
-            $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'password_hash' => password_hash($password, PASSWORD_DEFAULT), 'role' => $role, 'created_at' => date(DATE_ATOM)];
+            $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'password_hash' => password_hash($password, PASSWORD_DEFAULT), 'role' => $role, 'created_at' => date(DATE_ATOM), 'privacy_acknowledged_at' => date(DATE_ATOM)];
             $repository->create($user); $this->auth()->login($email, $password); $this->redirect('/');
         } catch (InvalidArgumentException $exception) { $this->page('auth/register', $exception->getMessage(), 422); }
     }
@@ -65,7 +66,7 @@ final class AuthController
 
     private function page(string $template, ?string $message = null, int $status = 200, array $extra = []): never
     {
-        Response::html($this->app->view()->render($template, array_replace(['application' => $this->app->config('app'), 'csrfToken' => $this->auth()->csrfToken(), 'user' => $this->auth()->currentUser(), 'message' => $message], $extra)), $status);
+        Response::html($this->app->view()->render($template, array_replace(['application' => $this->app->config('app'), 'privacy' => $this->app->config('privacy'), 'csrfToken' => $this->auth()->csrfToken(), 'user' => $this->auth()->currentUser(), 'message' => $message], $extra)), $status);
     }
     private function auth(): AuthService { return new AuthService($this->repository(), $this->app->config('auth')); }
     private function notifier(): NotificationService { return new NotificationService($this->app->config('smtp'), $this->app->config('notifications'), $this->app->logger()); }
@@ -73,7 +74,12 @@ final class AuthController
     private function repository(): UserRepository { return new UserRepository($this->app->config('auth')['users_file']); }
     private function csrf(Request $request): void { if (!$this->auth()->verifyCsrf((string) $request->input('csrf_token'))) { throw new InvalidArgumentException('Session expirée.'); } }
     private function phone(mixed $value): string { $phone = mb_substr(trim((string) $value), 0, 30); if ($phone !== '' && preg_match('/^[0-9+().\-\s]+$/', $phone) !== 1) { throw new InvalidArgumentException('Numéro de téléphone invalide.'); } return $phone; }
-    private function resets(): array { $file = $this->app->config('auth')['password_resets_file']; return is_file($file) ? (json_decode((string) file_get_contents($file), true) ?: []) : []; }
+    private function resets(): array
+    {
+        $file = $this->app->config('auth')['password_resets_file'];
+        $resets = is_file($file) ? (json_decode((string) file_get_contents($file), true) ?: []) : [];
+        return array_values(array_filter($resets, static fn(array $reset): bool => (int) ($reset['expires_at'] ?? 0) >= time()));
+    }
     private function writeResets(array $resets): void { file_put_contents($this->app->config('auth')['password_resets_file'], json_encode($resets), LOCK_EX); }
     private function redirect(string $location): never { header('Location: ' . $this->app->routeUrl($location), true, 303); exit; }
 }

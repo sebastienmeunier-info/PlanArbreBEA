@@ -10,11 +10,13 @@ use Plantons\Controllers\AdminUserController;
 use Plantons\Controllers\AccountController;
 use Plantons\Controllers\AdminProposalController;
 use Plantons\Controllers\ExportController;
+use Plantons\Controllers\PrivacyController;
 
 return [
     ['GET', '/', [HomeController::class, 'index']],
     ['GET', '/proposer-un-arbre', [HomeController::class, 'treeProposal']],
     ['GET', '/sante', [HomeController::class, 'health']],
+    ['GET', '/donnees-personnelles', [PrivacyController::class, 'index']],
     ['GET', '/api/data/territoire', [GeoJsonController::class, 'territory']],
     ['GET', '/api/data/communes-deleguees', [GeoJsonController::class, 'municipalities']],
     ['GET', '/api/data/arbres', [GeoJsonController::class, 'trees']],
@@ -41,4 +43,5 @@ return [
     ['GET', '/admin/exports', [ExportController::class, 'download']],
     ['GET', '/mon-compte', [AccountController::class, 'index']],
     ['POST', '/mon-compte', [AccountController::class, 'update']],
+    ['GET', '/mon-compte/donnees', [AccountController::class, 'downloadPersonalData']],
 ];

@@ -7,6 +7,7 @@ use Plantons\Core\Logger;
 $root = dirname(__DIR__);
 $environment = getenv('PLANTONS_ENV') ?: 'development';
 $projectName = getenv('PLANTONS_PROJECT_NAME') ?: 'Plantons';
+$territoryName = getenv('PLANTONS_TERRITORY_NAME') ?: 'Baugé-en-Anjou';
 $territoryCenter = [47.5310, -0.1020];
 $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
 $detectedBasePath = str_ends_with($scriptName, '.php') ? dirname($scriptName) : '';
@@ -36,7 +37,7 @@ return [
      * fichiers de données séparés afin de pouvoir les mettre à jour sans code.
      */
     'territory' => [
-        'name' => getenv('PLANTONS_TERRITORY_NAME') ?: 'Baugé-en-Anjou',
+        'name' => $territoryName,
         'center' => $territoryCenter,
         'timezone' => getenv('PLANTONS_TIMEZONE') ?: 'Europe/Paris',
     ],
@@ -114,6 +115,13 @@ return [
         // son emplacement exact.
         'public_coordinate_precision' => 4,
         'public_proposal_properties' => ['status', 'species', 'objectives', 'conditioning', 'tree_size'],
+        // Mentions à adapter par chaque collectivité avant mise en production.
+        'controller_name' => getenv('PLANTONS_PRIVACY_CONTROLLER') ?: 'Commune de ' . $territoryName,
+        'contact_email' => getenv('PLANTONS_PRIVACY_CONTACT_EMAIL') ?: 'contact@sebastienmeunier.info',
+        'dpo_email' => getenv('PLANTONS_DPO_EMAIL') ?: '',
+        'legal_basis' => getenv('PLANTONS_PRIVACY_LEGAL_BASIS') ?: 'mission d’intérêt public exercée par la collectivité',
+        'account_retention' => getenv('PLANTONS_ACCOUNT_RETENTION') ?: 'pendant la durée d’utilisation du compte, puis 3 ans après sa dernière activité',
+        'proposal_retention' => getenv('PLANTONS_PROPOSAL_RETENTION') ?: '5 ans après la clôture de la proposition',
     ],
     'notifications' => [
         'status_changes' => true,

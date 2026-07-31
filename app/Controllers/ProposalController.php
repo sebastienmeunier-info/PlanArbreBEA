@@ -64,6 +64,9 @@ final class ProposalController
             if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
                 throw new InvalidArgumentException('Veuillez renseigner une adresse e-mail valide.');
             }
+            if ($email !== '' && (string) $request->input('notification_consent') !== '1') {
+                throw new InvalidArgumentException('Votre accord est nécessaire pour recevoir les notifications par e-mail.');
+            }
 
             $store = new GeoJsonStore();
             $sources = $this->app->config('data_sources');
@@ -87,6 +90,7 @@ final class ProposalController
                     'created_at' => date(DATE_ATOM),
                     'author' => $author,
                     'email' => $email === '' ? null : $email,
+                    'notification_consent_at' => $email === '' ? null : date(DATE_ATOM),
                     'species' => $species,
                     'objectives' => $objectives,
                     'conditioning' => $source === 'donations' ? $conditioning : null,

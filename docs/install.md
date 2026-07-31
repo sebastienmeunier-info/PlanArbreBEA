@@ -54,3 +54,9 @@ PLANTONS_SMTP_PASSWORD=mot-de-passe-de-la-boite-mail
 ## Données affichées publiquement
 
 Les services publics `api/data/propositions` et `api/data/dons` ne retournent que le statut, l'essence, les objectifs ou caractéristiques de l'arbre et une position arrondie. Les coordonnées exactes, noms, e-mails, adresses, commentaires et photos restent dans les fichiers privés et ne sont disponibles que pour les administrateurs authentifiés. Le niveau d'arrondi se règle avec `privacy.public_coordinate_precision` dans `config/config.php`.
+
+## Protection des données
+
+Avant la mise en service, renseigner les mentions de la section `privacy` de `config/config.php` : identité du responsable de traitement, adresse de contact, adresse du DPO si applicable, base légale et durées de conservation validées par la collectivité. La page `/donnees-personnelles` rend ces informations accessibles aux visiteurs. Chaque utilisateur connecté peut télécharger ses données depuis cette page.
+
+Les changements de statut par e-mail requièrent l’accord explicite du demandeur pour chaque proposition. Les demandes d’effacement, de limitation ou d’opposition sont adressées au contact indiqué dans la politique de confidentialité afin que la collectivité vérifie les éventuelles obligations de conservation avant intervention.

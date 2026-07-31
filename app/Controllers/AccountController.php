@@ -91,6 +91,25 @@ final class AccountController
         header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=profil'), true, 303); exit;
     }
 
+    public function downloadPersonalData(Request $request): never
+    {
+        $user = $this->auth()->currentUser();
+        if (!$user) {
+            Response::html('Accès refusé.', 403);
+        }
+        unset($user['password_hash']);
+        $sources = $this->app->config('data_sources');
+        $store = new GeoJsonStore();
+        $data = ['exported_at' => date(DATE_ATOM), 'profile' => $user, 'proposals' => [], 'donations' => []];
+        foreach (['proposals', 'donations'] as $source) {
+            $data[$source] = array_values(array_filter(
+                $store->read($sources[$source]['file'])['features'],
+                static fn(array $feature): bool => mb_strtolower((string) ($feature['properties']['email'] ?? '')) === mb_strtolower((string) $user['email']),
+            ));
+        }
+        Response::download(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", 'mes-donnees-plantons.json', 'application/json; charset=UTF-8');
+    }
+
     private function auth(): AuthService
     {
         return new AuthService(new UserRepository($this->app->config('auth')['users_file']), $this->app->config('auth'));

@@ -40,5 +40,15 @@ final class AuthService
         $this->startSession(); return $token !== '' && hash_equals((string) ($_SESSION['csrf_token'] ?? ''), $token);
     }
 
-    private function startSession(): void { if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); } }
+    private function startSession(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            return;
+        }
+        $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || ((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+        ini_set('session.use_strict_mode', '1');
+        session_set_cookie_params(['httponly' => true, 'secure' => $secure, 'samesite' => 'Lax']);
+        session_start();
+    }
 }
