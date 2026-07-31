@@ -108,6 +108,13 @@ return [
         'max_email_length' => 254,
         'allowed_photo_mime_types' => ['image/jpeg', 'image/png', 'image/webp'],
     ],
+    'privacy' => [
+        // Données affichées sur les cartes publiques. 4 décimales représentent
+        // environ 11 m : suffisant pour visualiser une proposition sans publier
+        // son emplacement exact.
+        'public_coordinate_precision' => 4,
+        'public_proposal_properties' => ['status', 'species', 'objectives', 'conditioning', 'tree_size'],
+    ],
     'notifications' => [
         'status_changes' => true,
         'events' => ['validee', 'rejetee', 'arbre_plante', 'localisation_deplacee'],

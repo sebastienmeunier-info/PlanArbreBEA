@@ -1,0 +1,8 @@
+# Les GeoJSON et JSON bruts contiennent des données privées.
+# L'application PHP les lit depuis le disque ; ils ne doivent jamais être servis directement.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Deny from all
+</IfModule>

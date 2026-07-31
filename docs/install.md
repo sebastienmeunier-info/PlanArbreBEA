@@ -50,3 +50,7 @@ PLANTONS_SMTP_PASSWORD=mot-de-passe-de-la-boite-mail
 ```
 
 `PLANTONS_BASE_URL` garantit que les liens reçus par e-mail fonctionnent depuis l'hébergement FTP. Ne placez jamais le mot de passe SMTP dans `config/config.php`, dans le ZIP ou dans Git. La cause exacte d'un échec est inscrite dans `logs/application.log`, sans y enregistrer le mot de passe.
+
+## Données affichées publiquement
+
+Les services publics `api/data/propositions` et `api/data/dons` ne retournent que le statut, l'essence, les objectifs ou caractéristiques de l'arbre et une position arrondie. Les coordonnées exactes, noms, e-mails, adresses, commentaires et photos restent dans les fichiers privés et ne sont disponibles que pour les administrateurs authentifiés. Le niveau d'arrondi se règle avec `privacy.public_coordinate_precision` dans `config/config.php`.
