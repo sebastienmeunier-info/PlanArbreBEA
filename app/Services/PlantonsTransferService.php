@@ -30,7 +30,7 @@ final class PlantonsTransferService
             $store = new GeoJsonStore();
             $proposals = $store->read($this->sources['proposals']['file']);
             $donations = $store->read($this->sources['donations']['file']);
-            $users = (new UserRepository($this->auth['users_file']))->all();
+            $users = $this->exportUsers((new UserRepository($this->auth['users_file']))->all());
             $archive->addFromString('manifest.json', json_encode([
                 'format' => 'plantons-transfer', 'version' => 1, 'exported_at' => date(DATE_ATOM),
                 'contents' => ['users', 'proposals', 'donations', 'photos'],
@@ -51,7 +51,7 @@ final class PlantonsTransferService
         }
     }
 
-    /** @return array{users:int,proposals:int,donations:int,photos:int} */
+    /** @return array{users:int,proposals:int,donations:int,photos:int,imported_users:array<int,array<string,mixed>>} */
     public function import(string $archiveFile): array
     {
         try {
@@ -69,12 +69,12 @@ final class PlantonsTransferService
             $this->validatePhotos($archive, $proposals['features']);
             $this->validatePhotos($archive, $donations['features']);
 
-            $userCount = (new UserRepository($this->auth['users_file']))->merge($users);
+            $importedUsers = (new UserRepository($this->auth['users_file']))->merge($this->importUsers($users));
             $store = new GeoJsonStore();
             $proposalCount = $store->mergeFeatures($this->sources['proposals']['file'], $proposals['features']);
             $donationCount = $store->mergeFeatures($this->sources['donations']['file'], $donations['features']);
             $photoCount = $this->copyPhotos($archive, $proposals['features']) + $this->copyPhotos($archive, $donations['features']);
-            return ['users' => $userCount, 'proposals' => $proposalCount, 'donations' => $donationCount, 'photos' => $photoCount];
+            return ['users' => count($importedUsers), 'proposals' => $proposalCount, 'donations' => $donationCount, 'photos' => $photoCount, 'imported_users' => $importedUsers];
         } catch (\UnexpectedValueException $exception) {
             throw new RuntimeException('L’archive Plantons est illisible.', 0, $exception);
         }
@@ -88,6 +88,28 @@ final class PlantonsTransferService
                 $archive->addFile($source, $path);
             }
         }
+    }
+
+    /** @param array<int,array<string,mixed>> $users @return array<int,array<string,mixed>> */
+    private function exportUsers(array $users): array
+    {
+        foreach ($users as &$user) {
+            // An archive must never allow a connection with a source-instance password.
+            $user['password_hash'] = password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT);
+        }
+        unset($user);
+        return $users;
+    }
+
+    /** @param array<int,array<string,mixed>> $users @return array<int,array<string,mixed>> */
+    private function importUsers(array $users): array
+    {
+        foreach ($users as &$user) {
+            $user['role'] = 'contributeur';
+            $user['password_hash'] = password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT);
+        }
+        unset($user);
+        return $users;
     }
 
     private function validatePhotos(\PharData $archive, array $features): void

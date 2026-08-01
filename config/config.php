@@ -128,7 +128,7 @@ return [
         'status_changes' => true,
         'events' => ['validee', 'rejetee', 'arbre_plante', 'localisation_deplacee'],
         // Variables disponibles : {{project_name}}, {{first_name}}, {{last_name}},
-        // {{proposal_id}}, {{species}}, {{location}}, {{url}}.
+        // {{proposal_id}}, {{species}}, {{location}}, {{instance_url}}, {{url}}.
         'messages' => [
             'account_invitation' => [
                 'subject' => 'Activation de votre compte · {{project_name}}',
@@ -137,6 +137,10 @@ return [
             'password_reset' => [
                 'subject' => 'Réinitialisation de votre mot de passe · {{project_name}}',
                 'body' => "Bonjour {{first_name}},\n\nUtilisez ce lien valable une heure pour choisir un nouveau mot de passe :\n{{url}}\n\n{{project_name}}",
+            ],
+            'account_imported' => [
+                'subject' => 'Votre compte a été importé · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nVotre compte a été importé sur cette instance :\n{{instance_url}}\n\nPour choisir votre nouveau mot de passe, utilisez ce lien valable 7 jours :\n{{url}}\n\n{{project_name}}",
             ],
             'proposal_validated' => [
                 'subject' => 'Votre proposition a été validée · {{project_name}}',

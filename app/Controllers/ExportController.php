@@ -11,6 +11,7 @@ use Plantons\Repositories\UserRepository;
 use Plantons\Services\AuthService;
 use Plantons\Services\GeoJsonStore;
 use Plantons\Services\PlantonsTransferService;
+use Plantons\Services\NotificationService;
 use RuntimeException;
 
 final class ExportController
@@ -78,6 +79,9 @@ final class ExportController
         } finally {
             @unlink($temporary);
         }
+        $importedUsers = $result['imported_users'] ?? [];
+        unset($result['imported_users']);
+        $result['emails'] = $this->notifyImportedUsers(is_array($importedUsers) ? $importedUsers : []);
         $query = http_build_query(['onglet' => 'exports', 'import' => 'done'] + $result);
         header('Location: ' . $this->app->routeUrl('/mon-compte?' . $query), true, 303);
         exit;
@@ -175,5 +179,31 @@ final class ExportController
     private function transfer(): PlantonsTransferService
     {
         return new PlantonsTransferService($this->app->config('paths'), $this->app->config('auth'), $this->app->config('data_sources'));
+    }
+
+    /** @param array<int,array<string,mixed>> $users */
+    private function notifyImportedUsers(array $users): int
+    {
+        $resetFile = $this->app->config('auth')['password_resets_file'];
+        $resets = is_file($resetFile) ? (json_decode((string) file_get_contents($resetFile), true) ?: []) : [];
+        $resets = array_values(array_filter($resets, static fn(array $reset): bool => (int) ($reset['expires_at'] ?? 0) >= time()));
+        $sent = 0;
+        foreach ($users as $user) {
+            $email = mb_strtolower((string) ($user['email'] ?? ''));
+            if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) { continue; }
+            $token = bin2hex(random_bytes(32));
+            $resets = array_values(array_filter($resets, static fn(array $reset): bool => mb_strtolower((string) ($reset['email'] ?? '')) !== $email));
+            $resets[] = ['email' => $email, 'token_hash' => password_hash($token, PASSWORD_DEFAULT), 'expires_at' => time() + 604800];
+            $url = $this->app->absoluteRouteUrl('/reinitialiser-mot-de-passe?token=' . rawurlencode($token));
+            $variables = ['project_name' => (string) $this->app->config('app')['name'], 'first_name' => (string) ($user['first_name'] ?? ''), 'last_name' => (string) ($user['last_name'] ?? ''), 'instance_url' => $this->app->absoluteRouteUrl('/'), 'url' => $url];
+            if ($this->notifier()->send('account_imported', $email, $variables)) { $sent++; }
+        }
+        file_put_contents($resetFile, json_encode($resets), LOCK_EX);
+        return $sent;
+    }
+
+    private function notifier(): NotificationService
+    {
+        return new NotificationService($this->app->config('smtp'), $this->app->config('notifications'), $this->app->logger());
     }
 }

@@ -64,7 +64,7 @@ final class AccountController
             'displayFeatures' => $displayFeatures, 'statuses' => $this->app->config('proposals')['status_labels'],
             'planting' => $this->app->config('planting'), 'isDonationTab' => $isDonationTab,
             'notice' => $request->query('import') === 'done'
-                ? sprintf('Import terminé : %d utilisateur(s), %d plantation(s), %d don(s) et %d photo(s) ajoutés.', (int) $request->query('users'), (int) $request->query('proposals'), (int) $request->query('donations'), (int) $request->query('photos'))
+                ? sprintf('Import terminé : %d utilisateur(s), %d plantation(s), %d don(s), %d photo(s) ajoutés et %d e-mail(s) envoyé(s).', (int) $request->query('users'), (int) $request->query('proposals'), (int) $request->query('donations'), (int) $request->query('photos'), (int) $request->query('emails'))
                 : match ($request->query('invite')) {
                 'sent' => 'Le compte a été créé et l’invitation a été envoyée.',
                 'failed' => 'Le compte est créé, mais l’invitation n’a pas pu être envoyée. Vérifiez la configuration SMTP puis renvoyez l’invitation.',

@@ -60,23 +60,26 @@ final class UserRepository
         $this->write($remaining);
     }
 
-    /** @param array<int,array<string,mixed>> $importedUsers */
-    public function merge(array $importedUsers): int
+    /** @param array<int,array<string,mixed>> $importedUsers @return array<int,array<string,mixed>> */
+    public function merge(array $importedUsers): array
     {
         $users = $this->all();
         $knownEmails = [];
-        foreach ($users as $user) { $knownEmails[mb_strtolower((string) ($user['email'] ?? ''))] = true; }
-        $added = 0;
+        $knownIds = [];
+        foreach ($users as $user) { $knownEmails[mb_strtolower((string) ($user['email'] ?? ''))] = true; $knownIds[(string) ($user['id'] ?? '')] = true; }
+        $added = [];
         foreach ($importedUsers as $user) {
             $email = mb_strtolower(trim((string) ($user['email'] ?? '')));
             if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false || isset($knownEmails[$email])) { continue; }
             $user['email'] = $email;
-            $user['id'] = (string) ($user['id'] ?? bin2hex(random_bytes(16)));
+            $id = (string) ($user['id'] ?? '');
+            $user['id'] = $id === '' || isset($knownIds[$id]) ? bin2hex(random_bytes(16)) : $id;
             $users[] = $user;
             $knownEmails[$email] = true;
-            $added++;
+            $knownIds[$user['id']] = true;
+            $added[] = $user;
         }
-        if ($added > 0) { $this->write($users); }
+        if ($added !== []) { $this->write($users); }
         return $added;
     }
 
