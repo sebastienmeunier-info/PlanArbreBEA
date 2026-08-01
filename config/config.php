@@ -128,7 +128,7 @@ return [
         'status_changes' => true,
         'events' => ['validee', 'rejetee', 'arbre_plante', 'localisation_deplacee'],
         // Variables disponibles : {{project_name}}, {{first_name}}, {{last_name}},
-        // {{proposal_id}}, {{species}}, {{location}}, {{comment}}, {{instance_url}}, {{url}}.
+        // {{proposal_id}}, {{species}}, {{location}}, {{comment}}, {{administrator_name}}, {{administrator_email}}, {{instance_url}}, {{url}}.
         'messages' => [
             'account_invitation' => [
                 'subject' => 'Activation de votre compte · {{project_name}}',
@@ -144,19 +144,19 @@ return [
             ],
             'proposal_validated' => [
                 'subject' => 'Votre proposition a été validée · {{project_name}}',
-                'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} pour {{species}} a été validée.\n\nCommentaire de l’administration :\n{{comment}}\n\n{{project_name}}",
+                'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} pour {{species}} a été validée.\n\nCommentaire de l’administration :\n{{comment}}\n\nModification réalisée par : {{administrator_name}} ({{administrator_email}})\n\n{{project_name}}",
             ],
             'proposal_rejected' => [
                 'subject' => 'Décision concernant votre proposition · {{project_name}}',
-                'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} pour {{species}} n’a pas été retenue.\n\nCommentaire de l’administration :\n{{comment}}\n\n{{project_name}}",
+                'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} pour {{species}} n’a pas été retenue.\n\nCommentaire de l’administration :\n{{comment}}\n\nModification réalisée par : {{administrator_name}} ({{administrator_email}})\n\n{{project_name}}",
             ],
             'tree_planted' => [
                 'subject' => 'Plantation réalisée · {{project_name}}',
-                'body' => "Bonjour {{first_name}},\n\nL’arbre proposé dans le cadre de la proposition {{proposal_id}} a été planté.\n\nCommentaire de l’administration :\n{{comment}}\n\nMerci pour votre contribution,\n{{project_name}}",
+                'body' => "Bonjour {{first_name}},\n\nL’arbre proposé dans le cadre de la proposition {{proposal_id}} a été planté.\n\nCommentaire de l’administration :\n{{comment}}\n\nModification réalisée par : {{administrator_name}} ({{administrator_email}})\n\nMerci pour votre contribution,\n{{project_name}}",
             ],
             'location_moved' => [
                 'subject' => 'Localisation mise à jour · {{project_name}}',
-                'body' => "Bonjour {{first_name}},\n\nLa localisation de votre proposition {{proposal_id}} a été mise à jour : {{location}}.\n\nCommentaire de l’administration :\n{{comment}}\n\n{{project_name}}",
+                'body' => "Bonjour {{first_name}},\n\nLa localisation de votre proposition {{proposal_id}} a été mise à jour : {{location}}.\n\nCommentaire de l’administration :\n{{comment}}\n\nModification réalisée par : {{administrator_name}} ({{administrator_email}})\n\n{{project_name}}",
             ],
         ],
     ],

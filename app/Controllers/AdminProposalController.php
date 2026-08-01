@@ -98,7 +98,7 @@ final class AdminProposalController
                 'updated_at' => date(DATE_ATOM),
                 'updated_by' => $current['id'],
             ], [$longitude, $latitude]);
-            $this->notifyChanges($previous, $status, $species, $longitude, $latitude, $territoryService->municipality($municipalities, $longitude, $latitude), $adminComment);
+            $this->notifyChanges($previous, $status, $species, $longitude, $latitude, $territoryService->municipality($municipalities, $longitude, $latitude), $adminComment, $current);
             header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=' . $tab), true, 303);
             exit;
         } catch (InvalidArgumentException|RuntimeException $exception) {
@@ -122,7 +122,7 @@ final class AdminProposalController
         return null;
     }
 
-    private function notifyChanges(array $previous, string $status, string $species, float $longitude, float $latitude, ?string $municipality, string $adminComment): void
+    private function notifyChanges(array $previous, string $status, string $species, float $longitude, float $latitude, ?string $municipality, string $adminComment, array $administrator): void
     {
         $notifications = $this->app->config('notifications');
         $properties = $previous['properties'] ?? [];
@@ -142,6 +142,8 @@ final class AdminProposalController
             'species' => $species,
             'location' => (string) (($properties['address'] ?? '') ?: $municipality ?: sprintf('%.5f, %.5f', $latitude, $longitude)),
             'comment' => $adminComment !== '' ? $adminComment : 'Aucun commentaire.',
+            'administrator_name' => trim((string) ($administrator['first_name'] ?? '') . ' ' . (string) ($administrator['last_name'] ?? '')) ?: 'Administration',
+            'administrator_email' => (string) ($administrator['email'] ?? ''),
             'url' => $this->app->absoluteRouteUrl('/'),
         ];
         $notifier = new NotificationService($this->app->config('smtp'), $notifications, $this->app->logger());
