@@ -6,7 +6,7 @@
 <?php require __DIR__ . '/../partials/header.php'; ?>
 <main class="auth-page admin-page">
   <h1>Utilisateurs</h1><p><a href="<?= htmlspecialchars($routeUrl('/admin/propositions'), ENT_QUOTES, 'UTF-8') ?>">Gérer les propositions</a></p>
-  <table class="users-table"><thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Action</th></tr></thead><tbody>
+  <table class="users-table"><thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Actions</th></tr></thead><tbody>
   <?php foreach ($users as $listedUser): ?><tr>
     <td><?= htmlspecialchars($listedUser['first_name'] . ' ' . $listedUser['last_name']) ?></td><td><?= htmlspecialchars($listedUser['email']) ?></td><td><?= htmlspecialchars(str_replace('_', ' ', $listedUser['role'])) ?></td><td>
     <?php if ($listedUser['role'] === 'super_administrateur'): ?>Protégé
