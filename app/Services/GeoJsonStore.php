@@ -82,4 +82,34 @@ final class GeoJsonStore
             fclose($handle);
         }
     }
+
+    public function deleteFeature(string $file, string $id): array
+    {
+        $handle = fopen($file, 'c+');
+        if ($handle === false || !flock($handle, LOCK_EX)) {
+            throw new RuntimeException('Impossible de verrouiller le fichier de données.');
+        }
+
+        try {
+            $content = stream_get_contents($handle);
+            $collection = $content === '' ? ['type' => 'FeatureCollection', 'features' => []] : json_decode($content, true);
+            if (!is_array($collection) || ($collection['type'] ?? null) !== 'FeatureCollection') {
+                throw new RuntimeException('Le fichier de propositions est invalide.');
+            }
+            foreach ($collection['features'] as $index => $feature) {
+                if (($feature['properties']['id'] ?? null) !== $id) {
+                    continue;
+                }
+                array_splice($collection['features'], $index, 1);
+                rewind($handle);
+                ftruncate($handle, 0);
+                fwrite($handle, json_encode($collection, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+                return $feature;
+            }
+            throw new RuntimeException('Proposition introuvable.');
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
 }

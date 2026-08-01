@@ -47,6 +47,17 @@ final class AdminProposalController
             }
             $status = (string) $request->input('status');
             $statuses = $this->app->config('proposals')['status_labels'];
+            if ($status === 'supprimer') {
+                if ($current['role'] !== 'super_administrateur') {
+                    Response::html('Suppression réservée au super-admin.', 403);
+                }
+                $store = new GeoJsonStore();
+                $sourceFile = $this->app->config('data_sources')[$source]['file'];
+                $deleted = $store->deleteFeature($sourceFile, (string) $request->input('id'));
+                $this->deletePhotos((array) ($deleted['properties']['photos'] ?? []));
+                header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=' . $tab), true, 303);
+                exit;
+            }
             if (!array_key_exists($status, $statuses)) {
                 throw new InvalidArgumentException('Statut invalide.');
             }
@@ -165,5 +176,24 @@ final class AdminProposalController
     private function repository(): UserRepository
     {
         return new UserRepository($this->app->config('auth')['users_file']);
+    }
+
+    /** @param array<int,mixed> $photos */
+    private function deletePhotos(array $photos): void
+    {
+        $uploads = realpath($this->app->config('paths')['uploads']);
+        if ($uploads === false) {
+            return;
+        }
+        foreach ($photos as $path) {
+            if (!is_string($path) || preg_match('#^uploads/photos/\\d{4}/[a-f0-9]{32}\\.webp$#', $path) !== 1) {
+                continue;
+            }
+            $file = $this->app->config('paths')['root'] . '/' . $path;
+            $resolved = realpath($file);
+            if ($resolved !== false && str_starts_with($resolved, $uploads . DIRECTORY_SEPARATOR)) {
+                unlink($resolved);
+            }
+        }
     }
 }
