@@ -16,14 +16,24 @@
       const openChooser = () => {
         const content = document.createElement('form');
         const group = `plantons-basemap-${map._leaflet_id}`;
+        const zoom = Math.min(Math.max(Math.round(map.getZoom()), 0), 19);
+        const point = map.project(map.getCenter(), zoom);
+        const tileX = Math.floor(point.x / 256);
+        const tileY = Math.floor(point.y / 256);
         content.className = 'basemap-popup';
         content.innerHTML = '<strong>Fond de carte</strong>';
         [
-          ['osm', 'OpenStreetMap', osm],
-          ['aerial', 'Photo aérienne', aerial],
-        ].forEach(([value, label, layer]) => {
+          ['osm', 'OpenStreetMap', osm, `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`],
+          ['aerial', 'Photo aérienne', aerial, `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${tileY}/${tileX}`],
+        ].forEach(([value, label, layer, previewUrl]) => {
           const labelElement = document.createElement('label');
           const input = document.createElement('input');
+          const preview = document.createElement('span');
+          const title = document.createElement('span');
+          labelElement.className = 'basemap-tile';
+          preview.className = 'basemap-tile-preview';
+          preview.style.backgroundImage = `url("${previewUrl}")`;
+          title.className = 'basemap-tile-title'; title.textContent = label;
           input.type = 'radio'; input.name = group; input.value = value; input.checked = selected === layer;
           input.addEventListener('change', () => {
             if (!input.checked) return;
@@ -32,7 +42,8 @@
             map.addLayer(selected);
             map.closePopup();
           });
-          labelElement.append(input, document.createTextNode(' ' + label));
+          preview.append(title);
+          labelElement.append(input, preview);
           content.append(labelElement);
         });
         L.popup({ closeButton: true, autoClose: true, className: 'basemap-leaflet-popup' }).setLatLng(map.getCenter()).setContent(content).openOn(map);
