@@ -35,16 +35,17 @@ final class AdminUserController
             $email = mb_strtolower(trim((string) $request->input('email')));
             $address = mb_substr(trim((string) $request->input('address')), 0, 255);
             $phone = $this->phone($request->input('phone'));
+            $notificationConsentAt = date(DATE_ATOM);
             if ($firstName === '' || $lastName === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) { throw new InvalidArgumentException('Nom, prénom et e-mail valides sont requis.'); }
             $role = $this->requestedRole($current = $this->guard($auth), 'contributeur');
             $repository = $this->repository();
             $user = $repository->findByEmail($email);
             if ($user !== null && $user['password_hash'] !== null) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
             if ($user === null) {
-                $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'password_hash' => null, 'role' => $role, 'created_at' => date(DATE_ATOM)];
+                $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'password_hash' => null, 'role' => $role, 'created_at' => date(DATE_ATOM), 'notification_consent_at' => $notificationConsentAt];
                 $repository->create($user);
             } else {
-                $repository->update($user['id'], ['first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'address' => $address, 'phone' => $phone, 'role' => $role]);
+                $repository->update($user['id'], ['first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'address' => $address, 'phone' => $phone, 'role' => $role, 'notification_consent_at' => $notificationConsentAt]);
                 $user = $repository->findById($user['id']);
             }
             $token = bin2hex(random_bytes(32));
