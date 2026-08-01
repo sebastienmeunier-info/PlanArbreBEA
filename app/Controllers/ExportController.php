@@ -10,6 +10,8 @@ use Plantons\Core\Response;
 use Plantons\Repositories\UserRepository;
 use Plantons\Services\AuthService;
 use Plantons\Services\GeoJsonStore;
+use Plantons\Services\PlantonsTransferService;
+use RuntimeException;
 
 final class ExportController
 {
@@ -24,8 +26,12 @@ final class ExportController
 
         $source = (string) $request->query('source', 'all');
         $format = (string) $request->query('format', 'geojson');
-        if (!in_array($source, ['proposals', 'donations', 'all'], true) || !in_array($format, ['geojson', 'csv', 'qgis'], true)) {
+        if (!in_array($source, ['proposals', 'donations', 'all'], true) || !in_array($format, ['geojson', 'csv', 'qgis', 'plantons'], true)) {
             Response::html('Paramètres d’export invalides.', 422);
+        }
+
+        if ($format === 'plantons') {
+            Response::download($this->transfer()->export(), 'plantons-transfert-complet.plantons.tar', 'application/x-tar');
         }
 
         $collection = ['type' => 'FeatureCollection', 'features' => $this->features($source)];
@@ -41,6 +47,40 @@ final class ExportController
             $filename,
             'application/geo+json; charset=UTF-8',
         );
+    }
+
+    public function import(Request $request): never
+    {
+        $user = $this->auth()->currentUser();
+        if (!in_array($user['role'] ?? null, ['administrateur', 'super_administrateur'], true)) {
+            Response::html('Accès réservé aux administrateurs.', 403);
+        }
+        if (!$this->auth()->verifyCsrf((string) $request->input('csrf_token'))) {
+            Response::html('Session expirée.', 403);
+        }
+        $upload = $request->files('plantons_file');
+        if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_string($upload['tmp_name'] ?? null)) {
+            Response::html('Sélectionnez une archive Plantons valide.', 422);
+        }
+        if ((int) ($upload['size'] ?? 0) > (int) ($this->app->config('security')['max_transfer_size'] ?? 104857600)) {
+            Response::html('L’archive Plantons est trop volumineuse.', 422);
+        }
+        $temporaryBase = tempnam(sys_get_temp_dir(), 'plantons-import-');
+        $temporary = $temporaryBase === false ? false : $temporaryBase . '.tar';
+        if ($temporaryBase !== false) { @unlink($temporaryBase); }
+        if ($temporary === false || !move_uploaded_file($upload['tmp_name'], $temporary)) {
+            Response::html('Impossible de recevoir l’archive Plantons.', 422);
+        }
+        try {
+            $result = $this->transfer()->import($temporary);
+        } catch (RuntimeException $exception) {
+            Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422);
+        } finally {
+            @unlink($temporary);
+        }
+        $query = http_build_query(['onglet' => 'exports', 'import' => 'done'] + $result);
+        header('Location: ' . $this->app->routeUrl('/mon-compte?' . $query), true, 303);
+        exit;
     }
 
     /** @return array<int,array<string,mixed>> */
@@ -130,5 +170,10 @@ final class ExportController
     private function auth(): AuthService
     {
         return new AuthService(new UserRepository($this->app->config('auth')['users_file']), $this->app->config('auth'));
+    }
+
+    private function transfer(): PlantonsTransferService
+    {
+        return new PlantonsTransferService($this->app->config('paths'), $this->app->config('auth'), $this->app->config('data_sources'));
     }
 }

@@ -60,6 +60,26 @@ final class UserRepository
         $this->write($remaining);
     }
 
+    /** @param array<int,array<string,mixed>> $importedUsers */
+    public function merge(array $importedUsers): int
+    {
+        $users = $this->all();
+        $knownEmails = [];
+        foreach ($users as $user) { $knownEmails[mb_strtolower((string) ($user['email'] ?? ''))] = true; }
+        $added = 0;
+        foreach ($importedUsers as $user) {
+            $email = mb_strtolower(trim((string) ($user['email'] ?? '')));
+            if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false || isset($knownEmails[$email])) { continue; }
+            $user['email'] = $email;
+            $user['id'] = (string) ($user['id'] ?? bin2hex(random_bytes(16)));
+            $users[] = $user;
+            $knownEmails[$email] = true;
+            $added++;
+        }
+        if ($added > 0) { $this->write($users); }
+        return $added;
+    }
+
     private function write(array $users): void
     {
         $directory = dirname($this->file);

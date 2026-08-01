@@ -63,7 +63,9 @@ final class AccountController
             'tab' => $tab, 'isAdministrator' => $isAdministrator, 'counts' => $counts, 'features' => $features,
             'displayFeatures' => $displayFeatures, 'statuses' => $this->app->config('proposals')['status_labels'],
             'planting' => $this->app->config('planting'), 'isDonationTab' => $isDonationTab,
-            'notice' => match ($request->query('invite')) {
+            'notice' => $request->query('import') === 'done'
+                ? sprintf('Import terminé : %d utilisateur(s), %d plantation(s), %d don(s) et %d photo(s) ajoutés.', (int) $request->query('users'), (int) $request->query('proposals'), (int) $request->query('donations'), (int) $request->query('photos'))
+                : match ($request->query('invite')) {
                 'sent' => 'Le compte a été créé et l’invitation a été envoyée.',
                 'failed' => 'Le compte est créé, mais l’invitation n’a pas pu être envoyée. Vérifiez la configuration SMTP puis renvoyez l’invitation.',
                 default => null,

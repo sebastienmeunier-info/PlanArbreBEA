@@ -112,4 +112,27 @@ final class GeoJsonStore
             fclose($handle);
         }
     }
+
+    /** @param array<int,array<string,mixed>> $features */
+    public function mergeFeatures(string $file, array $features): int
+    {
+        $collection = $this->read($file);
+        $knownIds = [];
+        foreach ($collection['features'] as $feature) { $knownIds[(string) ($feature['properties']['id'] ?? '')] = true; }
+        $added = 0;
+        foreach ($features as $feature) {
+            $id = (string) ($feature['properties']['id'] ?? '');
+            if ($id === '' || isset($knownIds[$id]) || ($feature['type'] ?? null) !== 'Feature') { continue; }
+            $collection['features'][] = $feature;
+            $knownIds[$id] = true;
+            $added++;
+        }
+        if ($added > 0) {
+            $temporary = $file . '.tmp';
+            if (file_put_contents($temporary, json_encode($collection, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false || !rename($temporary, $file)) {
+                throw new RuntimeException('Impossible d’enregistrer les données importées.');
+            }
+        }
+        return $added;
+    }
 }
