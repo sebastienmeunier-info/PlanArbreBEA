@@ -34,7 +34,7 @@ final class AuthController
             $role = ($isFirstUser || ($authConfig['bootstrap_super_admin_email'] !== '' && $email === $authConfig['bootstrap_super_admin_email']))
                 ? 'super_administrateur'
                 : ((($authConfig['bootstrap_admin_email'] !== '' && $email === $authConfig['bootstrap_admin_email']) || in_array($email, $authConfig['administrator_emails'], true)) ? 'administrateur' : 'contributeur');
-            $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'password_hash' => password_hash($password, PASSWORD_DEFAULT), 'role' => $role, 'created_at' => date(DATE_ATOM), 'privacy_acknowledged_at' => date(DATE_ATOM)];
+            $user = ['id' => bin2hex(random_bytes(16)), 'first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'password_hash' => password_hash($password, PASSWORD_DEFAULT), 'role' => $role, 'created_at' => date(DATE_ATOM), 'privacy_acknowledged_at' => date(DATE_ATOM), 'notification_consent_at' => (string) $request->input('notification_consent') === '1' ? date(DATE_ATOM) : null];
             $repository->create($user); $this->auth()->login($email, $password); $this->redirect('/');
         } catch (InvalidArgumentException $exception) { $this->page('auth/register', $exception->getMessage(), 422); }
     }

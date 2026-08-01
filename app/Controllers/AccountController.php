@@ -85,7 +85,7 @@ final class AccountController
         if ($password !== '' && strlen($password) < 12) { Response::html('Le mot de passe doit contenir au moins 12 caractères.', 422); }
         $repository = new UserRepository($this->app->config('auth')['users_file']); $existing = $repository->findByEmail($email);
         if ($existing !== null && $existing['id'] !== $user['id']) { Response::html('Cette adresse e-mail est déjà utilisée.', 422); }
-        $changes = ['first_name' => $first, 'last_name' => $last, 'email' => $email, 'address' => $address, 'phone' => $phone];
+        $changes = ['first_name' => $first, 'last_name' => $last, 'email' => $email, 'address' => $address, 'phone' => $phone, 'notification_consent_at' => (string) $request->input('notification_consent') === '1' ? ($user['notification_consent_at'] ?? date(DATE_ATOM)) : null];
         if ($password !== '') { $changes['password_hash'] = password_hash($password, PASSWORD_DEFAULT); }
         $repository->update($user['id'], $changes);
         header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=profil'), true, 303); exit;
