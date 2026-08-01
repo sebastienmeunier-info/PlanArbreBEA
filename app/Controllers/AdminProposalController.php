@@ -67,7 +67,8 @@ final class AdminProposalController
             $species = trim((string) $request->input('species'));
             $objectives = array_values(array_unique(array_filter((array) $request->input('objectives', []), 'is_string')));
             if (!in_array($species, $planting['allowed_species'], true)) { throw new InvalidArgumentException('Essence invalide.'); }
-            $changes = ['status' => $status, 'species' => $species];
+            $adminComment = mb_substr(trim((string) $request->input('admin_comment')), 0, 2000);
+            $changes = ['status' => $status, 'species' => $species, 'admin_comment' => $adminComment];
             if ($source === 'donations') {
                 $conditioning = (string) $request->input('conditioning');
                 $treeSize = (string) $request->input('tree_size');
@@ -97,7 +98,7 @@ final class AdminProposalController
                 'updated_at' => date(DATE_ATOM),
                 'updated_by' => $current['id'],
             ], [$longitude, $latitude]);
-            $this->notifyChanges($previous, $status, $species, $longitude, $latitude, $territoryService->municipality($municipalities, $longitude, $latitude));
+            $this->notifyChanges($previous, $status, $species, $longitude, $latitude, $territoryService->municipality($municipalities, $longitude, $latitude), $adminComment);
             header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=' . $tab), true, 303);
             exit;
         } catch (InvalidArgumentException|RuntimeException $exception) {
@@ -121,7 +122,7 @@ final class AdminProposalController
         return null;
     }
 
-    private function notifyChanges(array $previous, string $status, string $species, float $longitude, float $latitude, ?string $municipality): void
+    private function notifyChanges(array $previous, string $status, string $species, float $longitude, float $latitude, ?string $municipality, string $adminComment): void
     {
         $notifications = $this->app->config('notifications');
         $properties = $previous['properties'] ?? [];
@@ -140,6 +141,7 @@ final class AdminProposalController
             'proposal_id' => (string) ($properties['id'] ?? ''),
             'species' => $species,
             'location' => (string) (($properties['address'] ?? '') ?: $municipality ?: sprintf('%.5f, %.5f', $latitude, $longitude)),
+            'comment' => $adminComment !== '' ? $adminComment : 'Aucun commentaire.',
             'url' => $this->app->absoluteRouteUrl('/'),
         ];
         $notifier = new NotificationService($this->app->config('smtp'), $notifications, $this->app->logger());
