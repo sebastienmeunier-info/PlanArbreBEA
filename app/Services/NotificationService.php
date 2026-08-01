@@ -35,6 +35,7 @@ final class NotificationService
                 $recipient,
                 $this->replace((string) ($template['subject'] ?? ''), $variables),
                 $this->replace((string) ($template['body'] ?? ''), $variables),
+                (string) ($this->notifications['notification_cci'] ?? ''),
             );
             $this->logger->info('Notification envoyée.', ['event' => $event, 'recipient' => $recipient]);
             return true;

@@ -11,7 +11,7 @@ final class SmtpMailer
     /** @param array<string,mixed> $config */
     public function __construct(private readonly array $config) {}
 
-    public function send(string $recipient, string $subject, string $message): void
+    public function send(string $recipient, string $subject, string $message, string $blindCopy = ''): void
     {
         if (!extension_loaded('openssl')) { throw new RuntimeException('L’extension PHP OpenSSL est nécessaire pour l’envoi SMTP sécurisé.'); }
         if ((string) $this->config['password'] === '') { throw new RuntimeException('Le mot de passe SMTP n’est pas configuré.'); }
@@ -27,6 +27,9 @@ final class SmtpMailer
             $this->command($socket, base64_encode((string) $this->config['password']), [235]);
             $this->command($socket, 'MAIL FROM:<' . $this->config['from_email'] . '>', [250]);
             $this->command($socket, 'RCPT TO:<' . $recipient . '>', [250, 251]);
+            if ($blindCopy !== '' && mb_strtolower($blindCopy) !== mb_strtolower($recipient) && filter_var($blindCopy, FILTER_VALIDATE_EMAIL) !== false) {
+                $this->command($socket, 'RCPT TO:<' . $blindCopy . '>', [250, 251]);
+            }
             $this->command($socket, 'DATA', [354]);
             $headers = [
                 'From: ' . $this->encodeHeader((string) $this->config['from_name']) . ' <' . $this->config['from_email'] . '>',

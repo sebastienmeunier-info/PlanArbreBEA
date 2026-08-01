@@ -126,6 +126,8 @@ return [
     ],
     'notifications' => [
         'status_changes' => true,
+        // Copie cachée facultative de tous les e-mails transactionnels.
+        'notification_cci' => getenv('PLANTONS_NOTIFICATION_CCI') ?: '',
         'events' => ['validee', 'rejetee', 'arbre_plante', 'localisation_deplacee'],
         // Variables disponibles : {{project_name}}, {{first_name}}, {{last_name}},
         // {{proposal_id}}, {{species}}, {{location}}, {{comment}}, {{administrator_name}}, {{administrator_email}}, {{instance_url}}, {{url}}.
