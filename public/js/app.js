@@ -5,7 +5,7 @@
   const locationOutput = document.querySelector('#selected-location');
   const message = document.querySelector('#form-message');
   const toast = document.querySelector('#toast');
-  const map = L.map('map', { scrollWheelZoom: false }).setView(config.center, config.zoom);
+  const map = L.map('map', { scrollWheelZoom: window.matchMedia('(min-width: 48rem)').matches }).setView(config.center, config.zoom);
   const defaultBaseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
   window.PlantonsMapLayerControl?.add(map, defaultBaseLayer);
   let marker;
