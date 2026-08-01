@@ -34,6 +34,17 @@ Les demandes peuvent contenir une adresse e-mail facultative. Elle est enregistr
 
 La procédure de recherche des sources administratives officielles et de génération de `territoire.geojson` et `communes-deleguees.geojson` est décrite dans [la documentation GeoJSON](geojson.md).
 
+## Personnaliser la page « À propos »
+
+La page accessible par le lien « À propos » est définie dans `resources/templates/about.php`. Pour l’adapter à une collectivité :
+
+1. ouvrir ce fichier avec un éditeur de texte ;
+2. modifier les trois sections : objectif de l’application, adaptation au territoire et modalités de déploiement ;
+3. conserver la structure HTML existante (`<section>`, `<h2>` et `<p>`) afin de garder la mise en page ;
+4. transférer le fichier modifié sur l’hébergement, dans le même dossier.
+
+Le nom de l’application affiché dans le premier paragraphe provient automatiquement de `app.name` dans `config/config.php`. Il n’est donc pas nécessaire de le modifier dans la page « À propos ».
+
 ## Comptes et administration
 
 Chaque inscription crée un compte `contributeur`. Pour créer le premier administrateur, définir `PLANTONS_BOOTSTRAP_ADMIN_EMAIL` avec l'adresse e-mail de ce compte avant son inscription. Un administrateur peut ensuite promouvoir les contributeurs depuis `/admin/utilisateurs`.
