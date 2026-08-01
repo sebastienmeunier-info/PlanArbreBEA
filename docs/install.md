@@ -62,6 +62,23 @@ PLANTONS_SMTP_PASSWORD=mot-de-passe-de-la-boite-mail
 
 `PLANTONS_BASE_URL` garantit que les liens reçus par e-mail fonctionnent depuis l'hébergement FTP. Ne placez jamais le mot de passe SMTP dans `config/config.php`, dans le ZIP ou dans Git. La cause exacte d'un échec est inscrite dans `logs/application.log`, sans y enregistrer le mot de passe.
 
+### YunoHost — application `my_webapp`
+
+Pour rendre les variables d’environnement disponibles à l’application PHP, éditer le fichier du pool PHP-FPM :
+
+```bash
+nano /etc/php/8.4/fpm/pool.d/my_webapp.conf
+```
+
+Ajouter ou compléter les lignes suivantes, en remplaçant le mot de passe :
+
+```ini
+env[PLANTONS_SMTP_PASSWORD] = "mot de passe a renseigner"
+env[PLANTONS_NOTIFICATION_CCI] = "plantons@sebastienmeunier.info"
+```
+
+`PLANTONS_NOTIFICATION_CCI` est facultative : si elle est renseignée, cette adresse reçoit tous les e-mails transactionnels en copie cachée. Après modification, recharger le service PHP-FPM afin que les nouvelles variables soient prises en compte.
+
 ## Données affichées publiquement
 
 Les services publics `api/data/propositions` et `api/data/dons` ne retournent que le statut, l'essence, les objectifs ou caractéristiques de l'arbre et une position arrondie. Les coordonnées exactes, noms, e-mails, adresses, commentaires et photos restent dans les fichiers privés et ne sont disponibles que pour les administrateurs authentifiés. Le niveau d'arrondi se règle avec `privacy.public_coordinate_precision` dans `config/config.php`.
