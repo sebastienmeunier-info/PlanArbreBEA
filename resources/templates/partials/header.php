@@ -4,12 +4,14 @@
   <nav id="site-navigation" class="site-navigation" aria-label="Navigation principale">
     <?php if ($user ?? null): ?>
       <span class="user-menu">Bonjour <?= htmlspecialchars($user['first_name'], ENT_QUOTES, 'UTF-8') ?></span>
-      <?php if ($treeProposal ?? false): ?><a class="menu-button menu-proposal" href="<?= htmlspecialchars($routeUrl('/'), ENT_QUOTES, 'UTF-8') ?>">Proposer une plantation</a><?php else: ?><a class="menu-button menu-proposal" href="<?= htmlspecialchars($routeUrl('/proposer-un-arbre'), ENT_QUOTES, 'UTF-8') ?>">Proposer un arbre</a><?php endif; ?>
+      <a class="menu-button menu-proposal<?= !($treeProposal ?? false) ? ' menu-current' : '' ?>" href="<?= htmlspecialchars($routeUrl('/'), ENT_QUOTES, 'UTF-8') ?>">Proposer une plantation</a>
+      <a class="menu-button menu-proposal<?= ($treeProposal ?? false) ? ' menu-current' : '' ?>" href="<?= htmlspecialchars($routeUrl('/proposer-un-arbre'), ENT_QUOTES, 'UTF-8') ?>">Proposer un arbre</a>
       <a class="menu-button menu-admin" href="<?= htmlspecialchars($routeUrl('/mon-compte'), ENT_QUOTES, 'UTF-8') ?>">Espace Admin</a>
       <a class="menu-button" href="<?= htmlspecialchars($routeUrl('/donnees-personnelles'), ENT_QUOTES, 'UTF-8') ?>">Infos RGPD</a>
       <form class="logout-form" method="post" action="<?= htmlspecialchars($routeUrl('/deconnexion'), ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>"><button class="menu-button menu-logout">Déconnexion</button></form>
     <?php else: ?>
-      <?php if ($treeProposal ?? false): ?><a class="menu-button menu-proposal" href="<?= htmlspecialchars($routeUrl('/'), ENT_QUOTES, 'UTF-8') ?>">Proposer une plantation</a><?php else: ?><a class="menu-button menu-proposal" href="<?= htmlspecialchars($routeUrl('/proposer-un-arbre'), ENT_QUOTES, 'UTF-8') ?>">Proposer un arbre</a><?php endif; ?>
+      <a class="menu-button menu-proposal<?= !($treeProposal ?? false) ? ' menu-current' : '' ?>" href="<?= htmlspecialchars($routeUrl('/'), ENT_QUOTES, 'UTF-8') ?>">Proposer une plantation</a>
+      <a class="menu-button menu-proposal<?= ($treeProposal ?? false) ? ' menu-current' : '' ?>" href="<?= htmlspecialchars($routeUrl('/proposer-un-arbre'), ENT_QUOTES, 'UTF-8') ?>">Proposer un arbre</a>
       <a class="menu-button" href="<?= htmlspecialchars($routeUrl('/donnees-personnelles'), ENT_QUOTES, 'UTF-8') ?>">Infos RGPD</a><a class="menu-button" href="<?= htmlspecialchars($routeUrl('/connexion'), ENT_QUOTES, 'UTF-8') ?>">Connexion</a><a class="menu-button" href="<?= htmlspecialchars($routeUrl('/inscription'), ENT_QUOTES, 'UTF-8') ?>">Inscription</a>
     <?php endif; ?>
   </nav>
