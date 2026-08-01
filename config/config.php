@@ -10,8 +10,8 @@ $projectName = getenv('PLANTONS_PROJECT_NAME') ?: 'Plantons';
 $territoryName = getenv('PLANTONS_TERRITORY_NAME') ?: 'Baugé-en-Anjou';
 $territoryCenter = [47.5310, -0.1020];
 $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
-$detectedBasePath = str_ends_with($scriptName, '.php') ? dirname($scriptName) : '';
-$basePath = rtrim((string) (getenv('PLANTONS_BASE_PATH') ?: $detectedBasePath), '/.');
+$detectedBasePath = str_ends_with($scriptName, '.php') ? str_replace('\\', '/', dirname($scriptName)) : '';
+$basePath = str_replace('\\', '/', rtrim((string) (getenv('PLANTONS_BASE_PATH') ?: $detectedBasePath), '/.'));
 $basePath = $basePath === '/' ? '' : $basePath;
 
 return [
