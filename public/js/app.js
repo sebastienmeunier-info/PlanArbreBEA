@@ -5,6 +5,7 @@
   const locationOutput = document.querySelector('#selected-location');
   const message = document.querySelector('#form-message');
   const toast = document.querySelector('#toast');
+  const objectiveStatistics = document.querySelector('#objective-statistics');
   const map = L.map('map', { scrollWheelZoom: window.matchMedia('(min-width: 48rem)').matches }).setView(config.center, config.zoom);
   const defaultBaseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
   window.PlantonsMapLayerControl?.add(map, defaultBaseLayer);
@@ -17,6 +18,16 @@
   let photoPreparation = Promise.resolve();
 
   const setMessage = (text, kind = '') => { message.textContent = text; message.className = `form-message ${kind}`; };
+  const updateObjectiveStatistics = () => {
+    if (!objectiveStatistics) return;
+    const proposed = Number(objectiveStatistics.dataset.proposed || 0) + 1;
+    const validated = Number(objectiveStatistics.dataset.validated || 0);
+    const planted = Number(objectiveStatistics.dataset.planted || 0);
+    const noun = config.treeProposal ? 'arbres' : 'plantations';
+    const format = new Intl.NumberFormat('fr-FR');
+    objectiveStatistics.dataset.proposed = String(proposed);
+    objectiveStatistics.textContent = `Objectif : ${format.format(config.targetCount)} ${noun} — ${format.format(proposed)} ${noun} proposés, ${format.format(validated)} ${noun} validés, ${format.format(planted)} arbres plantés.`;
+  };
   const showToast = (text, kind = '') => { clearTimeout(toastTimer); toast.textContent = text; toast.className = `toast ${kind}`; toast.hidden = false; toastTimer = window.setTimeout(() => { toast.hidden = true; }, 5000); };
   const markerDetails = (status = 'a_valider') => {
     const cross = config.markerShape === 'cross';
@@ -108,6 +119,6 @@
   form.addEventListener('submit', async (event) => {
     event.preventDefault(); if (!form.latitude.value || !form.longitude.value) return setMessage('Choisissez l’emplacement de l’arbre sur la carte.', 'error'); await photoPreparation;
     const submit = form.querySelector('[type="submit"]'); submit.disabled = true; setMessage('Envoi de la proposition…');
-    try { const formData = new FormData(form); formData.delete('photos[]'); preparedPhotos.forEach((photo) => formData.append('photos[]', photo, photo.name)); const response = await fetch(config.proposalUrl, { method: 'POST', body: formData }); const data = await response.json(); if (!response.ok) throw new Error(data.message || 'Envoi impossible.'); form.reset(); preparedPhotos = []; document.querySelector('#photo-previews').textContent = ''; marker?.remove(); marker = undefined; renderProposal(data.feature); locationOutput.value = 'Choisissez un point sur la carte.'; setMessage(''); showToast(data.message); } catch (error) { setMessage(error.message, 'error'); } finally { submit.disabled = false; }
+    try { const formData = new FormData(form); formData.delete('photos[]'); preparedPhotos.forEach((photo) => formData.append('photos[]', photo, photo.name)); const response = await fetch(config.proposalUrl, { method: 'POST', body: formData }); const data = await response.json(); if (!response.ok) throw new Error(data.message || 'Envoi impossible.'); form.reset(); preparedPhotos = []; document.querySelector('#photo-previews').textContent = ''; marker?.remove(); marker = undefined; renderProposal(data.feature); updateObjectiveStatistics(); locationOutput.value = 'Choisissez un point sur la carte.'; setMessage(''); showToast(data.message); } catch (error) { setMessage(error.message, 'error'); } finally { submit.disabled = false; }
   });
 })();
