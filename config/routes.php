@@ -37,6 +37,7 @@ return [
     ['POST', '/admin/utilisateurs/role', [AdminUserController::class, 'changeRole']],
     ['POST', '/admin/utilisateurs/creer', [AdminUserController::class, 'create']],
     ['POST', '/admin/utilisateurs/modifier', [AdminUserController::class, 'updateProfile']],
+    ['POST', '/admin/utilisateurs/supprimer', [AdminUserController::class, 'delete']],
     ['GET', '/admin/propositions', [AdminProposalController::class, 'index']],
     ['POST', '/admin/propositions/modifier', [AdminProposalController::class, 'update']],
     ['POST', '/admin/dons/modifier', [AdminProposalController::class, 'updateDonation']],

@@ -71,6 +71,22 @@ final class AdminUserController
         header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=utilisateurs'), true, 303); exit;
     }
 
+    public function delete(Request $request): never
+    {
+        $auth = $this->auth();
+        $current = $this->guard($auth);
+        if (!$auth->verifyCsrf((string) $request->input('csrf_token'))) {
+            Response::html('Session expirée.', 403);
+        }
+        $target = $this->repository()->findById((string) $request->input('user_id'));
+        if ($current['role'] !== 'super_administrateur' || $target === null || !in_array($target['role'], ['contributeur', 'administrateur'], true)) {
+            Response::html('Cette suppression n’est pas autorisée.', 403);
+        }
+        $this->repository()->delete($target['id']);
+        header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=utilisateurs'), true, 303);
+        exit;
+    }
+
     public function updateProfile(Request $request): never
     {
         try {

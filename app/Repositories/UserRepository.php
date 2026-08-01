@@ -50,6 +50,16 @@ final class UserRepository
         throw new RuntimeException('Utilisateur introuvable.');
     }
 
+    public function delete(string $id): void
+    {
+        $users = $this->all();
+        $remaining = array_values(array_filter($users, static fn(array $user): bool => ($user['id'] ?? '') !== $id));
+        if (count($remaining) === count($users)) {
+            throw new RuntimeException('Utilisateur introuvable.');
+        }
+        $this->write($remaining);
+    }
+
     private function write(array $users): void
     {
         $directory = dirname($this->file);
