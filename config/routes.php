@@ -11,12 +11,14 @@ use Plantons\Controllers\AccountController;
 use Plantons\Controllers\AdminProposalController;
 use Plantons\Controllers\ExportController;
 use Plantons\Controllers\PrivacyController;
+use Plantons\Controllers\AboutController;
 
 return [
     ['GET', '/', [HomeController::class, 'index']],
     ['GET', '/proposer-un-arbre', [HomeController::class, 'treeProposal']],
     ['GET', '/sante', [HomeController::class, 'health']],
     ['GET', '/donnees-personnelles', [PrivacyController::class, 'index']],
+    ['GET', '/a-propos', [AboutController::class, 'index']],
     ['GET', '/api/data/territoire', [GeoJsonController::class, 'territory']],
     ['GET', '/api/data/communes-deleguees', [GeoJsonController::class, 'municipalities']],
     ['GET', '/api/data/arbres', [GeoJsonController::class, 'trees']],
