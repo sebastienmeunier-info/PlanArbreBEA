@@ -67,7 +67,7 @@ final class AdminUserController
         $auth = $this->auth(); $current = $this->guard($auth);
         if (!$auth->verifyCsrf((string) $request->input('csrf_token'))) { Response::html('Session expirée.', 403); }
         $target = $this->repository()->findById((string) $request->input('user_id')); $role = (string) $request->input('role');
-        if ($target === null || !$this->mayChangeRole($current['role'], $target['role'], $role)) { Response::html('Cette modification de rôle n’est pas autorisée.', 403); }
+        if ($target === null || !$this->mayChangeRole($current, $target, $role)) { Response::html('Cette modification de rôle n’est pas autorisée.', 403); }
         $this->repository()->update($target['id'], ['role' => $role]);
         header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=utilisateurs'), true, 303); exit;
     }
@@ -80,7 +80,7 @@ final class AdminUserController
             Response::html('Session expirée.', 403);
         }
         $target = $this->repository()->findById((string) $request->input('user_id'));
-        if ($current['role'] !== 'super_administrateur' || $target === null || !in_array($target['role'], ['contributeur', 'administrateur'], true)) {
+        if ($target === null || !$this->mayDelete($current, $target)) {
             Response::html('Cette suppression n’est pas autorisée.', 403);
         }
         $this->repository()->delete($target['id']);
@@ -99,7 +99,7 @@ final class AdminUserController
             $existing = $repository->findByEmail($email);
             if ($existing !== null && $existing['id'] !== $target['id']) { throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.'); }
             $role = $this->requestedRole($current, $target['role']);
-            if (!$this->mayEditRole($current['role'], $target['role'], $role)) { Response::html('Cette modification de rôle n’est pas autorisée.', 403); }
+            if (!$this->mayEditRole($current, $target, $role)) { Response::html('Cette modification de rôle n’est pas autorisée.', 403); }
             $repository->update($target['id'], ['first_name' => mb_substr($firstName, 0, 80), 'last_name' => mb_substr($lastName, 0, 80), 'email' => $email, 'address' => $address, 'phone' => $phone, 'role' => $role]);
             header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=utilisateurs'), true, 303); exit;
         } catch (InvalidArgumentException $exception) { Response::html(htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8'), 422); }
@@ -127,18 +127,35 @@ final class AdminUserController
         }
     }
 
-    private function mayChangeRole(string $actor, string $target, string $next): bool
+    private function mayChangeRole(array $actor, array $target, string $next): bool
     {
-        if ($target === 'super_administrateur') { return false; }
-        if ($actor === 'administrateur') { return $target === 'contributeur' && $next === 'administrateur'; }
-        return $actor === 'super_administrateur' && $target === 'administrateur' && in_array($next, ['contributeur', 'super_administrateur'], true);
+        if ($this->isPrimarySuperAdministrator($target)) { return false; }
+        if ($this->isPrimarySuperAdministrator($actor)) { return in_array($next, ['contributeur', 'administrateur', 'super_administrateur'], true); }
+        if ($target['role'] === 'super_administrateur') { return false; }
+        if ($actor['role'] === 'administrateur') { return $target['role'] === 'contributeur' && $next === 'administrateur'; }
+        return $actor['role'] === 'super_administrateur' && $target['role'] === 'administrateur' && in_array($next, ['contributeur', 'super_administrateur'], true);
     }
 
-    private function mayEditRole(string $actor, string $target, string $next): bool
+    private function mayEditRole(array $actor, array $target, string $next): bool
     {
-        if ($target === 'super_administrateur') { return $actor === 'super_administrateur' && $next === 'super_administrateur'; }
-        if ($actor === 'administrateur') { return in_array($target, ['contributeur', 'administrateur'], true) && in_array($next, ['contributeur', 'administrateur'], true); }
-        return $actor === 'super_administrateur' && !( $target === 'contributeur' && $next === 'super_administrateur');
+        if ($this->isPrimarySuperAdministrator($target)) { return false; }
+        if ($this->isPrimarySuperAdministrator($actor)) { return in_array($next, ['contributeur', 'administrateur', 'super_administrateur'], true); }
+        if ($target['role'] === 'super_administrateur') { return $actor['role'] === 'super_administrateur' && $next === 'super_administrateur'; }
+        if ($actor['role'] === 'administrateur') { return in_array($target['role'], ['contributeur', 'administrateur'], true) && in_array($next, ['contributeur', 'administrateur'], true); }
+        return $actor['role'] === 'super_administrateur' && !( $target['role'] === 'contributeur' && $next === 'super_administrateur');
+    }
+
+    private function mayDelete(array $actor, array $target): bool
+    {
+        if ($this->isPrimarySuperAdministrator($target)) { return false; }
+        if ($this->isPrimarySuperAdministrator($actor)) { return true; }
+        return $actor['role'] === 'super_administrateur' && in_array($target['role'], ['contributeur', 'administrateur'], true);
+    }
+
+    private function isPrimarySuperAdministrator(array $user): bool
+    {
+        $primary = $this->repository()->primarySuperAdministrator();
+        return $primary !== null && hash_equals((string) $primary['id'], (string) ($user['id'] ?? ''));
     }
 
     private function requestedRole(array $current, string $fallback): string

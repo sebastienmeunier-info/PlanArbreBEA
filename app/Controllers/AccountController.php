@@ -27,6 +27,7 @@ final class AccountController
         if (!in_array($tab, $allowedTabs, true)) { $tab = 'profil'; }
 
         $store = new GeoJsonStore();
+        $userRepository = new UserRepository($this->app->config('auth')['users_file']);
         $sources = $this->app->config('data_sources');
         $isDonationTab = $tab === 'dons';
         $allFeatures = $store->read($sources[$isDonationTab ? 'donations' : 'proposals']['file'])['features'];
@@ -34,7 +35,7 @@ final class AccountController
         $displayFeatures = $isAdministrator ? $allFeatures : $features;
         if ($isAdministrator) {
             $usersByEmail = [];
-            foreach ((new UserRepository($this->app->config('auth')['users_file']))->all() as $contributor) {
+            foreach ($userRepository->all() as $contributor) {
                 $usersByEmail[mb_strtolower((string) $contributor['email'])] = $contributor;
             }
             foreach ($displayFeatures as &$feature) {
@@ -70,7 +71,8 @@ final class AccountController
                 'failed' => 'Le compte est créé, mais l’invitation n’a pas pu être envoyée. Vérifiez la configuration SMTP puis renvoyez l’invitation.',
                 default => null,
             },
-            'users' => $isAdministrator ? (new UserRepository($this->app->config('auth')['users_file']))->all() : [],
+            'users' => $isAdministrator ? $userRepository->all() : [],
+            'primarySuperAdministratorId' => (string) ($userRepository->primarySuperAdministrator()['id'] ?? ''),
         ]));
     }
 

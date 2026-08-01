@@ -41,6 +41,16 @@ final class UserRepository
         return $users;
     }
 
+    public function primarySuperAdministrator(): ?array
+    {
+        foreach ($this->all() as $user) {
+            if (($user['role'] ?? '') === 'super_administrateur') {
+                return $user;
+            }
+        }
+        return null;
+    }
+
     public function update(string $id, array $changes): void
     {
         $users = $this->all();
