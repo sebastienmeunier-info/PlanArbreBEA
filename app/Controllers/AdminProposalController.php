@@ -126,7 +126,7 @@ final class AdminProposalController
         $notifications = $this->app->config('notifications');
         $properties = $previous['properties'] ?? [];
         $recipient = (string) ($properties['email'] ?? '');
-        if (($notifications['status_changes'] ?? false) !== true || filter_var($recipient, FILTER_VALIDATE_EMAIL) === false) {
+        if (($notifications['status_changes'] ?? false) !== true || empty($properties['notification_consent_at']) || filter_var($recipient, FILTER_VALIDATE_EMAIL) === false) {
             return;
         }
 
