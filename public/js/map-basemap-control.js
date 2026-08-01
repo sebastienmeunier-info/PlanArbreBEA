@@ -51,7 +51,8 @@
 
       control.onAdd = () => {
         const button = L.DomUtil.create('button', 'leaflet-bar basemap-control-button');
-        button.type = 'button'; button.title = 'Choisir le fond de carte'; button.setAttribute('aria-label', 'Choisir le fond de carte'); button.textContent = '🗺️';
+        button.type = 'button'; button.title = 'Choisir parmi 2 fonds de carte'; button.setAttribute('aria-label', 'Choisir parmi 2 fonds de carte');
+        button.innerHTML = '<svg class="basemap-control-layers" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5 12 3l9 4.5L12 12 3 7.5Z"/><path d="m5.5 12 6.5 3.3 6.5-3.3"/><path d="m5.5 16.2 6.5 3.3 6.5-3.3"/></svg><span class="basemap-control-count" aria-hidden="true">2</span>';
         L.DomEvent.disableClickPropagation(button); L.DomEvent.on(button, 'click', openChooser);
         return button;
       };
