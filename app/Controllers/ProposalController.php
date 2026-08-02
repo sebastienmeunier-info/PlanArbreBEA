@@ -75,7 +75,7 @@ final class ProposalController
                 throw new InvalidArgumentException('Le point sélectionné est situé hors du territoire autorisé.');
             }
 
-            $municipalities = $store->read($sources['delegated_municipalities']['file']);
+            $sectors = $store->read($sources['sectors']['file']);
             $photos = (new PhotoService())->store($request->files('photos'), $this->app->config('security'), $this->app->config('paths')['uploads']);
             $feature = [
                 'type' => 'Feature',
@@ -93,7 +93,7 @@ final class ProposalController
                     'tree_size' => $source === 'donations' ? $treeSize : null,
                     'comment' => $comment,
                     'address' => mb_substr(trim((string) $request->input('address')), 0, 255),
-                    'delegated_municipality' => $territoryService->municipality($municipalities, $longitude, $latitude),
+                    'sector' => $territoryService->municipality($sectors, $longitude, $latitude),
                     'photos' => $photos,
                 ],
             ];

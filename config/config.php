@@ -8,6 +8,7 @@ $root = dirname(__DIR__);
 $environment = getenv('PLANTONS_ENV') ?: 'development';
 $projectName = getenv('PLANTONS_PROJECT_NAME') ?: 'Plantons';
 $territoryName = getenv('PLANTONS_TERRITORY_NAME') ?: 'Baugé-en-Anjou';
+$sectorType = getenv('PLANTONS_TYPE_SECTEUR') ?: 'commune déléguée';
 $territoryCenter = [47.5310, -0.1020];
 $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
 $detectedBasePath = str_ends_with($scriptName, '.php') ? str_replace('\\', '/', dirname($scriptName)) : '';
@@ -38,6 +39,7 @@ return [
      */
     'territory' => [
         'name' => $territoryName,
+        'type_secteur' => $sectorType,
         'center' => $territoryCenter,
         'timezone' => getenv('PLANTONS_TIMEZONE') ?: 'Europe/Paris',
     ],
@@ -66,9 +68,9 @@ return [
             'file' => $root . '/data/territoire.geojson',
             'url' => getenv('PLANTONS_TERRITORY_GEOJSON_URL') ?: '/api/data/territoire',
         ],
-        'delegated_municipalities' => [
-            'file' => $root . '/data/communes-deleguees.geojson',
-            'url' => getenv('PLANTONS_MUNICIPALITIES_GEOJSON_URL') ?: '/api/data/communes-deleguees',
+        'sectors' => [
+            'file' => getenv('PLANTONS_SECTORS_GEOJSON_FILE') ?: $root . '/data/communes-deleguees.geojson',
+            'url' => getenv('PLANTONS_SECTORS_GEOJSON_URL') ?: (getenv('PLANTONS_MUNICIPALITIES_GEOJSON_URL') ?: '/api/data/secteurs'),
         ],
     ],
     'geocoding' => [

@@ -92,13 +92,13 @@ final class AdminProposalController
             if (!$territoryService->contains($territory, $longitude, $latitude)) {
                 throw new InvalidArgumentException('La localisation doit rester dans le territoire autorisé.');
             }
-            $municipalities = $store->read($sources['delegated_municipalities']['file']);
+            $sectors = $store->read($sources['sectors']['file']);
             $store->updateFeature($sources[$source]['file'], $proposalId, $changes + [
-                'delegated_municipality' => $territoryService->municipality($municipalities, $longitude, $latitude),
+                'sector' => $territoryService->municipality($sectors, $longitude, $latitude),
                 'updated_at' => date(DATE_ATOM),
                 'updated_by' => $current['id'],
             ], [$longitude, $latitude]);
-            $this->notifyChanges($previous, $status, $species, $longitude, $latitude, $territoryService->municipality($municipalities, $longitude, $latitude), $adminComment, $current);
+            $this->notifyChanges($previous, $status, $species, $longitude, $latitude, $territoryService->municipality($sectors, $longitude, $latitude), $adminComment, $current);
             header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=' . $tab), true, 303);
             exit;
         } catch (InvalidArgumentException|RuntimeException $exception) {

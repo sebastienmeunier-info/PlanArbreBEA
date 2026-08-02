@@ -133,7 +133,7 @@ final class ExportController
 
         fputcsv($handle, [
             'source', 'id', 'statut', 'date_creation', 'date_mise_a_jour', 'essence', 'objectifs', 'conditionnement', 'taille_arbre',
-            'commentaire', 'adresse', 'commune_deleguee', 'longitude', 'latitude', 'auteur_saisi', 'email_proposition',
+            'commentaire', 'adresse', 'secteur', 'longitude', 'latitude', 'auteur_saisi', 'email_proposition',
             'contributeur_nom', 'contributeur_email', 'contributeur_adresse', 'contributeur_telephone', 'contributeur_role', 'contributeur_inscrit_le',
             'photos_urls',
         ], ';', '"', '');
@@ -144,7 +144,7 @@ final class ExportController
             fputcsv($handle, [
                 $properties['export_source'] ?? '', $properties['id'] ?? '', $properties['status'] ?? '', $properties['created_at'] ?? '', $properties['updated_at'] ?? '',
                 $properties['species'] ?? '', implode(' | ', (array) ($properties['objectives'] ?? [])), $properties['conditioning'] ?? '', $properties['tree_size'] ?? '',
-                $properties['comment'] ?? '', $properties['address'] ?? '', $properties['delegated_municipality'] ?? '', $coordinates[0] ?? '', $coordinates[1] ?? '',
+                $properties['comment'] ?? '', $properties['address'] ?? '', $properties['sector'] ?? $properties['delegated_municipality'] ?? '', $coordinates[0] ?? '', $coordinates[1] ?? '',
                 $properties['author'] ?? '', $properties['email'] ?? '', $contributor['name'] ?? '', $contributor['email'] ?? '', $contributor['address'] ?? '',
                 $contributor['phone'] ?? '', $contributor['role'] ?? '', $contributor['created_at'] ?? '', implode(' | ', (array) ($properties['photo_urls'] ?? [])),
             ], ';', '"', '');

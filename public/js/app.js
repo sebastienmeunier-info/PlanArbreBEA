@@ -11,7 +11,7 @@
   window.PlantonsMapLayerControl?.add(map, defaultBaseLayer);
   let marker;
   let territory;
-  let municipalities;
+  let sectors;
   let toastTimer;
   let locationRequest = 0;
   let preparedPhotos = [];
@@ -38,7 +38,7 @@
   };
   const proposalIcon = (status) => { const details = markerDetails(status); return L.divIcon({ className: '', html: `<span class="proposal-marker ${details.className}" aria-hidden="true">${details.icon}</span>`, iconSize: [42, 42], iconAnchor: [21, 21] }); };
   const renderProposal = (feature) => L.geoJSON(feature, { pointToLayer: (item, latLng) => L.marker(latLng, { icon: proposalIcon(item.properties?.status) }), onEachFeature: (item, layer) => { const properties = item.properties || {}; const details = properties.conditioning ? [config.conditionings?.[properties.conditioning]?.label || properties.conditioning, properties.tree_size ? (config.treeSizes?.[properties.tree_size]?.label || properties.tree_size) : ''].filter(Boolean).join(' · ') : (properties.objectives || []).map((objective) => config.objectives[objective]?.label || objective).join(', '); layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${details || 'Information non renseignée'}`); } }).addTo(map);
-  const delegatedMunicipality = (longitude, latitude) => municipalities?.features?.find((feature) => window.turf && turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))?.properties?.nom || '';
+  const sectorAt = (longitude, latitude) => sectors?.features?.find((feature) => window.turf && turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))?.properties?.nom || '';
   const shortAddress = (place) => {
     if (place?.properties) return [place.properties.name, place.properties.postcode, place.properties.city].filter(Boolean).join(' ');
     const address = place.address || {};
@@ -48,14 +48,14 @@
   const describeLocation = async (latitude, longitude, knownAddress = '') => {
     const request = ++locationRequest;
     let address = knownAddress;
-    const municipality = delegatedMunicipality(longitude, latitude);
-    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — recherche de l’adresse… — ${municipality || 'commune déléguée non identifiée'}`;
+    const sector = sectorAt(longitude, latitude);
+    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — recherche de l’adresse… — ${sector || `${config.sectorType || 'secteur'} non identifié`}`;
     if (!address) {
       try { const response = await fetch(`${config.geocodingReverseUrl}?lat=${latitude}&lon=${longitude}&limit=1`, { headers: { Accept: 'application/geo+json, application/json' } }); const payload = await response.json(); address = shortAddress(payload.features?.[0] || payload); } catch { address = ''; }
     }
     if (request !== locationRequest) return;
     document.querySelector('#selected-address').value = address;
-    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${address || 'adresse non trouvée'} — ${municipality || 'commune déléguée non identifiée'}`;
+    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${address || 'adresse non trouvée'} — ${sector || `${config.sectorType || 'secteur'} non identifié`}`;
   };
   const setPosition = (latitude, longitude, address = '') => {
     const latLng = [latitude, longitude];
@@ -77,7 +77,7 @@
     const layer = L.geoJSON(geojson, { style: { color: '#1f6b3b', weight: 2, fillOpacity: .08 } }).addTo(map);
     map.fitBounds(layer.getBounds(), { padding: [16, 16], maxZoom: config.zoom });
   }).catch(() => setMessage('La limite du territoire n’est pas disponible pour le moment.', 'error'));
-  fetch(config.municipalitiesUrl).then((response) => response.ok ? response.json() : null).then((geojson) => { municipalities = geojson; });
+  fetch(config.sectorsUrl).then((response) => response.ok ? response.json() : null).then((geojson) => { sectors = geojson; });
   fetch(config.proposalsUrl).then((response) => response.ok ? response.json() : null).then((geojson) => {
     if (!geojson?.features?.length) return;
     geojson.features.forEach(renderProposal);

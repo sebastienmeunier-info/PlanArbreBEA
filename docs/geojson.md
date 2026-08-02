@@ -3,9 +3,11 @@
 Plantons utilise deux fichiers de référence dans `data/` :
 
 - `territoire.geojson` : les contours des communes actuelles qui composent le territoire autorisé ;
-- `communes-deleguees.geojson` : les contours des communes déléguées, pour afficher le bon nom de commune au moment d'une proposition.
+- `communes-deleguees.geojson` : les contours des secteurs ; il peut s’agir de communes déléguées, de quartiers ou de tout autre découpage local.
 
-Les deux fichiers sont des `FeatureCollection` GeoJSON. Ils sont volontairement séparés : le premier sert au contrôle de l'emprise du projet, le second à l'identification précise de la commune déléguée.
+Les deux fichiers sont des `FeatureCollection` GeoJSON. Ils sont volontairement séparés : le premier sert au contrôle de l'emprise du projet, le second à l'identification précise du secteur.
+
+Dans `config/config.php`, la clé `territory.type_secteur` définit le libellé affiché. Elle vaut par défaut `commune déléguée` et peut être remplacée par `quartier`. La source GeoJSON des secteurs se configure dans `data_sources.sectors` ; les variables d’environnement `PLANTONS_SECTORS_GEOJSON_FILE` et `PLANTONS_SECTORS_GEOJSON_URL` permettent aussi de la surcharger sans modifier le code.
 
 ## Sources officielles
 
@@ -36,7 +38,7 @@ Le script `scripts/generate_geojson.py` ne nécessite aucune bibliothèque Pytho
 python scripts/generate_geojson.py --communes 49018 --departments 49 --output-dir data
 ```
 
-Cet exemple produit les deux fichiers dans `data/` pour la commune actuelle de code INSEE `49018`, située dans le département `49`. La commande télécharge les contours courants, puis sélectionne les communes déléguées dont le chef-lieu est rattaché à la ou aux communes indiquées.
+Cet exemple produit les deux fichiers dans `data/` pour la commune actuelle de code INSEE `49018`, située dans le département `49`. La commande télécharge les contours courants, puis sélectionne les secteurs dont le chef-lieu est rattaché à la ou aux communes indiquées.
 
 Un territoire intercommunal ou réparti sur plusieurs départements s'écrit ainsi :
 
@@ -44,7 +46,7 @@ Un territoire intercommunal ou réparti sur plusieurs départements s'écrit ain
 python scripts/generate_geojson.py --communes 12345 12346 --departments 12 34 --output-dir data
 ```
 
-À la fin, le script indique le nombre de limites enregistrées dans chaque fichier. Un fichier `communes-deleguees.geojson` vide est valide lorsqu'aucune commune déléguée n'est rattachée au territoire.
+À la fin, le script indique le nombre de limites enregistrées dans chaque fichier. Un fichier de secteurs vide est valide lorsqu’aucun secteur n’est rattaché au territoire.
 
 ## Vérification et mise en service
 

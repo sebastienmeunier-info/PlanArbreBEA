@@ -8,7 +8,7 @@
 - Ajout de l'inscription, connexion, réinitialisation de mot de passe et gestion des rôles contributeur/administrateur.
 - Configuration du nom et du logo du projet, ajout du menu et des indicateurs de plantation dans l'en-tête public.
 - Raccourcissement de l'adresse affichée après sélection cartographique.
-- Infobulle enrichie avec l'essence et les objectifs, et complétion d'adresse et de commune déléguée après le clic cartographique.
+- Infobulle enrichie avec l'essence et les objectifs, et complétion d'adresse et de secteur après le clic cartographique.
 - Ajout des repères de carte colorés selon le statut de chaque proposition.
 - Limitation à trois objectifs, ajout du repère orange et d'une confirmation éphémère après envoi.
 - Ajout d'un thème sombre à haut contraste et d'une mise en page mobile adaptée à l'usage extérieur.

@@ -20,7 +20,7 @@ return [
     ['GET', '/donnees-personnelles', [PrivacyController::class, 'index']],
     ['GET', '/a-propos', [AboutController::class, 'index']],
     ['GET', '/api/data/territoire', [GeoJsonController::class, 'territory']],
-    ['GET', '/api/data/communes-deleguees', [GeoJsonController::class, 'municipalities']],
+    ['GET', '/api/data/secteurs', [GeoJsonController::class, 'sectors']],
     ['GET', '/api/data/arbres', [GeoJsonController::class, 'trees']],
     ['GET', '/api/data/propositions', [GeoJsonController::class, 'proposals']],
     ['GET', '/api/data/dons', [GeoJsonController::class, 'donations']],

@@ -14,7 +14,7 @@ final class GeoJsonController
     public function __construct(private readonly Application $app) {}
 
     public function territory(Request $request): never { $this->respond('territory'); }
-    public function municipalities(Request $request): never { $this->respond('delegated_municipalities'); }
+    public function sectors(Request $request): never { $this->respond('sectors'); }
     public function trees(Request $request): never { $this->respond('trees'); }
     public function proposals(Request $request): never { $this->respondPublicProposals('proposals'); }
     public function donations(Request $request): never { $this->respondPublicProposals('donations'); }
