@@ -192,6 +192,7 @@ return [
         'administrator_emails' => ['contact@sebastienmeunier.info'],
         'bootstrap_super_admin_email' => strtolower((string) (getenv('PLANTONS_BOOTSTRAP_SUPER_ADMIN_EMAIL') ?: '')),
         'validation_inscription_obligatoire' => filter_var(getenv('PLANTONS_VALIDATION_INSCRIPTION_OBLIGATOIRE') ?: false, FILTER_VALIDATE_BOOL),
+        'inscription_obligatoire' => filter_var(getenv('PLANTONS_INSCRIPTION_OBLIGATOIRE') ?: false, FILTER_VALIDATE_BOOL),
         'roles' => ['contributeur', 'administrateur', 'super_administrateur'],
     ],
     'smtp' => [

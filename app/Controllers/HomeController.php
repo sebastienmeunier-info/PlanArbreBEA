@@ -29,6 +29,10 @@ final class HomeController
     {
         $auth = new AuthService(new UserRepository($this->app->config('auth')['users_file']), $this->app->config('auth'));
         $user = $auth->currentUser();
+        if ((bool) ($this->app->config('auth')['inscription_obligatoire'] ?? false) && $user === null) {
+            header('Location: ' . $this->app->routeUrl('/connexion'), true, 303);
+            exit;
+        }
         $planting = $this->app->config('planting');
         $dataSources = $this->app->config('data_sources');
         $proposalFeatures = (new GeoJsonStore())->read($dataSources[$source]['file'])['features'];

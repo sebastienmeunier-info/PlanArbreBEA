@@ -8,6 +8,8 @@ use InvalidArgumentException;
 use Plantons\Core\Application;
 use Plantons\Core\Request;
 use Plantons\Core\Response;
+use Plantons\Repositories\UserRepository;
+use Plantons\Services\AuthService;
 use Plantons\Services\GeoJsonStore;
 use Plantons\Services\PhotoService;
 use Plantons\Services\TerritoryService;
@@ -30,6 +32,9 @@ final class ProposalController
     private function createForSource(Request $request, string $source): never
     {
         try {
+            if ((bool) ($this->app->config('auth')['inscription_obligatoire'] ?? false) && $this->auth()->currentUser() === null) {
+                Response::json(['message' => 'Vous devez vous connecter avant d’envoyer une proposition.'], 403);
+            }
             $this->verifyCsrf((string) $request->input('csrf_token'));
             $planting = $this->app->config('planting');
             $longitude = $this->number($request->input('longitude'), 'Longitude invalide.');
@@ -113,6 +118,11 @@ final class ProposalController
         if ($token === '' || !hash_equals((string) ($_SESSION['csrf_token'] ?? ''), $token)) {
             throw new InvalidArgumentException('Votre session a expiré. Veuillez recharger la page.');
         }
+    }
+
+    private function auth(): AuthService
+    {
+        return new AuthService(new UserRepository($this->app->config('auth')['users_file']), $this->app->config('auth'));
     }
 
     private function number(mixed $value, string $message): float
