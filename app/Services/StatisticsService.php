@@ -18,10 +18,10 @@ final class StatisticsService
         foreach ($statusLabels as $status => $label) {
             $statuses[$this->normalizeStatus((string) $status)] = $label;
         }
-        $approvedContributors = [];
+        $contributors = [];
         foreach ($users as $user) {
-            if (($user['role'] ?? '') === 'contributeur' && ($user['registration_status'] ?? 'approved') === 'approved') {
-                $approvedContributors[mb_strtolower((string) ($user['email'] ?? ''))] = [
+            if (($user['role'] ?? '') === 'contributeur') {
+                $contributors[mb_strtolower((string) ($user['email'] ?? ''))] = [
                     'name' => trim((string) ($user['first_name'] ?? '') . ' ' . (string) ($user['last_name'] ?? '')),
                     'email' => (string) ($user['email'] ?? ''),
                     'total' => 0,
@@ -46,25 +46,25 @@ final class StatisticsService
             $statusTotals[$status]++;
 
             $email = mb_strtolower((string) ($properties['email'] ?? ''));
-            if (isset($approvedContributors[$email])) {
-                $approvedContributors[$email]['total']++;
+            if (isset($contributors[$email])) {
+                $contributors[$email]['total']++;
                 if (in_array($status, ['validee', 'arbre_plante'], true)) {
-                    $approvedContributors[$email]['successful']++;
+                    $contributors[$email]['successful']++;
                 }
             }
         }
 
         ksort($bySector, SORT_NATURAL | SORT_FLAG_CASE);
-        $contributions = array_sum(array_column($approvedContributors, 'total'));
-        $leaders = array_values(array_filter($approvedContributors, static fn(array $contributor): bool => $contributor['successful'] > 0));
+        $contributions = array_sum(array_column($contributors, 'total'));
+        $leaders = array_values(array_filter($contributors, static fn(array $contributor): bool => $contributor['successful'] > 0));
         usort($leaders, static fn(array $left, array $right): int => [$right['successful'], $right['total'], $left['name']] <=> [$left['successful'], $left['total'], $right['name']]);
 
         return [
             'statuses' => $statuses,
             'by_sector' => $bySector,
             'status_totals' => $statusTotals,
-            'contributor_count' => count($approvedContributors),
-            'average_contributions' => $approvedContributors === [] ? 0 : round($contributions / count($approvedContributors), 1),
+            'contributor_count' => count($contributors),
+            'average_contributions' => $contributors === [] ? 0 : round($contributions / count($contributors), 1),
             'leaders' => array_slice($leaders, 0, 10),
         ];
     }
