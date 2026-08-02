@@ -20,7 +20,7 @@ final class StatisticsService
         }
         $contributors = [];
         foreach ($users as $user) {
-            if (($user['role'] ?? '') === 'contributeur') {
+            if (in_array($user['role'] ?? '', ['contributeur', 'administrateur', 'super_administrateur'], true)) {
                 $contributors[mb_strtolower((string) ($user['email'] ?? ''))] = [
                     'name' => trim((string) ($user['first_name'] ?? '') . ' ' . (string) ($user['last_name'] ?? '')),
                     'email' => (string) ($user['email'] ?? ''),
