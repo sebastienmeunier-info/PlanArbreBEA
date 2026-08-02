@@ -71,6 +71,12 @@ return [
             'url' => getenv('PLANTONS_MUNICIPALITIES_GEOJSON_URL') ?: '/api/data/communes-deleguees',
         ],
     ],
+    'geocoding' => [
+        // Service public IGN/BAN : à conserver modifiable pour un autre territoire
+        // ou une infrastructure de géocodage locale.
+        'search_url' => getenv('PLANTONS_GEOCODING_SEARCH_URL') ?: 'https://data.geopf.fr/geocodage/search',
+        'reverse_url' => getenv('PLANTONS_GEOCODING_REVERSE_URL') ?: 'https://data.geopf.fr/geocodage/reverse',
+    ],
     'planting' => [
         'target_count' => 1000,
         'max_objectives_per_proposal' => 3,

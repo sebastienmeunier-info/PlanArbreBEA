@@ -50,6 +50,7 @@ final class HomeController
             'map' => $this->app->config('map'),
             'proposals' => $this->app->config('proposals'),
             'dataSources' => $dataSources,
+            'geocoding' => $this->app->config('geocoding'),
             'activeDataSource' => $dataSources[$source],
             'submissionUrl' => $submissionUrl,
             'csrfToken' => $auth->csrfToken(),

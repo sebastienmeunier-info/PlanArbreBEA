@@ -40,6 +40,7 @@
   const renderProposal = (feature) => L.geoJSON(feature, { pointToLayer: (item, latLng) => L.marker(latLng, { icon: proposalIcon(item.properties?.status) }), onEachFeature: (item, layer) => { const properties = item.properties || {}; const details = properties.conditioning ? [config.conditionings?.[properties.conditioning]?.label || properties.conditioning, properties.tree_size ? (config.treeSizes?.[properties.tree_size]?.label || properties.tree_size) : ''].filter(Boolean).join(' · ') : (properties.objectives || []).map((objective) => config.objectives[objective]?.label || objective).join(', '); layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${details || 'Information non renseignée'}`); } }).addTo(map);
   const delegatedMunicipality = (longitude, latitude) => municipalities?.features?.find((feature) => window.turf && turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))?.properties?.nom || '';
   const shortAddress = (place) => {
+    if (place?.properties) return [place.properties.name, place.properties.postcode, place.properties.city].filter(Boolean).join(' ');
     const address = place.address || {};
     const street = [address.house_number, address.road || address.pedestrian || address.footway].filter(Boolean).join(' ');
     return street || address.amenity || address.building || address.hamlet || (place.display_name || '').split(',')[0] || 'adresse non trouvée';
@@ -50,7 +51,7 @@
     const municipality = delegatedMunicipality(longitude, latitude);
     locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — recherche de l’adresse… — ${municipality || 'commune déléguée non identifiée'}`;
     if (!address) {
-      try { const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=${latitude}&lon=${longitude}`, { headers: { Accept: 'application/json' } }); const place = await response.json(); address = shortAddress(place); } catch { address = ''; }
+      try { const response = await fetch(`${config.geocodingReverseUrl}?lat=${latitude}&lon=${longitude}&limit=1`, { headers: { Accept: 'application/geo+json, application/json' } }); const payload = await response.json(); address = shortAddress(payload.features?.[0] || payload); } catch { address = ''; }
     }
     if (request !== locationRequest) return;
     document.querySelector('#selected-address').value = address;
@@ -90,7 +91,7 @@
   document.querySelector('#address-search').addEventListener('submit', async (event) => {
     event.preventDefault(); const query = document.querySelector('#address').value.trim(); if (query.length < 3) return;
     const results = document.querySelector('#address-results'); results.textContent = 'Recherche en cours…';
-    try { const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`, { headers: { Accept: 'application/json' } }); const places = await response.json(); results.replaceChildren(...places.map((place) => { const button = document.createElement('button'); button.type = 'button'; button.textContent = place.display_name; button.onclick = () => { setPosition(Number(place.lat), Number(place.lon), shortAddress(place)); results.textContent = ''; }; return button; })); } catch { results.textContent = 'La recherche d’adresse est indisponible.'; }
+    try { const response = await fetch(`${config.geocodingSearchUrl}?q=${encodeURIComponent(query)}&limit=5`, { headers: { Accept: 'application/geo+json, application/json' } }); const payload = await response.json(); const places = payload.features || payload; results.replaceChildren(...places.map((place) => { const button = document.createElement('button'), coordinates = place.geometry?.coordinates || [place.lon, place.lat]; button.type = 'button'; button.textContent = place.properties?.label || place.display_name; button.onclick = () => { setPosition(Number(coordinates[1]), Number(coordinates[0]), shortAddress(place)); results.textContent = ''; }; return button; })); } catch { results.textContent = 'La recherche d’adresse est indisponible.'; }
   });
   const canvasBlob = (canvas, quality) => new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', quality));
   const compressPhoto = async (file) => {
