@@ -98,10 +98,10 @@ return [
             'pleine_terre' => ['label' => 'Pleine terre', 'icon' => '🌱'],
         ],
         'tree_sizes' => [
-            'moins_1m' => ['label' => 'Moins d’1 m', 'icon' => '🌱'],
-            '1_a_2m' => ['label' => 'De 1 à 2 m', 'icon' => '🌿'],
-            '2_a_4m' => ['label' => 'De 2 à 4 m', 'icon' => '🌳'],
-            'plus_4m' => ['label' => 'Plus de 4 m', 'icon' => '🌲'],
+            'moins_50cm' => ['label' => 'Moins de 50 cm', 'icon' => '🌱'],
+            '50cm_a_1m' => ['label' => 'De 50 cm à 1 m', 'icon' => '🌿'],
+            '1_a_2m' => ['label' => 'De 1 à 2 m', 'icon' => '🌳'],
+            'plus_2m' => ['label' => 'Plus de 2 m', 'icon' => '🌲'],
         ],
     ],
     'logging' => [
@@ -123,8 +123,8 @@ return [
         'public_coordinate_precision' => 4,
         'public_proposal_properties' => ['status', 'species', 'objectives', 'conditioning', 'tree_size'],
         // Mentions à adapter par chaque collectivité avant mise en production.
-        'controller_name' => getenv('PLANTONS_PRIVACY_CONTROLLER') ?: 'Commune de ' . $territoryName,
-        'contact_email' => getenv('PLANTONS_PRIVACY_CONTACT_EMAIL') ?: 'contact@sebastienmeunier.info',
+        'controller_name' => getenv('PLANTONS_PRIVACY_CONTROLLER') ?: 'Sébastien MEUNIER, conseiller municipal (minorité) - Commune de ' . $territoryName,
+        'contact_email' => getenv('PLANTONS_PRIVACY_CONTACT_EMAIL') ?: 'plantons@sebastienmeunier.info',
         'dpo_email' => getenv('PLANTONS_DPO_EMAIL') ?: '',
         'legal_basis' => getenv('PLANTONS_PRIVACY_LEGAL_BASIS') ?: 'mission d’intérêt public exercée par la collectivité',
         'account_retention' => getenv('PLANTONS_ACCOUNT_RETENTION') ?: 'pendant la durée d’utilisation du compte, puis 3 ans après sa dernière activité',
@@ -133,7 +133,7 @@ return [
     'notifications' => [
         'status_changes' => true,
         // Copie cachée facultative de tous les e-mails transactionnels.
-        'notification_cci' => getenv('PLANTONS_NOTIFICATION_CCI') ?: '',
+        'notification_cci' => getenv('PLANTONS_NOTIFICATION_CCI') ?: 'plantons@sebastienmeunier.info',
         'events' => ['validee', 'rejetee', 'arbre_plante', 'localisation_deplacee'],
         // Variables disponibles : {{project_name}}, {{first_name}}, {{last_name}},
         // {{proposal_id}}, {{species}}, {{location}}, {{comment}}, {{administrator_name}}, {{administrator_email}}, {{instance_url}}, {{url}}.
@@ -193,10 +193,10 @@ return [
         'host' => getenv('PLANTONS_SMTP_HOST') ?: 'ssl0.ovh.net',
         'port' => (int) (getenv('PLANTONS_SMTP_PORT') ?: 465),
         'encryption' => getenv('PLANTONS_SMTP_ENCRYPTION') ?: 'ssl',
-        'username' => getenv('PLANTONS_SMTP_USERNAME') ?: 'contact@sebastienmeunier.info',
+        'username' => getenv('PLANTONS_SMTP_USERNAME') ?: 'plantons@sebastienmeunier.info',
         // PLANARBRE_SMTP_PASSWORD est accepté pour les installations déjà configurées.
         'password' => getenv('PLANTONS_SMTP_PASSWORD') ?: (getenv('PLANARBRE_SMTP_PASSWORD') ?: ''),
-        'from_email' => getenv('PLANTONS_SMTP_FROM_EMAIL') ?: 'contact@sebastienmeunier.info',
+        'from_email' => getenv('PLANTONS_SMTP_FROM_EMAIL') ?: 'plantons@sebastienmeunier.info',
         'from_name' => getenv('PLANTONS_SMTP_FROM_NAME') ?: $projectName,
     ],
     'map' => [
