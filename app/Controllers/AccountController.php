@@ -58,6 +58,11 @@ final class AccountController
             elseif (in_array($status, ['refusee', 'rejetee'], true)) { $counts['rejected']++; }
             else { $counts['proposed']++; }
         }
+        $managedUsers = $isAdministrator ? $userRepository->all() : [];
+        $registrationStatuses = [];
+        foreach ($managedUsers as $managedUser) {
+            $registrationStatuses[(string) $managedUser['id']] = (string) ($managedUser['registration_status'] ?? 'approved');
+        }
 
         Response::html($this->app->view()->render('account/index', [
             'application' => $this->app->config('app'), 'csrfToken' => $auth->csrfToken(), 'user' => $user,
@@ -66,12 +71,17 @@ final class AccountController
             'planting' => $this->app->config('planting'), 'isDonationTab' => $isDonationTab,
             'notice' => $request->query('import') === 'done'
                 ? sprintf('Import terminé : %d utilisateur(s), %d plantation(s), %d don(s), %d photo(s) ajoutés et %d e-mail(s) envoyé(s).', (int) $request->query('users'), (int) $request->query('proposals'), (int) $request->query('donations'), (int) $request->query('photos'), (int) $request->query('emails'))
-                : match ($request->query('invite')) {
-                'sent' => 'Le compte a été créé et l’invitation a été envoyée.',
-                'failed' => 'Le compte est créé, mais l’invitation n’a pas pu être envoyée. Vérifiez la configuration SMTP puis renvoyez l’invitation.',
-                default => null,
+                : match ($request->query('approval')) {
+                'sent' => 'L’inscription a été approuvée et le courriel de confirmation a été envoyé.',
+                'failed' => 'L’inscription est approuvée, mais le courriel de confirmation n’a pas pu être envoyé.',
+                default => match ($request->query('invite')) {
+                    'sent' => 'Le compte a été créé et l’invitation a été envoyée.',
+                    'failed' => 'Le compte est créé, mais l’invitation n’a pas pu être envoyée. Vérifiez la configuration SMTP puis renvoyez l’invitation.',
+                    default => null,
+                },
             },
-            'users' => $isAdministrator ? $userRepository->all() : [],
+            'users' => $managedUsers,
+            'registrationStatuses' => $registrationStatuses,
             'primarySuperAdministratorId' => (string) ($userRepository->primarySuperAdministrator()['id'] ?? ''),
         ]));
     }

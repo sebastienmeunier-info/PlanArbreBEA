@@ -88,6 +88,34 @@ final class AdminUserController
         exit;
     }
 
+    public function approveRegistration(Request $request): never
+    {
+        $auth = $this->auth();
+        $current = $this->guard($auth);
+        if (!$auth->verifyCsrf((string) $request->input('csrf_token'))) {
+            Response::html('Session expirée.', 403);
+        }
+        $repository = $this->repository();
+        $target = $repository->findById((string) $request->input('user_id'));
+        if ($target === null || ($target['registration_status'] ?? 'approved') !== 'pending') {
+            Response::html('Cette inscription ne peut pas être approuvée.', 422);
+        }
+        $repository->update($target['id'], [
+            'registration_status' => 'approved',
+            'approved_at' => date(DATE_ATOM),
+            'approved_by' => $current['id'],
+        ]);
+        $sent = $this->notifier()->send('registration_approved', (string) $target['email'], [
+            'project_name' => (string) $this->app->config('app')['name'],
+            'first_name' => (string) $target['first_name'],
+            'last_name' => (string) $target['last_name'],
+            'administrator_name' => trim((string) $current['first_name'] . ' ' . (string) $current['last_name']),
+            'administrator_email' => (string) $current['email'],
+        ]);
+        header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=utilisateurs&approval=' . ($sent ? 'sent' : 'failed')), true, 303);
+        exit;
+    }
+
     public function updateProfile(Request $request): never
     {
         try {

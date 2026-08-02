@@ -152,6 +152,10 @@ return [
                 'subject' => 'Votre compte a été importé · {{project_name}}',
                 'body' => "Bonjour {{first_name}},\n\nVotre compte a été importé sur cette instance :\n{{instance_url}}\n\nPour choisir votre nouveau mot de passe, utilisez ce lien valable 7 jours :\n{{url}}\n\n{{project_name}}",
             ],
+            'registration_approved' => [
+                'subject' => 'Votre inscription est validée · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nVotre inscription a été validée. Vous pouvez maintenant vous connecter à l’application.\n\nValidation réalisée par : {{administrator_name}} ({{administrator_email}})\n\n{{project_name}}",
+            ],
             'proposal_validated' => [
                 'subject' => 'Votre proposition a été validée · {{project_name}}',
                 'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} pour {{species}} a été validée.\n\nCommentaire de l’administration :\n{{comment}}\n\nModification réalisée par : {{administrator_name}} ({{administrator_email}})\n\n{{project_name}}",
@@ -187,6 +191,7 @@ return [
         'bootstrap_admin_email' => strtolower((string) (getenv('PLANTONS_BOOTSTRAP_ADMIN_EMAIL') ?: '')),
         'administrator_emails' => ['contact@sebastienmeunier.info'],
         'bootstrap_super_admin_email' => strtolower((string) (getenv('PLANTONS_BOOTSTRAP_SUPER_ADMIN_EMAIL') ?: '')),
+        'validation_inscription_obligatoire' => filter_var(getenv('PLANTONS_VALIDATION_INSCRIPTION_OBLIGATOIRE') ?: false, FILTER_VALIDATE_BOOL),
         'roles' => ['contributeur', 'administrateur', 'super_administrateur'],
     ],
     'smtp' => [

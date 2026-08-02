@@ -14,13 +14,18 @@ final class AuthService
     {
         $this->startSession();
         $id = $_SESSION[$this->config['session_key']] ?? null;
-        return is_string($id) ? $this->users->findById($id) : null;
+        $user = is_string($id) ? $this->users->findById($id) : null;
+        if ($user !== null && ($user['registration_status'] ?? 'approved') !== 'approved') {
+            unset($_SESSION[$this->config['session_key']]);
+            return null;
+        }
+        return $user;
     }
 
     public function login(string $email, string $password): ?array
     {
         $user = $this->users->findByEmail($email);
-        if ($user === null || !is_string($user['password_hash'] ?? null) || !password_verify($password, $user['password_hash'])) { return null; }
+        if ($user === null || ($user['registration_status'] ?? 'approved') !== 'approved' || !is_string($user['password_hash'] ?? null) || !password_verify($password, $user['password_hash'])) { return null; }
         $this->startSession(); session_regenerate_id(true); $_SESSION[$this->config['session_key']] = $user['id'];
         return $user;
     }
