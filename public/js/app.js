@@ -40,7 +40,10 @@
   const renderProposal = (feature) => L.geoJSON(feature, { pointToLayer: (item, latLng) => L.marker(latLng, { icon: proposalIcon(item.properties?.status) }), onEachFeature: (item, layer) => { const properties = item.properties || {}; const details = properties.conditioning ? [config.conditionings?.[properties.conditioning]?.label || properties.conditioning, properties.tree_size ? (config.treeSizes?.[properties.tree_size]?.label || properties.tree_size) : ''].filter(Boolean).join(' · ') : (properties.objectives || []).map((objective) => config.objectives[objective]?.label || objective).join(', '); layer.bindPopup(`<strong>${properties.species || 'Proposition'}</strong><br>${details || 'Information non renseignée'}`); } }).addTo(map);
   const sectorAt = (longitude, latitude) => sectors?.features?.find((feature) => window.turf && turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))?.properties?.nom || '';
   const shortAddress = (place) => {
-    if (place?.properties) return [place.properties.name, place.properties.postcode, place.properties.city].filter(Boolean).join(' ');
+    if (place?.properties) {
+      const numberAndStreet = [place.properties.housenumber || place.properties.house_number, place.properties.name].filter(Boolean).join(' ');
+      return [numberAndStreet, place.properties.postcode, place.properties.city].filter(Boolean).join(', ');
+    }
     const address = place.address || {};
     const street = [address.house_number, address.road || address.pedestrian || address.footway].filter(Boolean).join(' ');
     return street || address.amenity || address.building || address.hamlet || (place.display_name || '').split(',')[0] || 'adresse non trouvée';
@@ -49,13 +52,14 @@
     const request = ++locationRequest;
     let address = knownAddress;
     const sector = sectorAt(longitude, latitude);
-    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — recherche de l’adresse… — ${sector || `${config.sectorType || 'secteur'} non identifié`}`;
+    const sectorDisplay = `(${config.sectorType || 'secteur'} : ${sector || 'non identifié'})`;
+    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — recherche de l’adresse… ${sectorDisplay}`;
     if (!address) {
       try { const response = await fetch(`${config.geocodingReverseUrl}?lat=${latitude}&lon=${longitude}&limit=1`, { headers: { Accept: 'application/geo+json, application/json' } }); const payload = await response.json(); address = shortAddress(payload.features?.[0] || payload); } catch { address = ''; }
     }
     if (request !== locationRequest) return;
     document.querySelector('#selected-address').value = address;
-    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${address || 'adresse non trouvée'} — ${sector || `${config.sectorType || 'secteur'} non identifié`}`;
+    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${address || 'adresse non trouvée'} ${sectorDisplay}`;
   };
   const setPosition = (latitude, longitude, address = '') => {
     const latLng = [latitude, longitude];
