@@ -10,6 +10,7 @@ use Plantons\Core\Response;
 use Plantons\Repositories\UserRepository;
 use Plantons\Services\AuthService;
 use Plantons\Services\GeoJsonStore;
+use Plantons\Services\StatisticsService;
 
 final class AccountController
 {
@@ -23,7 +24,7 @@ final class AccountController
 
         $isAdministrator = in_array($user['role'], ['administrateur', 'super_administrateur'], true);
         $tab = (string) $request->query('onglet', 'profil');
-        $allowedTabs = $isAdministrator ? ['profil', 'plantations', 'dons', 'utilisateurs', 'exports'] : ['profil', 'plantations'];
+        $allowedTabs = $isAdministrator ? ['profil', 'plantations', 'dons', 'utilisateurs', 'exports', 'statistiques'] : ['profil', 'plantations', 'statistiques'];
         if (!in_array($tab, $allowedTabs, true)) { $tab = 'profil'; }
 
         $store = new GeoJsonStore();
@@ -58,11 +59,20 @@ final class AccountController
             elseif (in_array($status, ['refusee', 'rejetee'], true)) { $counts['rejected']++; }
             else { $counts['proposed']++; }
         }
-        $managedUsers = $isAdministrator ? $userRepository->all() : [];
+        $allUsers = $userRepository->all();
+        $managedUsers = $isAdministrator ? $allUsers : [];
         $registrationStatuses = [];
         foreach ($managedUsers as $managedUser) {
             $registrationStatuses[(string) $managedUser['id']] = (string) ($managedUser['registration_status'] ?? 'approved');
         }
+        $statistics = (new StatisticsService())->summarize(
+            array_merge(
+                $store->read($sources['proposals']['file'])['features'],
+                $store->read($sources['donations']['file'])['features'],
+            ),
+            $allUsers,
+            $this->app->config('proposals')['status_labels'],
+        );
 
         Response::html($this->app->view()->render('account/index', [
             'application' => $this->app->config('app'), 'csrfToken' => $auth->csrfToken(), 'user' => $user,
@@ -82,6 +92,7 @@ final class AccountController
             },
             'users' => $managedUsers,
             'registrationStatuses' => $registrationStatuses,
+            'statisticsData' => $statistics,
             'primarySuperAdministratorId' => (string) ($userRepository->primarySuperAdministrator()['id'] ?? ''),
         ]));
     }
