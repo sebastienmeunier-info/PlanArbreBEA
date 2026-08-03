@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /*
 ------------------------------------------------------------
-PlanArbreBEA
+Plantons
 save.php
 Version 1.0.0
 Licence GNU AGPL v3
@@ -42,7 +42,7 @@ try {
     )) {
 
         Response::forbidden(
-            "Le point sélectionné est situé hors du territoire de Baugé-en-Anjou."
+            "Le point sélectionné est situé hors du territoire autorisé."
         );
 
     }

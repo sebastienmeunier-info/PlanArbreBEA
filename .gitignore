@@ -1,0 +1,13 @@
+data/*.json
+data/*.geojson
+!data/territoire.geojson
+!data/communes-deleguees.geojson
+!data/dons.geojson
+logs/*.log
+uploads/photos/*
+!uploads/photos/.gitkeep
+uploads/documents/*
+uploads/exports/*
+uploads/backups/*
+tools/php/
+tools/*.zip

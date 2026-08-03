@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * ------------------------------------------------------------
- * PlanArbreBEA
+ * Plantons
  * Validation des données
  * Version : 1.0.0
  * Licence : GNU AGPL v3

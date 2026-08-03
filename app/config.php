@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * ------------------------------------------------------------
- * PlanArbreBEA
+ * Plantons
  * Configuration générale
  * Version : 1.0.0
  * Build   : 20260727
@@ -20,7 +20,7 @@ final class Config
     ============================================================
     */
 
-    public const APP_NAME = 'PlanArbreBEA';
+    public const APP_NAME = 'Plantons';
 
     public const VERSION = '1.0.0';
 

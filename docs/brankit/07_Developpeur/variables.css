@@ -1,0 +1,13 @@
+:root{
+  --plantons-forest: #0B2D1B;
+  --plantons-border: #7BEA8C;
+  --plantons-leaf: #9ED11B;
+  --plantons-leaf-dark: #73B300;
+  --plantons-leaf-light: #B8E020;
+  --plantons-trunk: #A45A3C;
+  --plantons-orange: #FF8C00;
+  --plantons-white: #FFFFFF;
+  --plantons-mist: #F3F7F3;
+  --plantons-ink: #17211A;
+  --space-unit:8px;--radius-card:12px;
+}
