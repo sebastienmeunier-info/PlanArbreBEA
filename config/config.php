@@ -156,6 +156,14 @@ return [
                 'subject' => 'Votre inscription est validée · {{project_name}}',
                 'body' => "Bonjour {{first_name}},\n\nVotre inscription a été validée. Vous pouvez maintenant vous connecter à l’application.\n\nValidation réalisée par : {{administrator_name}} ({{administrator_email}})\n\n{{project_name}}",
             ],
+            'proposal_administrative_update' => [
+                'subject' => 'Votre proposition a été mise à jour · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} a été modifiée par l’administration.\n\nStatut : {{status}}\nEssence : {{species}}\nObjectifs / caractéristiques : {{objectives}}\nAdresse : {{address}}\nCoordonnées GPS : {{latitude}}, {{longitude}}\nSecteur : {{sector}}\n\nVotre commentaire :\n{{comment}}\n\nCommentaire de l’administration :\n{{admin_comment}}\n\nModification réalisée par : {{administrator_name}} ({{administrator_email}})\n\nConsulter votre proposition :\n{{proposal_url}}\n\n{{project_name}}",
+            ],
+            'proposal_deleted' => [
+                'subject' => 'Votre proposition a été supprimée · {{project_name}}',
+                'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} a été supprimée par l’administration.\n\nStatut avant suppression : {{status}}\nEssence : {{species}}\nObjectifs / caractéristiques : {{objectives}}\nAdresse : {{address}}\nCoordonnées GPS : {{latitude}}, {{longitude}}\nSecteur : {{sector}}\n\nVotre commentaire :\n{{comment}}\n\nCommentaire de l’administration :\n{{admin_comment}}\n\nSuppression réalisée par : {{administrator_name}} ({{administrator_email}})\n\n{{project_name}}",
+            ],
             'proposal_validated' => [
                 'subject' => 'Votre proposition a été validée · {{project_name}}',
                 'body' => "Bonjour {{first_name}},\n\nVotre proposition {{proposal_id}} pour {{species}} a été validée.\n\nCommentaire de l’administration :\n{{comment}}\n\nModification réalisée par : {{administrator_name}} ({{administrator_email}})\n\n{{project_name}}",

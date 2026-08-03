@@ -12,6 +12,7 @@ use Plantons\Controllers\AdminProposalController;
 use Plantons\Controllers\ExportController;
 use Plantons\Controllers\PrivacyController;
 use Plantons\Controllers\AboutController;
+use Plantons\Controllers\MyProposalController;
 
 return [
     ['GET', '/', [HomeController::class, 'index']],
@@ -44,6 +45,8 @@ return [
     ['GET', '/admin/propositions', [AdminProposalController::class, 'index']],
     ['POST', '/admin/propositions/modifier', [AdminProposalController::class, 'update']],
     ['POST', '/admin/dons/modifier', [AdminProposalController::class, 'updateDonation']],
+    ['GET', '/ma-proposition', [MyProposalController::class, 'show']],
+    ['POST', '/ma-proposition/modifier', [MyProposalController::class, 'update']],
     ['GET', '/admin/exports', [ExportController::class, 'download']],
     ['POST', '/admin/imports', [ExportController::class, 'import']],
     ['GET', '/mon-compte', [AccountController::class, 'index']],

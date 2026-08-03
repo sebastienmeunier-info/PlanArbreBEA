@@ -54,6 +54,7 @@ final class AdminProposalController
                 $store = new GeoJsonStore();
                 $sourceFile = $this->app->config('data_sources')[$source]['file'];
                 $deleted = $store->deleteFeature($sourceFile, (string) $request->input('id'));
+                $this->notifyAdministrativeAction($deleted, $source, 'proposal_deleted', $current, mb_substr(trim((string) $request->input('admin_comment')), 0, 2000));
                 $this->deletePhotos((array) ($deleted['properties']['photos'] ?? []));
                 header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=' . $tab), true, 303);
                 exit;
@@ -93,12 +94,16 @@ final class AdminProposalController
                 throw new InvalidArgumentException('La localisation doit rester dans le territoire autorisé.');
             }
             $sectors = $store->read($sources['sectors']['file']);
-            $store->updateFeature($sources[$source]['file'], $proposalId, $changes + [
+            $updateProperties = $changes + [
                 'sector' => $territoryService->municipality($sectors, $longitude, $latitude),
                 'updated_at' => date(DATE_ATOM),
                 'updated_by' => $current['id'],
-            ], [$longitude, $latitude]);
-            $this->notifyChanges($previous, $status, $species, $longitude, $latitude, $territoryService->municipality($sectors, $longitude, $latitude), $adminComment, $current);
+            ];
+            $store->updateFeature($sources[$source]['file'], $proposalId, $updateProperties, [$longitude, $latitude]);
+            $updated = $previous;
+            $updated['properties'] = array_replace((array) ($previous['properties'] ?? []), $updateProperties);
+            $updated['geometry'] = ['type' => 'Point', 'coordinates' => [$longitude, $latitude]];
+            $this->notifyAdministrativeAction($updated, $source, 'proposal_administrative_update', $current, $adminComment);
             header('Location: ' . $this->app->routeUrl('/mon-compte?onglet=' . $tab), true, 303);
             exit;
         } catch (InvalidArgumentException|RuntimeException $exception) {
@@ -122,45 +127,45 @@ final class AdminProposalController
         return null;
     }
 
-    private function notifyChanges(array $previous, string $status, string $species, float $longitude, float $latitude, ?string $municipality, string $adminComment, array $administrator): void
+    private function notifyAdministrativeAction(array $proposal, string $source, string $event, array $administrator, string $adminComment): void
     {
         $notifications = $this->app->config('notifications');
-        $properties = $previous['properties'] ?? [];
+        $properties = (array) ($proposal['properties'] ?? []);
         $recipient = (string) ($properties['email'] ?? '');
         if (($notifications['status_changes'] ?? false) !== true || empty($properties['notification_consent_at']) || filter_var($recipient, FILTER_VALIDATE_EMAIL) === false) {
             return;
         }
-
-        $coordinates = $previous['geometry']['coordinates'] ?? [];
-        $moved = count($coordinates) >= 2 && ((float) $coordinates[0] !== $longitude || (float) $coordinates[1] !== $latitude);
         $user = $this->repository()->findByEmail($recipient);
+        $coordinates = (array) ($proposal['geometry']['coordinates'] ?? [null, null]);
+        $planting = $this->app->config('planting');
+        $objectives = $source === 'donations'
+            ? implode(' · ', array_filter([
+                $planting['tree_conditioning'][$properties['conditioning'] ?? '']['label'] ?? '',
+                $planting['tree_sizes'][$properties['tree_size'] ?? '']['label'] ?? '',
+            ]))
+            : implode(', ', array_map(static fn(string $objective): string => (string) ($planting['objectives'][$objective]['label'] ?? $objective), (array) ($properties['objectives'] ?? [])));
+        $status = (string) ($this->app->config('proposals')['status_labels'][$properties['status'] ?? ''] ?? ($properties['status'] ?? 'Proposée'));
+        $proposalUrl = $this->app->absoluteRouteUrl('/ma-proposition?source=' . rawurlencode($source) . '&id=' . rawurlencode((string) ($properties['id'] ?? '')));
         $variables = [
             'project_name' => (string) $this->app->config('app')['name'],
             'first_name' => (string) ($user['first_name'] ?? $properties['author'] ?? ''),
             'last_name' => (string) ($user['last_name'] ?? ''),
             'proposal_id' => (string) ($properties['id'] ?? ''),
-            'species' => $species,
-            'location' => (string) (($properties['address'] ?? '') ?: $municipality ?: sprintf('%.5f, %.5f', $latitude, $longitude)),
-            'comment' => $adminComment !== '' ? $adminComment : 'Aucun commentaire.',
+            'status' => $status,
+            'species' => (string) ($properties['species'] ?? ''),
+            'objectives' => $objectives !== '' ? $objectives : 'Non renseigné',
+            'address' => (string) ($properties['address'] ?? 'Non renseignée'),
+            'latitude' => isset($coordinates[1]) ? number_format((float) $coordinates[1], 6, '.', '') : 'Non renseignée',
+            'longitude' => isset($coordinates[0]) ? number_format((float) $coordinates[0], 6, '.', '') : 'Non renseignée',
+            'sector' => (string) ($properties['sector'] ?? $properties['delegated_municipality'] ?? 'Non renseigné'),
+            'comment' => (string) ($properties['comment'] ?? 'Aucun commentaire.'),
+            'admin_comment' => $adminComment !== '' ? $adminComment : 'Aucun commentaire.',
             'administrator_name' => trim((string) ($administrator['first_name'] ?? '') . ' ' . (string) ($administrator['last_name'] ?? '')) ?: 'Administration',
             'administrator_email' => (string) ($administrator['email'] ?? ''),
-            'url' => $this->app->absoluteRouteUrl('/'),
+            'proposal_url' => $proposalUrl,
         ];
         $notifier = new NotificationService($this->app->config('smtp'), $notifications, $this->app->logger());
-        if (($properties['status'] ?? '') !== $status) {
-            $event = match ($status) {
-                'validee' => 'proposal_validated',
-                'refusee', 'rejetee' => 'proposal_rejected',
-                'arbre_plante', 'realisee' => 'tree_planted',
-                default => null,
-            };
-            if ($event !== null) {
-                $notifier->send($event, $recipient, $variables);
-            }
-        }
-        if ($moved) {
-            $notifier->send('location_moved', $recipient, $variables);
-        }
+        $notifier->send($event, $recipient, $variables);
     }
 
     private function guard(AuthService $auth): array
