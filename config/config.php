@@ -19,7 +19,7 @@ return [
     'app' => [
         'name' => $projectName,
         'header_text' => getenv('PLANTONS_HEADER_TEXT') ?: 'Plantons des arbres dans notre commune',
-        'logo_url' => getenv('PLANTONS_PROJECT_LOGO_URL') ?: 'https://www.sebastienmeunier.info/wp-content/uploads/2024/12/sebmeunier-300x300.png',
+        'logo_url' => getenv('PLANTONS_PROJECT_LOGO_URL') ?: $basePath . '/public/img/plantons-logo.svg',
         'environment' => $environment,
         'debug' => filter_var(getenv('PLANTONS_DEBUG') ?: $environment !== 'production', FILTER_VALIDATE_BOOL),
         'base_url' => rtrim((string) (getenv('PLANTONS_BASE_URL') ?: ''), '/'),
