@@ -18,8 +18,10 @@ $basePath = $basePath === '/' ? '' : $basePath;
 return [
     'app' => [
         'name' => $projectName,
-        'header_text' => getenv('PLANTONS_HEADER_TEXT') ?: 'Plantons des arbres dans notre commune',
-        'logo_url' => getenv('PLANTONS_PROJECT_LOGO_URL') ?: $basePath . '/public/img/plantons-logo.svg',
+        // Laisser vide pour utiliser l'accroche visuelle par défaut dans l'en-tête.
+        'header_text' => getenv('PLANTONS_HEADER_TEXT') ?: '',
+        // Laisser vide pour utiliser le logo libre fourni dans le BrandKit.
+        'logo_url' => getenv('PLANTONS_PROJECT_LOGO_URL') ?: $basePath . '/docs/brankit/02_Logos/SVG/Plantons.svg',
         'environment' => $environment,
         'debug' => filter_var(getenv('PLANTONS_DEBUG') ?: $environment !== 'production', FILTER_VALIDATE_BOOL),
         'base_url' => rtrim((string) (getenv('PLANTONS_BASE_URL') ?: ''), '/'),
@@ -64,10 +66,14 @@ return [
             'file' => $root . '/data/dons.geojson',
             'url' => getenv('PLANTONS_DONATIONS_GEOJSON_URL') ?: '/api/data/dons',
         ],
+        // Supprimer cette entrée, ou renseigner `file` avec une chaîne vide,
+        // pour autoriser les propositions sans limite territoriale.
         'territory' => [
             'file' => $root . '/data/territoire.geojson',
             'url' => getenv('PLANTONS_TERRITORY_GEOJSON_URL') ?: '/api/data/territoire',
         ],
+        // Supprimer cette entrée, ou renseigner `file` avec une chaîne vide,
+        // lorsqu'aucun secteur (quartier, commune déléguée, etc.) ne s'applique.
         'sectors' => [
             'file' => getenv('PLANTONS_SECTORS_GEOJSON_FILE') ?: $root . '/data/communes-deleguees.geojson',
             'url' => getenv('PLANTONS_SECTORS_GEOJSON_URL') ?: (getenv('PLANTONS_MUNICIPALITIES_GEOJSON_URL') ?: '/api/data/secteurs'),

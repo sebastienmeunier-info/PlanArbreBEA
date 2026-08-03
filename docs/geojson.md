@@ -9,6 +9,8 @@ Les deux fichiers sont des `FeatureCollection` GeoJSON. Ils sont volontairement 
 
 Dans `config/config.php`, la clé `territory.type_secteur` définit le libellé affiché. Elle vaut par défaut `commune déléguée` et peut être remplacée par `quartier`. La source GeoJSON des secteurs se configure dans `data_sources.sectors` ; les variables d’environnement `PLANTONS_SECTORS_GEOJSON_FILE` et `PLANTONS_SECTORS_GEOJSON_URL` permettent aussi de la surcharger sans modifier le code.
 
+Ces deux couches sont facultatives : supprimez la section `data_sources.territory`, ou laissez son champ `file` vide, pour ne pas limiter la zone de proposition. Supprimez la section `data_sources.sectors`, ou laissez son champ `file` vide, pour ne pas afficher ni enregistrer de secteur. Cette dernière option convient à un territoire qui n’est pas découpé en quartiers ou communes déléguées.
+
 ## Sources officielles
 
 La source recommandée est [l'API Découpage administratif de geo.api.gouv.fr](https://geo.api.gouv.fr/decoupage-administratif/communes). Elle diffuse les communes courantes et leurs contours au format GeoJSON, sans clé d'API. Les communes associées et déléguées sont fournies par [l'endpoint dédié](https://geo.api.gouv.fr/decoupage-administratif/communes-associees-deleguees).

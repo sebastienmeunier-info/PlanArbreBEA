@@ -54,14 +54,14 @@
     const request = ++locationRequest;
     let address = knownAddress;
     const sector = sectorAt(longitude, latitude);
-    const sectorDisplay = `(${config.sectorType || 'secteur'} : ${sector || 'non identifié'})`;
-    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — recherche de l’adresse… ${sectorDisplay}`;
+    const sectorDisplay = config.sectorsUrl ? ` (${config.sectorType || 'secteur'} : ${sector || 'non identifié'})` : '';
+    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — recherche de l’adresse…${sectorDisplay}`;
     if (!address) {
       try { const response = await fetch(`${config.geocodingReverseUrl}?lat=${latitude}&lon=${longitude}&limit=1`, { headers: { Accept: 'application/geo+json, application/json' } }); const payload = await response.json(); address = shortAddress(payload.features?.[0] || payload); } catch { address = ''; }
     }
     if (request !== locationRequest) return;
     document.querySelector('#selected-address').value = address;
-    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${address || 'adresse non trouvée'} ${sectorDisplay}`;
+    locationOutput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${address || 'adresse non trouvée'}${sectorDisplay}`;
   };
   const setPosition = (latitude, longitude, address = '') => {
     const latLng = [latitude, longitude];
@@ -77,13 +77,13 @@
     setMessage('');
   };
 
-  fetch(config.territoryUrl).then((response) => response.ok ? response.json() : null).then((geojson) => {
+  if (config.territoryUrl) fetch(config.territoryUrl).then((response) => response.ok ? response.json() : null).then((geojson) => {
     if (!geojson || !geojson.features?.length) return;
     territory = geojson;
     const layer = L.geoJSON(geojson, { style: { color: '#1f6b3b', weight: 2, fillOpacity: .08 } }).addTo(map);
     map.fitBounds(layer.getBounds(), { padding: [16, 16], maxZoom: config.zoom });
   }).catch(() => setMessage('La limite du territoire n’est pas disponible pour le moment.', 'error'));
-  fetch(config.sectorsUrl).then((response) => response.ok ? response.json() : null).then((geojson) => { sectors = geojson; });
+  if (config.sectorsUrl) fetch(config.sectorsUrl).then((response) => response.ok ? response.json() : null).then((geojson) => { sectors = geojson; });
   fetch(config.proposalsUrl).then((response) => response.ok ? response.json() : null).then((geojson) => {
     if (!geojson?.features?.length) return;
     geojson.features.forEach(renderProposal);

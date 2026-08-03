@@ -23,7 +23,7 @@ Avant la mise en service, adapter `config/config.php` :
 
 - `app.name` : nom du projet affiché ;
 - `territory.name` et `territory.center` : identité et centre de carte ;
-- `data_sources` : chemins locaux et URL de service des GeoJSON ;
+- `data_sources` : chemins locaux et URL de service des GeoJSON ; les sections `territory` et `sectors` peuvent être omises pour désactiver respectivement la limite territoriale et la notion de secteur.
 - `planting.allowed_species` : essences proposées au citoyen ;
 - `planting.objectives` : objectifs de plantation proposés ;
 - `security.max_photos_per_proposal` : fixé à `3` pour la version 1.0.

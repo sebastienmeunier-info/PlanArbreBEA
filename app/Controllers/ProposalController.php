@@ -71,16 +71,15 @@ final class ProposalController
             }
             $store = new GeoJsonStore();
             $sources = $this->app->config('data_sources');
-            $territory = $store->read($sources['territory']['file']);
             $territoryService = new TerritoryService();
-            if (($territory['features'] ?? []) === []) {
-                throw new RuntimeException('Le territoire n’est pas encore configuré.');
-            }
-            if (!$territoryService->contains($territory, $longitude, $latitude)) {
+            $territoryFile = trim((string) ($sources['territory']['file'] ?? ''));
+            $territory = $territoryFile === '' ? null : $store->read($territoryFile);
+            if ($territory !== null && ($territory['features'] ?? []) !== [] && !$territoryService->contains($territory, $longitude, $latitude)) {
                 throw new InvalidArgumentException('Le point sélectionné est situé hors du territoire autorisé.');
             }
 
-            $sectors = $store->read($sources['sectors']['file']);
+            $sectorsFile = trim((string) ($sources['sectors']['file'] ?? ''));
+            $sectors = $sectorsFile === '' ? null : $store->read($sectorsFile);
             $photos = (new PhotoService())->store($request->files('photos'), $this->app->config('security'), $this->app->config('paths')['uploads']);
             $feature = [
                 'type' => 'Feature',
@@ -98,7 +97,7 @@ final class ProposalController
                     'tree_size' => $source === 'donations' ? $treeSize : null,
                     'comment' => $comment,
                     'address' => mb_substr(trim((string) $request->input('address')), 0, 255),
-                    'sector' => $territoryService->municipality($sectors, $longitude, $latitude),
+                    'sector' => $sectors === null ? '' : $territoryService->municipality($sectors, $longitude, $latitude),
                     'photos' => $photos,
                 ],
             ];

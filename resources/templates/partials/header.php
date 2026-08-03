@@ -1,5 +1,10 @@
+<?php
+$headerText = trim((string) ($application['header_text'] ?? ''));
+$defaultHeaderText = "Plantons + d’arbres sur notre territoire";
+$headerLabel = $headerText !== '' ? $headerText : $defaultHeaderText;
+?>
 <header class="site-header">
-  <a class="project-brand" href="<?= htmlspecialchars($routeUrl('/'), ENT_QUOTES, 'UTF-8') ?>" aria-label="<?= htmlspecialchars($application['header_text'] ?? $application['name'], ENT_QUOTES, 'UTF-8') ?>"><img class="project-logo" src="<?= htmlspecialchars($application['logo_url'], ENT_QUOTES, 'UTF-8') ?>" alt=""><strong class="project-title"><?= htmlspecialchars($application['header_text'] ?? $application['name'], ENT_QUOTES, 'UTF-8') ?></strong></a>
+  <a class="project-brand" href="<?= htmlspecialchars($routeUrl('/'), ENT_QUOTES, 'UTF-8') ?>" aria-label="<?= htmlspecialchars($headerLabel, ENT_QUOTES, 'UTF-8') ?>"><img class="project-logo" src="<?= htmlspecialchars((string) ($application['logo_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" alt=""><?php if ($headerText === ''): ?><strong class="project-title">Plantons <span class="project-title-plus">+</span> d’arbres sur notre territoire</strong><?php else: ?><strong class="project-title"><?= htmlspecialchars($headerText, ENT_QUOTES, 'UTF-8') ?></strong><?php endif; ?></a>
   <button class="menu-toggle" type="button" aria-label="Ouvrir le menu" aria-controls="site-navigation" aria-expanded="false"><span></span><span></span><span></span></button>
   <nav id="site-navigation" class="site-navigation" aria-label="Navigation principale">
     <?php if ($user ?? null): ?>

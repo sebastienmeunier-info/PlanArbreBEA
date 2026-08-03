@@ -21,8 +21,9 @@ final class GeoJsonController
 
     private function respond(string $source): never
     {
-        $config = $this->app->config('data_sources')[$source];
-        Response::json((new GeoJsonStore())->read($config['file']));
+        $config = (array) ($this->app->config('data_sources')[$source] ?? []);
+        $file = trim((string) ($config['file'] ?? ''));
+        Response::json($file === '' ? ['type' => 'FeatureCollection', 'features' => []] : (new GeoJsonStore())->read($file));
     }
 
     /**

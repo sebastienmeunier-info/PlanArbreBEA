@@ -88,14 +88,16 @@ final class AdminProposalController
             if ($previous === null) {
                 throw new RuntimeException('Proposition introuvable.');
             }
-            $territory = $store->read($sources['territory']['file']);
             $territoryService = new TerritoryService();
-            if (!$territoryService->contains($territory, $longitude, $latitude)) {
+            $territoryFile = trim((string) ($sources['territory']['file'] ?? ''));
+            $territory = $territoryFile === '' ? null : $store->read($territoryFile);
+            if ($territory !== null && ($territory['features'] ?? []) !== [] && !$territoryService->contains($territory, $longitude, $latitude)) {
                 throw new InvalidArgumentException('La localisation doit rester dans le territoire autorisé.');
             }
-            $sectors = $store->read($sources['sectors']['file']);
+            $sectorsFile = trim((string) ($sources['sectors']['file'] ?? ''));
+            $sectors = $sectorsFile === '' ? null : $store->read($sectorsFile);
             $updateProperties = $changes + [
-                'sector' => $territoryService->municipality($sectors, $longitude, $latitude),
+                'sector' => $sectors === null ? '' : $territoryService->municipality($sectors, $longitude, $latitude),
                 'updated_at' => date(DATE_ATOM),
                 'updated_by' => $current['id'],
             ];
