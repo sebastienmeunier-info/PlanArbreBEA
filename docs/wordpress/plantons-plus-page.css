@@ -3,6 +3,8 @@
 .plantons-presentation section { margin: 3rem 0; }
 .plantons-hero, .plantons-services, .plantons-cta { padding: clamp(1.5rem, 4vw, 3.5rem); border-radius: 1.25rem; }
 .plantons-hero { color: #fff; background: linear-gradient(135deg, #0b2d1b, #1d5b34); }
+.plantons-logo-link { display: inline-block; margin-bottom: 1rem; }
+.plantons-logo { display: block; width: min(14rem, 55vw); height: auto; max-height: 4.5rem; }
 .plantons-eyebrow { margin: 0 0 .75rem; color: #a8e5b8; font-size: .9rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
 .plantons-hero h1 { margin: 0; color: #fff; font-size: clamp(2.75rem, 7vw, 5rem); line-height: 1; }
 .plantons-lead { max-width: 44rem; margin: 1rem 0 0; font-size: clamp(1.15rem, 2vw, 1.45rem); }
@@ -19,4 +21,5 @@
 .plantons-cta h2 { color: #fff; }
 .plantons-button { display: inline-block; padding: .8rem 1.15rem; border-radius: .5rem; color: #0b2d1b; background: #70d88c; font-weight: 800; text-decoration: none; }
 .plantons-button:hover { color: #fff; background: #247442; }
+.plantons-licence { margin: 2rem 0; color: #496452; font-size: .9rem; text-align: center; }.plantons-licence a { color: #155b31; font-weight: 700; }
 @media (max-width: 48rem) { .plantons-feature-grid { grid-template-columns: 1fr; }.plantons-capture-grid { grid-template-columns: 1fr; }.plantons-capture-mobile { max-width: 22rem; margin-inline: auto !important; } }
