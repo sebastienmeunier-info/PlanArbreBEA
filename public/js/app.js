@@ -41,7 +41,9 @@
   const sectorAt = (longitude, latitude) => sectors?.features?.find((feature) => window.turf && turf.booleanPointInPolygon(turf.point([longitude, latitude]), feature))?.properties?.nom || '';
   const shortAddress = (place) => {
     if (place?.properties) {
-      const numberAndStreet = [place.properties.housenumber || place.properties.house_number, place.properties.name].filter(Boolean).join(' ');
+      const number = String(place.properties.housenumber || place.properties.house_number || '').trim();
+      const street = String(place.properties.name || '').trim();
+      const numberAndStreet = number && !street.startsWith(number) ? number + ' ' + street : street;
       return [numberAndStreet, place.properties.postcode, place.properties.city].filter(Boolean).join(', ');
     }
     const address = place.address || {};
