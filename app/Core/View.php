@@ -22,12 +22,22 @@ final class View
         }
 
         $basePath = rtrim($this->basePath, '/');
-        $url = static function (string $path = '/') use ($basePath): string {
+        $projectRoot = dirname($this->directory, 2);
+        $url = static function (string $path = '/') use ($basePath, $projectRoot): string {
             if (preg_match('#^https?://#i', $path)) {
                 return $path;
             }
 
-            return $basePath . '/' . ltrim($path, '/');
+            $localPath = '/' . ltrim($path, '/');
+            $url = $basePath . $localPath;
+            if (str_starts_with($localPath, '/public/')) {
+                $file = $projectRoot . str_replace('/', DIRECTORY_SEPARATOR, $localPath);
+                if (is_file($file)) {
+                    $url .= '?v=' . filemtime($file);
+                }
+            }
+
+            return $url;
         };
         $routeUrl = static function (string $path = '/') use ($url): string {
             if (preg_match('#^https?://#i', $path)) {
