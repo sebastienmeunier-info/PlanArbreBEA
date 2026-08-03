@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="plantons_forest">#0B2D1B</color>
+  <color name="plantons_border">#7BEA8C</color>
+  <color name="plantons_leaf">#9ED11B</color>
+  <color name="plantons_leaf_dark">#73B300</color>
+  <color name="plantons_leaf_light">#B8E020</color>
+  <color name="plantons_trunk">#A45A3C</color>
+  <color name="plantons_orange">#FF8C00</color>
+  <color name="plantons_white">#FFFFFF</color>
+  <color name="plantons_mist">#F3F7F3</color>
+  <color name="plantons_ink">#17211A</color>
+</resources>
