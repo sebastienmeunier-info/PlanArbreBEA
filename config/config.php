@@ -6,7 +6,7 @@ use Plantons\Core\Logger;
 
 $root = dirname(__DIR__);
 $environment = getenv('PLANTONS_ENV') ?: 'development';
-$projectName = getenv('PLANTONS_PROJECT_NAME') ?: 'Plantons';
+$projectName = getenv('PLANTONS_PROJECT_NAME') ?: 'Plantons +';
 $territoryName = getenv('PLANTONS_TERRITORY_NAME') ?: 'Baugé-en-Anjou';
 $sectorType = getenv('PLANTONS_TYPE_SECTEUR') ?: 'commune déléguée';
 $territoryCenter = [47.5310, -0.1020];

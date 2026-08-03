@@ -1,6 +1,6 @@
-# Plantons
+# Plantons +
 
-Plantons est un logiciel libre de gestion du patrimoine arboré et des propositions citoyennes de plantation. Il est conçu pour les collectivités, avec une installation simple sur hébergement PHP et un stockage pérenne en JSON/GeoJSON.
+Plantons + est un logiciel libre de gestion du patrimoine arboré et des propositions citoyennes de plantation. Il est conçu pour les collectivités, avec une installation simple sur hébergement PHP et un stockage pérenne en JSON/GeoJSON.
 
 ## État du projet
 
