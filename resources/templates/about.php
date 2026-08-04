@@ -21,10 +21,12 @@
       <h2>Une collaboration entre l’humain et l’intelligence artificielle</h2>
       <p>Plantons + est un projet imaginé par un humain, à partir de besoins concrets de terrain, puis développé avec l’appui d’une intelligence artificielle. Cette collaboration associe une vision locale et citoyenne — planter davantage d’arbres, mobiliser les habitants et suivre les projets — à la capacité de l’IA à accélérer la conception, l’écriture du code et l’amélioration continue de l’application.</p>
     </section>
-    <section class="about-card about-project-card">
+    <div class="about-project-column">
       <h2>À propos du projet de plantation</h2>
-      <?= is_string($about['planting_project_html'] ?? null) ? $about['planting_project_html'] : '' ?>
-    </section>
+      <section class="about-card about-project-card">
+        <?= is_string($about['planting_project_html'] ?? null) ? $about['planting_project_html'] : '' ?>
+      </section>
+    </div>
   </div>
 </main>
 <?php require __DIR__ . '/partials/footer.php'; ?>
