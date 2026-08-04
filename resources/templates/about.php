@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="<?= htmlspecialchars($url('/public/css/app.css'), ENT_QUOTES, 'UTF-8') ?>">
-  <title>À propos · <?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></title>
+  <title>À propos de l’application · <?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?></title>
 </head>
 <body class="outdoor-mode">
 <?php require __DIR__ . '/partials/header.php'; ?>
 <main class="auth-page about-page">
-  <h1>À propos</h1>
+  <h1>À propos de l’application</h1>
   <section>
     <h2>Un outil pour agir ensemble</h2>
     <p><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?> facilite la participation citoyenne aux plantations et aux dons d’arbres. Chacun peut localiser une idée, expliquer son objectif et suivre son évolution ; la collectivité peut ensuite l’instruire et la valoriser sur la carte.</p>
