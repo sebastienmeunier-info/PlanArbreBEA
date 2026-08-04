@@ -20,6 +20,7 @@ final class AboutController
         Response::html($this->app->view()->render('about', [
             'application' => $this->app->config('app'),
             'territory' => $this->app->config('territory'),
+            'about' => $this->app->config('about'),
             'csrfToken' => $auth->csrfToken(),
             'user' => $auth->currentUser(),
         ]));
