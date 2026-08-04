@@ -49,7 +49,9 @@ return [
         // Ce contenu HTML est affiché dans la seconde colonne de la page « À propos ».
         // Il est administré dans ce fichier : n’y ajoutez que du HTML de confiance.
         'planting_project_html' => <<<'HTML'
+<h3>Un outil pour l’environnement</h3>
 <p>Le projet de plantation répond aux enjeux d’adaptation au réchauffement climatique : davantage d’arbres pour apporter de l’ombre et de la fraîcheur, favoriser la biodiversité, mieux gérer l’eau et améliorer le cadre de vie.</p>
+<h3>Une participation citoyenne active</h3>
 <p>Il repose également sur une volonté politique de participation citoyenne active. Les habitantes et les habitants connaissent finement leur territoire ; leurs idées, leurs usages et leur expertise locale nourrissent les choix de plantation.</p>
 HTML,
     ],
