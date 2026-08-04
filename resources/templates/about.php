@@ -12,7 +12,7 @@
   <div class="about-columns">
     <div class="about-application-column">
       <h1>À propos de l’application</h1>
-      <section class="about-card">
+      <section class="about-card about-project-card">
         <h2>Un outil pour agir ensemble</h2>
         <p><?= htmlspecialchars($application['name'], ENT_QUOTES, 'UTF-8') ?> facilite la participation citoyenne aux plantations et aux dons d’arbres. Chacun peut localiser une idée, expliquer son objectif et suivre son évolution ; la collectivité peut ensuite l’instruire et la valoriser sur la carte.</p>
         <h2>Adaptable à chaque territoire</h2>
